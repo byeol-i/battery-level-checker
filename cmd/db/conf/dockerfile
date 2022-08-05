@@ -1,0 +1,14 @@
+FROM postgres:12-alpine
+COPY ./cmd/db/init.sql /docker-entrypoint-initdb.d/10-init.sql
+
+# COPY init.sql /docker-entrypoint-initdb.d/10-init.sql
+
+COPY ./cmd/db/pg_hba.conf ./cmd/db/postgresql.conf ./cmd/db/pg_ident.conf /etc/postgresql/config/
+
+COPY keys /etc/postgres/security
+
+RUN chown -R postgres:postgres /etc/postgres/security
+
+COPY --chown=postgres:postgres keys/ca.crt keys/server.crt keys/server.key /etc/postgres/security/
+
+CMD ["postgres", "-c", "config_file=/etc/postgresql/config/postgresql.conf", "-c", "hba_file=/etc/postgresql/config/pg_hba.conf"]

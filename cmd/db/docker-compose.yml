@@ -1,0 +1,22 @@
+version: "3.5"
+# x-services-volume: &services-volume
+#   type: bind
+
+services:
+    db:
+        build:
+            context: .
+        # volumes:
+        #   - <<: *services-volume
+        #     # source: ${HOST}/postgres
+        #     source: /tmp/dak-keyword
+        #     target: /var/lib/postgres
+        ports:
+            - 8432:5432
+        environment:
+            #PGDATA: /var/lib/postgresql/data
+            POSTGRES_DB: battery
+            #POSTGRES_HOST_AUTH_METHOD: trust
+            POSTGRES_USER: table_admin
+            POSTGRES_PASSWORD: HelloWorld
+            POSTGRES_INITDB_ARGS: --encoding=UTF-8
