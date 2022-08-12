@@ -1,202 +1,84 @@
-version: "3.2"
-
-# https://docs.docker.com/compose/compose-file/#long-syntax-3
-# https://docs.confluent.io/current/installation/docker/docs/operations/external-volumes.html#data-volumes-for-kafka-zookeeper
-volumes:
-  zookeeper1-data:
-  zookeeper1-txn-logs:
-  zookeeper2-data:
-  zookeeper2-txn-logs:
-  zookeeper3-data:
-  zookeeper3-txn-logs:
-  kafka1-data:
-  kafka2-data:
-  kafka3-data:
-
+version: "3"
 services:
+    zookeeper:
+        image: wurstmeister/zookeeper:3.4.6
+        volumes:
+            - /opt/data/zookeeper:/opt/zookeeper-3.4.6/data
+        ports:
+            - 2181
+        networks:
+            custom-network:
+                aliases:
+                    - zookeeper
+    kafka-1:
+        image: wurstmeister/kafka:1.1.0
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper
+            KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+            KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+            KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
+            KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
+            KAFKA_LISTENERS: INSIDE://:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_LOG_RETENTION_BYTES: -1
+            KAFKA_LOG_RETENTION_DAYS: 2
+            KAFKA_LOG_DIRS: /kafka/kafka-logs
+        volumes:
+            - /opt/data/kafka-1:/kafka/kafka-logs
+        networks:
+            custom-network:
+                aliases:
+                    - kafka-1
 
-  zookeeper1:
-    hostname: zookeeper1
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-        - ZOOKEEPER_SERVER_ID=1
-        - ZOOKEEPER_CLIENT_PORT=22181
-        - ZOOKEEPER_TICK_TIME=2000
-        - ZOOKEEPER_INIT_LIMIT=5
-        - ZOOKEEPER_SYNC_LIMIT=2
-        # These ports are for peer to peer communications
-        - ZOOKEEPER_SERVERS=0.0.0.0:22888:23888;54.89.13.155:32888:33888;54.89.13.155:42888:43888
-    ports:
-      - "22181:22181"
-      - "22888:22888"
-      - "23888:23888"
-    volumes:
-      - type: "volume"
-        source: "zookeeper1-data"
-        target: "/var/lib/zookeeper/data"
-        volume:
-          nocopy: true
-      - type: "volume"
-        source: "zookeeper1-txn-logs"
-        target: "/var/lib/zookeeper/log"
-        volume:
-          nocopy: true
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.hostname == cm4]
+    kafka-2:
+        image: wurstmeister/kafka:1.1.0
+        environment:
+            KAFKA_BROKER_ID: 2
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper
+            KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+            KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+            KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
+            KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
+            KAFKA_LISTENERS: INSIDE://:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_LOG_RETENTION_BYTES: -1
+            KAFKA_LOG_RETENTION_DAYS: 2
+            KAFKA_LOG_DIRS: /kafka/kafka-logs
+        volumes:
+            - /opt/data/kafka-2:/kafka/kafka-logs
+        networks:
+            custom-network:
+                aliases:
+                    - kafka-2
 
-  zookeeper2:
-    hostname: zookeeper2
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-        - ZOOKEEPER_SERVER_ID=2
-        - ZOOKEEPER_CLIENT_PORT=32181
-        - ZOOKEEPER_TICK_TIME=2000
-        - ZOOKEEPER_INIT_LIMIT=5
-        - ZOOKEEPER_SYNC_LIMIT=2
-        # These ports are for peer to peer communications
-        - ZOOKEEPER_SERVERS=54.89.13.155:22888:23888;0.0.0.0:32888:33888;54.89.13.155:42888:43888
-    ports:
-      - "32181:32181"
-      - "32888:32888"
-      - "33888:33888"
-    volumes:
-      - type: "volume"
-        source: "zookeeper2-data"
-        target: "/var/lib/zookeeper/data"
-        volume:
-          nocopy: true
-      - type: "volume"
-        source: "zookeeper2-txn-logs"
-        target: "/var/lib/zookeeper/log"
-        volume:
-          nocopy: true
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.hostname == dev2-master01]
+    kafka-3:
+        image: wurstmeister/kafka:1.1.0
+        environment:
+            KAFKA_BROKER_ID: 3
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper
+            KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+            KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+            KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
+            KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
+            KAFKA_LISTENERS: INSIDE://:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_LOG_RETENTION_BYTES: -1
+            KAFKA_LOG_RETENTION_DAYS: 2
+            KAFKA_LOG_DIRS: /kafka/kafka-logs
+        volumes:
+            - /opt/data/kafka-3:/kafka/kafka-logs
+        networks:
+            custom-network:
+                aliases:
+                    - kafka-3
 
-  zookeeper3:
-    hostname: zookeeper3
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-        - ZOOKEEPER_SERVER_ID=3
-        - ZOOKEEPER_CLIENT_PORT=42181
-        - ZOOKEEPER_TICK_TIME=2000
-        - ZOOKEEPER_INIT_LIMIT=5
-        - ZOOKEEPER_SYNC_LIMIT=2
-        # These ports are for peer to peer communications
-        - ZOOKEEPER_SERVERS=54.89.13.155:22888:23888;54.89.13.155:32888:33888;0.0.0.0:42888:43888
-    ports:
-      - "42181:42181"
-      - "42888:42888"
-      - "43888:43888"
-    volumes:
-      - type: "volume"
-        source: "zookeeper3-data"
-        target: "/var/lib/zookeeper/data"
-        volume:
-          nocopy: true
-      - type: "volume"
-        source: "zookeeper3-txn-logs"
-        target: "/var/lib/zookeeper/log"
-        volume:
-          nocopy: true
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.hostname == dev2-master01]
-
-  kafka1:
-    hostname: kafka1
-    image: confluentinc/cp-kafka:latest
-    ports:
-     - 19092:19092
-    volumes:
-      - type: "volume"
-        source: "kafka1-data"
-        target: "/var/lib/kafka/data"
-        volume:
-          nocopy: true
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 54.89.13.155:22181,54.89.13.155:32181,54.89.13.155:42181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://54.89.13.155:19092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-    deploy:
-      placement:
-        constraints: [node.hostname == dev2-master01]
-
-  kafka2:
-    hostname: kafka2
-    image: confluentinc/cp-kafka:latest
-    ports:
-     - 29092:29092
-    volumes:
-      - type: "volume"
-        source: "kafka2-data"
-        target: "/var/lib/kafka/data"
-        volume:
-          nocopy: true
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: 54.89.13.155:22181,54.89.13.155:32181,54.89.13.155:42181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://54.89.13.155:29092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-    deploy:
-      placement:
-        constraints: [node.hostname == dev2-master01]
-
-  kafka3:
-    hostname: kafka3
-    image: confluentinc/cp-kafka:latest
-    ports:
-     - 39092:39092
-    volumes:
-      - type: "volume"
-        source: "kafka3-data"
-        target: "/var/lib/kafka/data"
-        volume:
-          nocopy: true
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: 54.89.13.155:22181,54.89.13.155:32181,54.89.13.155:42181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://54.89.13.155:39092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-    deploy:
-      placement:
-        constraints: [node.hostname == dev2-master01]
-
-  kafka-manager:
-    image: sheepkiller/kafka-manager:latest
-    ports:
-      - "9000:9000"
-    links:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-      - kafka1
-      - kafka2
-      - kafka3
-    environment:
-      ZK_HOSTS: 54.89.13.155:22181,54.89.13.155:32181,54.89.13.155:42181
-      APPLICATION_SECRET: letmein
-    deploy:
-      placement:
-        constraints: [node.hostname == dev2-master01]
+networks:
+    custom-network:
+        external: true
