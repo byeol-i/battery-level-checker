@@ -5,7 +5,7 @@ services:
         ports:
             - 2181:2181
         networks:
-            custom-network:
+            kafka-network:
                 aliases:
                     - zookeeper
     kafka-1:
@@ -25,9 +25,9 @@ services:
             KAFKA_LOG_RETENTION_DAYS: 2
             KAFKA_LOG_DIRS: /kafka/kafka-logs
         volumes:
-            - /opt/data/kafka-1:/kafka/kafka-logs
+            - /home/data/kafka-1:/kafka/kafka-logs
         networks:
-            custom-network:
+            kafka-network:
                 aliases:
                     - kafka-1
 
@@ -48,9 +48,9 @@ services:
             KAFKA_LOG_RETENTION_DAYS: 2
             KAFKA_LOG_DIRS: /kafka/kafka-logs
         volumes:
-            - /opt/data/kafka-2:/kafka/kafka-logs
+            - /home/data/kafka-2:/kafka/kafka-logs
         networks:
-            custom-network:
+            kafka-network:
                 aliases:
                     - kafka-2
 
@@ -71,12 +71,12 @@ services:
             KAFKA_LOG_RETENTION_DAYS: 2
             KAFKA_LOG_DIRS: /kafka/kafka-logs
         volumes:
-            - /opt/data/kafka-3:/kafka/kafka-logs
+            - /home/data/kafka-3:/kafka/kafka-logs
         networks:
-            custom-network:
+            kafka-network:
                 aliases:
                     - kafka-3
 
 networks:
-    custom-network:
+    kafka-network:
         external: true

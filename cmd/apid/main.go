@@ -24,8 +24,14 @@ func realMain() error {
 	rtr := router.NewRouter()
 
 	testCtrl := controllers.NewTestController()
+	deviceCtrl := controllers.NewDeviceController()
 
 	rtr.AddRule("", "GET", "^/$", testCtrl.PrintHello)
+	// uuid
+	rtr.AddRule("Battery", "GET", "^/api/v1/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$", deviceCtrl.GetBattery)
+	rtr.AddRule("Battery", "POST", "^/api/v1/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$", deviceCtrl.UpdateBattery)
+	
+	// rtr.AddRule("")
 	_ = ctx
 
 	wg.Go(func () error  {
