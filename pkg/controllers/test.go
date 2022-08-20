@@ -4,6 +4,14 @@ import (
 	"net/http"
 )
 
+// GetMap godoc
+// @Summary Get Map Example
+// @Description get map
+// @ID get-map
+// @Accept json
+// @Produce json
+// @Success 200 {object} Response
+// @Router /test [get]
 type TestController struct {
 
 }

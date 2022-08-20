@@ -1,4 +1,16 @@
+basePath: /v1
+host: localhost
 info:
-  contact: {}
+  contact:
+    email: aglide100@gmail.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a simple Battery level checker server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Battery level checker API
+  version: 0.0.1
 paths: {}
 swagger: "2.0"
