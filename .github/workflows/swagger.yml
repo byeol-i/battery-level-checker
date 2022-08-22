@@ -11,6 +11,7 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v2
+            - name: Rename file
               run: mv docs/swagger.json openapi.json
             - name: Generate Swagger UI
               uses: Legion2/swagger-ui-action@v1
