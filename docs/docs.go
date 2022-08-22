@@ -25,7 +25,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/battery/{uuid}": {
+        "/battery/{deviceID}": {
             "get": {
                 "description": "Get devices's battery",
                 "consumes": [
@@ -38,15 +38,39 @@ const docTemplate = `{
                     "Battery"
                 ],
                 "summary": "Get Battery Level",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Device"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.JSONsuccessResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Device"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Bad Request"
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
                     }
                 }
             },
@@ -62,29 +86,29 @@ const docTemplate = `{
                     "Battery"
                 ],
                 "summary": "Update Battery Level",
-                "responses": {
-                    "400": {
-                        "description": "Bad Request"
+                "parameters": [
+                    {
+                        "description": "Device form",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
                     }
-                }
-            }
-        },
-        "/test": {
-            "post": {
-                "description": "test",
-                "consumes": [
-                    "application/json"
                 ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "test"
-                ],
-                "summary": "Print Hello",
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
                     "400": {
-                        "description": "Bad Request"
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
                     }
                 }
             }
@@ -93,18 +117,56 @@ const docTemplate = `{
     "definitions": {
         "models.Device": {
             "type": "object",
+            "required": [
+                "batteryLevel",
+                "batteryStatus",
+                "name",
+                "time"
+            ],
             "properties": {
-                "BatteryLevel": {
-                    "type": "integer"
+                "batteryLevel": {
+                    "type": "integer",
+                    "example": 50
                 },
-                "BatteryStatus": {
-                    "type": "string"
+                "batteryStatus": {
+                    "type": "string",
+                    "example": "charging"
                 },
-                "Name": {
-                    "type": "string"
+                "name": {
+                    "type": "string",
+                    "example": "iphone 99xs"
                 },
-                "Time": {
-                    "type": "string"
+                "time": {
+                    "type": "string",
+                    "example": "2006-01-02 15:04:05"
+                }
+            }
+        },
+        "models.JSONfailResult": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "error"
+                }
+            }
+        },
+        "models.JSONsuccessResult": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "success"
                 }
             }
         }
@@ -115,7 +177,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.0.1",
 	Host:             "localhost",
-	BasePath:         "/v1",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Battery level checker API",
 	Description:      "This is a simple Battery level checker server.",

@@ -1,14 +1,43 @@
-basePath: /v1
+basePath: /api/v1
 definitions:
   models.Device:
     properties:
-      BatteryLevel:
+      batteryLevel:
+        example: 50
         type: integer
-      BatteryStatus:
+      batteryStatus:
+        example: charging
         type: string
-      Name:
+      name:
+        example: iphone 99xs
         type: string
-      Time:
+      time:
+        example: "2006-01-02 15:04:05"
+        type: string
+    required:
+    - batteryLevel
+    - batteryStatus
+    - name
+    - time
+    type: object
+  models.JSONfailResult:
+    properties:
+      code:
+        example: 400
+        type: integer
+      data: {}
+      message:
+        example: error
+        type: string
+    type: object
+  models.JSONsuccessResult:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: success
         type: string
     type: object
 host: localhost
@@ -25,20 +54,33 @@ info:
   title: Battery level checker API
   version: 0.0.1
 paths:
-  /battery/{uuid}:
+  /battery/{deviceID}:
     get:
       consumes:
       - application/json
       description: Get devices's battery
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Device'
+            allOf:
+            - $ref: '#/definitions/models.JSONsuccessResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Device'
+              type: object
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
       summary: Get Battery Level
       tags:
       - Battery
@@ -46,25 +88,25 @@ paths:
       consumes:
       - application/json
       description: Update devices's battery
+      parameters:
+      - description: Device form
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.Device'
       produces:
       - application/json
       responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JSONsuccessResult'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
       summary: Update Battery Level
       tags:
       - Battery
-  /test:
-    post:
-      consumes:
-      - application/json
-      description: test
-      produces:
-      - application/json
-      responses:
-        "400":
-          description: Bad Request
-      summary: Print Hello
-      tags:
-      - test
 swagger: "2.0"

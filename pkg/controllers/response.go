@@ -3,10 +3,16 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/aglide100/battery-level-checker/pkg/models"
 )
 
-func respondJSON(resp http.ResponseWriter, status int, payload interface{}) {
-	response, err := json.Marshal(payload)
+func respondJSON(resp http.ResponseWriter, status int, message string, payload interface{}) {
+	response, err := json.Marshal(models.JSONresult{
+		Code: status,
+		Message: message,
+		Data: payload,
+	})
 	if err != nil {
 		resp.WriteHeader(http.StatusInternalServerError)
 		resp.Write([]byte(err.Error()))
@@ -19,5 +25,5 @@ func respondJSON(resp http.ResponseWriter, status int, payload interface{}) {
 }
 
 func respondError(resp http.ResponseWriter, code int, message string) {
-	respondJSON(resp, code, map[string]string{"error": message})
+	respondJSON(resp, code, "error",  map[string]string{"error": message})
 }
