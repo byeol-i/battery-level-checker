@@ -77,4 +77,3 @@ func (hdl *DeviceController) UpdateBattery(resp http.ResponseWriter, req *http.R
 
 	respondJSON(resp, 200, "success", "")
 } 
-

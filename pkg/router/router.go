@@ -16,11 +16,13 @@ type routeRule struct {
 
 type Router struct {
 	rules           []*routeRule
+	notFoundHandler http.Handler
 }
 
-func NewRouter() *Router {
+func NewRouter(notFoundHandler http.Handler) *Router {
 	return &Router{
 		rules:           make([]*routeRule, 0),
+		notFoundHandler:  notFoundHandler,
 	}
 }
 
@@ -51,4 +53,6 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		handler.ServeHTTP(resp, req)
 		return
 	}
+
+	rtr.notFoundHandler.ServeHTTP(resp, req)
 }
