@@ -13,18 +13,15 @@ func NewDeviceController() *DeviceController {
 }
 
 
-// GetThing godoc
-// @Summary This is the summary for getting a thing by its UUID
-// @Description This is the description for getting a thing by its UUID. Which can be longer,
-// @Description and can continue over multiple lines
-// @ID get-thing
-// @Tags Thing
-// @Param uuid path string true "The UUID of a thing"
-// @Success 200 {object} ThingResponse
-// @Failure 400 {object} ErrorResponse
-// @Failure 404 {object} ErrorResponse
-// @Failure 500 {object} ErrorResponse
-// @Router /thing/{uuid} [get]
+
+// BatteryLevelChecker godoc
+// @Summary Get Battery Level
+// @Description Get devices's battery
+// @Tags Battery
+// @Accept json
+// @Produce json
+// @Failure 400 
+// @Router /battery/{uuid} [get]
 func (hdl *DeviceController) GetBattery(resp http.ResponseWriter, req *http.Request) {
 	bytes := []byte(`
 	{
@@ -37,14 +34,15 @@ func (hdl *DeviceController) GetBattery(resp http.ResponseWriter, req *http.Requ
 	resp.Header().Set("Content-Type", "text/html")
 }
 
+// BatteryLevelChecker godoc
+// @Summary Update Battery Level
+// @Description Update devices's battery
+// @Tags Battery
+// @Accept json
+// @Produce json
+// @Failure 400 
+// @Router /battery/{uuid} [put]
 func (hdl *DeviceController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
 
 } 
-
-func (hdl *DeviceController) PrintHello(resp http.ResponseWriter, req *http.Request) {
-	bytes := []byte("Hello World")
-	resp.Write(bytes)
-
-	resp.Header().Set("Content-Type", "text/html")
-}
 

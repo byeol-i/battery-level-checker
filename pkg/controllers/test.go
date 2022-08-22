@@ -4,14 +4,7 @@ import (
 	"net/http"
 )
 
-// GetMap godoc
-// @Summary Get Map Example
-// @Description get map
-// @ID get-map
-// @Accept json
-// @Produce json
-// @Success 200 {object} Response
-// @Router /test [get]
+
 type TestController struct {
 
 }
@@ -20,6 +13,14 @@ func NewTestController() *TestController {
 	return &TestController{}
 }
 
+// BatteryLevelChecker godoc
+// @Summary Print Hello
+// @Description test
+// @Tags test
+// @Accept json
+// @Produce json
+// @Failure 400 
+// @Router /test [post]
 func (hdl *TestController) PrintHello(resp http.ResponseWriter, req *http.Request) {
 	bytes := []byte("Hello World")
 	resp.Write(bytes)

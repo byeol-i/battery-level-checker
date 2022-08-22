@@ -12,5 +12,43 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Battery level checker API
   version: 0.0.1
-paths: {}
+paths:
+  /battery/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Get devices's battery
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+      summary: Get Battery Level
+      tags:
+      - Battery
+    put:
+      consumes:
+      - application/json
+      description: Update devices's battery
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+      summary: Update Battery Level
+      tags:
+      - Battery
+  /test:
+    post:
+      consumes:
+      - application/json
+      description: test
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+      summary: Print Hello
+      tags:
+      - test
 swagger: "2.0"

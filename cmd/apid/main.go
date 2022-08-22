@@ -9,11 +9,9 @@ import (
 
 	"github.com/aglide100/battery-level-checker/pkg/controllers"
 	"github.com/aglide100/battery-level-checker/pkg/router"
-	"github.com/gin-gonic/gin"
-	"github.com/labstack/echo/v4"
 
-	_ "github.com/aglide100/battery-level-checker/docs"
-	echoSwagger "github.com/swaggo/echo-swagger" // echo-swagger middleware
+	// _ "github.com/aglide100/battery-level-checker/docs"
+	// echoSwagger "github.com/swaggo/echo-swagger" // echo-swagger middleware
 	"golang.org/x/sync/errgroup"
 )
 
@@ -31,7 +29,6 @@ import (
 
 // @host localhost
 // @BasePath /v1
-
 func main() {
 	if err := realMain(); err != nil {
 		log.Printf("err :%s", err)
@@ -46,22 +43,10 @@ func realMain() error {
 	testCtrl := controllers.NewTestController()
 	deviceCtrl := controllers.NewDeviceController()
 
-	r := gin.Default()
-	e := echo.New()
-
-	v1 := r.Group("/api/v1")
-	{
-		test := v1.Group("/test")
-		{
-			test.GET("". testCtrl.PrintHello)
-		}
-	}
-	
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	
-	e.Logger.Fatal(e.Start(":1323"))
-
-
+	// Swagger Ui middleware server
+	// e := echo.New()
+	// e.GET("/swagger/*", echoSwagger.WrapHandler)
+	// e.Logger.Fatal(e.Start(":1323"))
 
 	rtr.AddRule("", "GET", "^/$", testCtrl.PrintHello)
 	// uuid
