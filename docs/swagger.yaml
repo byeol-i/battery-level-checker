@@ -1,4 +1,16 @@
 basePath: /v1
+definitions:
+  models.Device:
+    properties:
+      BatteryLevel:
+        type: integer
+      BatteryStatus:
+        type: string
+      Name:
+        type: string
+      Time:
+        type: string
+    type: object
 host: localhost
 info:
   contact:
@@ -21,6 +33,10 @@ paths:
       produces:
       - application/json
       responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Device'
         "400":
           description: Bad Request
       summary: Get Battery Level

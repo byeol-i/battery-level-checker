@@ -39,6 +39,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get Battery Level",
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
                     "400": {
                         "description": "Bad Request"
                     }
@@ -80,6 +86,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Device": {
+            "type": "object",
+            "properties": {
+                "BatteryLevel": {
+                    "type": "integer"
+                },
+                "BatteryStatus": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Time": {
+                    "type": "string"
                 }
             }
         }
