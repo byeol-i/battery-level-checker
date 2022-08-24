@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+
+	"github.com/aglide100/battery-level-checker/pkg/logger"
 )
 
 
@@ -48,7 +50,8 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		if !rule.pattern.MatchString(path) {
 			continue
 		}
-		log.Printf("found handler: %q, %v", rule.name, path)
+		logger.Info("found handler: %q, %v", rule.name, path)
+		// log.Printf("found handler: %q, %v", rule.name, path)
 		handler := rule.handler
 		handler.ServeHTTP(resp, req)
 		return
