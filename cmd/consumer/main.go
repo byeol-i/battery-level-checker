@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	brokerList        = kingpin.Flag("brokerList", "List of brokers to connect").Default("like-a-junk.com:2181").Strings()
+	brokerList        = kingpin.Flag("brokerList", "List of brokers to connect").Default("kafka-1:9092").Strings()
 	topic             = kingpin.Flag("topic", "Topic name").Default("important").String()
 	partition         = kingpin.Flag("partition", "Partition number").Default("0").String()
 	offsetType        = kingpin.Flag("offsetType", "Offset Type (OffsetNewest | OffsetOldest)").Default("-1").Int()

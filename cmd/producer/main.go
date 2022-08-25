@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	brokerList = kingpin.Flag("brokerList", "List of brokers to connect").Default("like-a-junk.com:2181").Strings()
+	brokerList = kingpin.Flag("brokerList", "List of brokers to connect").Default("kafka-1:9092").Strings()
 	topic      = kingpin.Flag("topic", "Topic name").Default("important").String()
 	maxRetry   = kingpin.Flag("maxRetry", "Retry limit").Default("5").Int()
 )
