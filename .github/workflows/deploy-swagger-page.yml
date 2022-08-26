@@ -1,4 +1,4 @@
-name: Swagger
+name: deploy-swagger-page
 
 on:
     push:
