@@ -1,0 +1,46 @@
+version: "3.3"
+
+services:
+    primary:
+        image: primaryDB
+        command: postgres -c log_destination=stderr -c log_statement=all
+        volumes:
+            - pg-primary-vol:/var/lib/postgresql/data
+        hostname: primaryDB
+        networks:
+            - kafka-network
+        ports:
+            - "5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+    replica:
+        image: replicaDB
+        command: postgres -c log_destination=stderr -c log_statement=all
+        volumes:
+            - pg-replica-vol:/var/lib/postgresql/data
+        hostname: replicaDB
+        networks:
+            - kafka-network
+        ports:
+            - "5432"
+        depends_on:
+            - primary
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+        deploy:
+            placement:
+                constraints:
+                    - node.role == worker
+networks:
+    kafka-network:
+        external: true
+
+volumes:
+    pg-primary-vol:
+    pg-replica-vol:

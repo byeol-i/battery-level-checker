@@ -1,0 +1,91 @@
+version: "3.4"
+
+services:
+    kafka-1:
+        image: wurstmeister/kafka
+        environment:
+            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_BROKER_ID: 1
+            DOCKER_API_VERSION: 1.41
+            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182"
+            KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+            KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+            KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
+            KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
+            KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+            KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_LOG_RETENTION_BYTES: -1
+            KAFKA_LOG_RETENTION_DAYS: 2
+            KAFKA_LOG_DIRS: /kafka/kafka-logs
+            KAFKA_ZOOKEEPER_TIMEOUT_MS: 36000
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+        # volumes:
+        #     - /home/data/kafka-1:/kafka/kafka-logs
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        hostname: kafka-1
+        networks:
+            - kafka-network
+        ports:
+            - target: 9094
+              published: 9094
+              protocol: tcp
+              mode: host
+        deploy:
+            mode: replicated
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            placement:
+                constraints:
+                    - node.labels.kafka == 1
+    kafka-2:
+        image: wurstmeister/kafka
+        environment:
+            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_BROKER_ID: 2
+            DOCKER_API_VERSION: 1.41
+            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182"
+            KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+            KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+            KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
+            KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
+            KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+            KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_LOG_RETENTION_BYTES: -1
+            KAFKA_LOG_RETENTION_DAYS: 2
+            KAFKA_LOG_DIRS: /kafka/kafka-logs
+            KAFKA_ZOOKEEPER_TIMEOUT_MS: 36000
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+        # volumes:
+        #     - /home/data/kafka-2:/kafka/kafka-logs
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        hostname: kafka-2
+        networks:
+            - kafka-network
+        ports:
+            - target: 9094
+              published: 9094
+              protocol: tcp
+              mode: host
+        deploy:
+            mode: replicated
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            placement:
+                constraints:
+                    - node.labels.kafka == 2
+
+networks:
+    kafka-network:
+        external: true

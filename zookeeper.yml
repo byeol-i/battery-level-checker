@@ -1,0 +1,58 @@
+version: "3.4"
+
+services:
+    zoo1:
+        image: zookeeper
+        ports:
+            - target: 2181
+              published: 2181
+              protocol: tcp
+              mode: ingress
+        hostname: zoo1
+        networks:
+            - kafka-network
+        environment:
+            ZOOKEEPER_SERVER_ID: 1
+            ZOOKEEPER_SERVERS: 0.0.0.0:2888:3888;zoo2:2888:3888
+            # ZOOKEEPER_CLIENT_PORT: 22181
+        deploy:
+            placement:
+                constraints:
+                    - node.labels.kafka == 1
+    zoo2:
+        image: zookeeper
+        ports:
+            - target: 2181
+              published: 2182
+              protocol: tcp
+              mode: ingress
+        hostname: zoo2
+        networks:
+            - kafka-network
+        environment:
+            ZOOKEEPER_SERVER_ID: 2
+            ZOOKEEPER_SERVERS: zoo1:2888:3888;0.0.0.0:2888:3888
+            # ZOOKEEPER_CLIENT_PORT: 22182
+        deploy:
+            placement:
+                constraints:
+                    - node.labels.kafka == 2
+    kafka_manager:
+        image: scjtqs/kafka-manager
+        networks:
+            - kafka-network
+        ports:
+            - target: 9000
+              published: 9000
+              protocol: tcp
+              mode: host
+        environment:
+            ZK_HOSTS: "zoo1:2181,zoo2:2182"
+            APPLICATION_SECRET: "random-secret"
+        deploy:
+            placement:
+                constraints: [node.role==manager]
+
+networks:
+    kafka-network:
+        external: true

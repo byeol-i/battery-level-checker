@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
+	"github.com/aglide100/battery-level-checker/pkg/consumer"
 	"github.com/aglide100/battery-level-checker/pkg/models"
-	"github.com/go-playground/validator"
+	"github.com/aglide100/battery-level-checker/pkg/producer"
 )
 
 type DeviceController struct {
@@ -36,7 +36,8 @@ func (hdl *DeviceController) GetBattery(resp http.ResponseWriter, req *http.Requ
 		BatteryLevel: 20,
 		BatteryStatus: "charging",
 	}
-
+	
+	consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "success", mock)
 }
 
@@ -51,29 +52,31 @@ func (hdl *DeviceController) GetBattery(resp http.ResponseWriter, req *http.Requ
 // @Failure 400 {object} models.JSONfailResult{}
 // @Router /battery/{deviceID} [put]
 func (hdl *DeviceController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
-	t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
-	if err != nil {
-		respondError(resp, 405, "time error")
-	}
+	// t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
+	// if err != nil {
+	// 	respondError(resp, 405, "time error")
+	// }
 
-	bt, err := strconv.Atoi(req.PostFormValue("BatteryLevel"))
-	if err != nil {
-		respondError(resp, 405, "can't convert batteryLevel")
-	}
+	// bt, err := strconv.Atoi(req.PostFormValue("BatteryLevel"))
+	// if err != nil {
+	// 	respondError(resp, 405, "can't convert batteryLevel")
+	// }
 
-	validDevice := models.Device{
-		Name : req.PostFormValue("Name"),
-		Time : &t,
-		BatteryLevel: bt,
-		BatteryStatus: req.PostFormValue("BatteryStatus"),
-	}
+	// validDevice := models.Device{
+	// 	Name : req.PostFormValue("Name"),
+	// 	Time : &t,
+	// 	BatteryLevel: bt,
+	// 	BatteryStatus: req.PostFormValue("BatteryStatus"),
+	// }
 
-	v := validator.New()
+	// v := validator.New()
 
-	err = v.Struct(validDevice)
-	if err != nil {
-		respondError(resp, 405, "not valid form")
-	}
+	// err = v.Struct(validDevice)
+	// if err != nil {
+	// 	respondError(resp, 405, "not valid form")
+	// }
+
+	producer.Write()
 
 	respondJSON(resp, 200, "success", "")
 } 
