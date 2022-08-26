@@ -4,13 +4,13 @@ set -e
 if [ ! -s "$PGDATA/PG_VERSION" ]; then
     echo "*:*:*:replication_user:replicationpassword" > ~/.pgpass
     chmod 0600 ~/.pgpass
-    until ping -c 1 -W 1 pg_primary
+    until ping -c 1 -W 1 primary-db
     do
         echo "Waiting for primary to ping..."
         sleep 1s
     done
 
-    until pg_basebackup -h pg_primary -D ${PGDATA} -U replication_user -vP -W
+    until pg_basebackup -h primary-db -D ${PGDATA} -U replication_user -vP -W
     do
         echo "Waiting for primary to connect..."
         sleep 1s
@@ -20,7 +20,7 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 
     cat > ${PGDATA}/recovery.conf <<EOF
 standby_mode = on
-primary_conninfo = 'host=pg_primary port=5432 user=replication_user password=replicationpassword application_name=pg_readonly'
+primary_conninfo = 'host=primary-db port=5432 user=replication_user password=replicationpassword application_name=pg_readonly'
 primary_slot_name = 'node_a_slot'
 EOF
 
