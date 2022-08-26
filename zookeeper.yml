@@ -37,21 +37,6 @@ services:
             placement:
                 constraints:
                     - node.labels.kafka == 2
-    kafka_manager:
-        image: scjtqs/kafka-manager
-        networks:
-            - kafka-network
-        ports:
-            - target: 9000
-              published: 9000
-              protocol: tcp
-              mode: host
-        environment:
-            ZK_HOSTS: "zoo1:2181,zoo2:2182"
-            APPLICATION_SECRET: "random-secret"
-        deploy:
-            placement:
-                constraints: [node.role==manager]
 
 networks:
     kafka-network:
