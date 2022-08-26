@@ -1,14 +1,9 @@
 name: build-db-image
 
 on:
-    # workflow_run:
-    #   workflows: ["Check mergeable"]
-    #   branches: [main]
-    #   types:
-    #     - completed
     push:
         branches:
-            - "main"
+            - "master"
 
 jobs:
     buildPrimaryImage:
