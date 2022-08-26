@@ -12,7 +12,7 @@ RUN wget https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERS
 
 RUN apk --update add openssh-client && rm -rf /var/cache/apk/*
 
-COPY ./setup-replica.sh /setup-replica.sh
+COPY ./cmd/dbsetup-replica.sh /setup-replica.sh
 RUN chmod +x /setup-replica.sh
 
 ENTRYPOINT [ \
