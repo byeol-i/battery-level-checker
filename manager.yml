@@ -11,7 +11,7 @@ services:
             GF_PATHS_DATA: /var/lib/grafana
             GF_SECURITY_ADMIN_PASSWORD: kafka
         volumes:
-            - ./conf/grafana/provisioning:/etc/grafana/provisioning
+            #- ./conf/grafana/provisioning:/etc/grafana/provisioning
             - ./conf/grafana/dashboards:/var/lib/grafana/dashboards
         depends_on:
             - prometheus
@@ -44,6 +44,17 @@ services:
         environment:
             ZK_HOSTS: "zoo1:2181,zoo2:2182"
             APPLICATION_SECRET: "random-secret"
+        deploy:
+            placement:
+                constraints: [node.role==manager]
+
+    kafka_exporter:
+        image: danielqsj/kafka-exporter
+        networks:
+            - kafka-network
+        ports:
+            - "9308:9308"
+        command: --kafka.server=kafka-1:9094 --kafka.server=kafka-2:9094
         deploy:
             placement:
                 constraints: [node.role==manager]
