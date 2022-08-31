@@ -17,12 +17,22 @@ services:
     #     networks:
     #         - kafka-network
 
+    primary:
+        image: ghcr.io/aglide100/battery-level-checker-db-primary:latest
+        command: postgres -c log_destination=stderr -c log_statement=all
+        hostname: primary-db
+        ports:
+            - "5432"
+        environment:
+            POSTGRES_USER: table_admin
+            POSTGRES_PASSWORD: HelloWorld
+            POSTGRES_INITDB_ARGS: --encoding=UTF-8
     zookeeper:
         container_name: local-zookeeper
         image: wurstmeister/zookeeper:3.4.6
         ports:
             - "2181:2181"
-    kafka:
+    kafka-1:
         container_name: local-kafka
         image: wurstmeister/kafka:2.12-2.3.0
         depends_on:

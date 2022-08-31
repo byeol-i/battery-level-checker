@@ -25,6 +25,50 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/battery/": {
+            "get": {
+                "description": "Get devices's battery",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Battery"
+                ],
+                "summary": "Get All Device's Battery Level",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.JSONsuccessResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Device"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
         "/battery/{deviceID}": {
             "get": {
                 "description": "Get devices's battery",
@@ -88,13 +132,91 @@ const docTemplate = `{
                 "summary": "Update Battery Level",
                 "parameters": [
                     {
-                        "description": "Device form",
+                        "description": "Battery input form",
                         "name": "device",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.Device"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/device": {
+            "post": {
+                "description": "Register New Device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Register New Device",
+                "parameters": [
+                    {
+                        "description": "add device",
+                        "name": "deviceInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeviceDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/device/{deviceID}": {
+            "delete": {
+                "description": "Delete Device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Delete Device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -139,6 +261,20 @@ const docTemplate = `{
                 "time": {
                     "type": "string",
                     "example": "2006-01-02 15:04:05"
+                }
+            }
+        },
+        "models.DeviceDetail": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "os": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },

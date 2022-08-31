@@ -1,82 +1,39 @@
 package controllers
 
-import (
-	"net/http"
-	"time"
+import "net/http"
 
-	"github.com/aglide100/battery-level-checker/pkg/consumer"
-	"github.com/aglide100/battery-level-checker/pkg/models"
-	"github.com/aglide100/battery-level-checker/pkg/producer"
-)
-
-type DeviceController struct {
+type DeviceControllers struct {
 
 }
 
-func NewDeviceController() *DeviceController {
-	return &DeviceController{}
+func NewDeviceController() *DeviceControllers {
+	return &DeviceControllers{}
 }
 
-// BatteryLevelChecker godoc
-// @Summary Get Battery Level
-// @Description Get devices's battery
-// @Tags Battery
+// AddDevice godoc
+// @Summary Register New Device
+// @Description Register New Device
+// @Tags Device
+// @Accept json
+// @Produce json
+// @Param deviceInfo body models.DeviceDetail true "add device"
+// @Failure 400 {object} models.JSONfailResult{}
+// @Success 200 {object} models.JSONsuccessResult{}
+// @Router /device [post]
+func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.Request) {
+	respondJSON(resp, http.StatusOK, "success", nil)
+}
+
+// DeleteDevice godoc
+// @Summary Delete Device
+// @Description Delete Device
+// @Tags Device
 // @Accept json
 // @Produce json
 // @Param id path string true "Device ID"
 // @Failure 400 {object} models.JSONfailResult{}
-// @Success 200 {object} models.JSONsuccessResult{data=models.Device{}}
-// @Router /battery/{deviceID} [get]
-func (hdl *DeviceController) GetBattery(resp http.ResponseWriter, req *http.Request) {
-	t := time.Now()
-	
-	mock := &models.Device{
-		Name: req.URL.Path,
-		Time: &t,
-		BatteryLevel: 20,
-		BatteryStatus: "charging",
-	}
-	
-	consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", mock)
-}
-
-// BatteryLevelChecker godoc
-// @Summary Update Battery Level
-// @Description Update devices's battery
-// @Tags Battery
-// @Accept json
-// @Produce json
-// @Param device body models.Device{} true "Device form"
 // @Success 200 {object} models.JSONsuccessResult{}
-// @Failure 400 {object} models.JSONfailResult{}
-// @Router /battery/{deviceID} [put]
-func (hdl *DeviceController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
-	// t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
-	// if err != nil {
-	// 	respondError(resp, 405, "time error")
-	// }
-
-	// bt, err := strconv.Atoi(req.PostFormValue("BatteryLevel"))
-	// if err != nil {
-	// 	respondError(resp, 405, "can't convert batteryLevel")
-	// }
-
-	// validDevice := models.Device{
-	// 	Name : req.PostFormValue("Name"),
-	// 	Time : &t,
-	// 	BatteryLevel: bt,
-	// 	BatteryStatus: req.PostFormValue("BatteryStatus"),
-	// }
-
-	// v := validator.New()
-
-	// err = v.Struct(validDevice)
-	// if err != nil {
-	// 	respondError(resp, 405, "not valid form")
-	// }
-
-	producer.Write()
-
-	respondJSON(resp, 200, "success", "")
-} 
+// @Router /device/{deviceID} [delete]
+func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.Request) {
+	respondJSON(resp, http.StatusOK, "success", nil)
+}

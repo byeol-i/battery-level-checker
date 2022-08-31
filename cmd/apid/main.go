@@ -39,14 +39,15 @@ func realMain() error {
 	wg, ctx := errgroup.WithContext(context.Background())
 
 	notFoundCtrl := &controllers.NotFoundController{}
-	deviceCtrl := controllers.NewDeviceController()
+	batteryCtrl := controllers.NewBatteryController()
 	
-	rtr := router.NewRouter(notFoundCtrl)
+	rtr := router.NewRouter(notFoundCtrl, "v1")
 
-	// rtr.AddRule("Battery", "GET", "^/api/v1/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$", deviceCtrl.GetBattery)
-	// rtr.AddRule("Battery", "POST", "^/api/v1/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$", deviceCtrl.UpdateBattery)	
-	rtr.AddRule("Battery", "GET", "^/api/v1/battery/", deviceCtrl.GetBattery)
-	rtr.AddRule("Battery", "POST", "^/api/v1/battery/", deviceCtrl.UpdateBattery)
+	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)	
+	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
+	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)	
+	// rtr.AddRule("Battery", "GET", "/battery/", batteryCtrl.GetBattery)
+	// rtr.AddRule("Battery", "POST", "/battery/", batteryCtrl.UpdateBattery)
 	
 	_ = ctx
 

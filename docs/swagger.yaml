@@ -20,6 +20,15 @@ definitions:
     - name
     - time
     type: object
+  models.DeviceDetail:
+    properties:
+      name:
+        type: string
+      os:
+        type: string
+      type:
+        type: string
+    type: object
   models.JSONfailResult:
     properties:
       code:
@@ -54,6 +63,32 @@ info:
   title: Battery level checker API
   version: 0.0.1
 paths:
+  /battery/:
+    get:
+      consumes:
+      - application/json
+      description: Get devices's battery
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.JSONsuccessResult'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Device'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Get All Device's Battery Level
+      tags:
+      - Battery
   /battery/{deviceID}:
     get:
       consumes:
@@ -89,7 +124,7 @@ paths:
       - application/json
       description: Update devices's battery
       parameters:
-      - description: Device form
+      - description: Battery input form
         in: body
         name: device
         required: true
@@ -109,4 +144,55 @@ paths:
       summary: Update Battery Level
       tags:
       - Battery
+  /device:
+    post:
+      consumes:
+      - application/json
+      description: Register New Device
+      parameters:
+      - description: add device
+        in: body
+        name: deviceInfo
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeviceDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JSONsuccessResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Register New Device
+      tags:
+      - Device
+  /device/{deviceID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Device
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JSONsuccessResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Delete Device
+      tags:
+      - Device
 swagger: "2.0"

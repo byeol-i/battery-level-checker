@@ -19,6 +19,8 @@ func init() {
  
 	log, err = config.Build(zap.AddCallerSkip(1))
  
+	// log, err = config.Build()
+ 
 	//log, err = zap.NewProduction()
 	if err != nil {
 		panic(err)
@@ -27,7 +29,7 @@ func init() {
 	defer log.Sync()
 }
 
-func Info(message string, fields ...interface{}) {
-	log.Sugar().Infow(message, fields)
-	// log.Info(message, fields...)
+func Info(message string, fields ...zap.Field) {
+	// log.Sugar().Infow(message, fields)
+	log.Info(message, fields...)
 }

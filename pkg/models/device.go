@@ -8,3 +8,11 @@ type Device struct {
 	BatteryLevel int `validate:"required" json:"batteryLevel" example:"50"`
 	BatteryStatus string `validate:"required" json:"batteryStatus" example:"charging"`
 }
+
+type DeviceDetail struct {
+	Name string
+	Type string
+	OS string
+	appVersion string
+	token string
+}
