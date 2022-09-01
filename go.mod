@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/Shopify/sarama v1.36.0
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.8.0
 	github.com/swaggo/echo-swagger v1.3.4
 	github.com/swaggo/swag v1.8.5
 	go.uber.org/zap v1.22.0
