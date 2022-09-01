@@ -260,14 +260,29 @@
         "models.DeviceDetail": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string"
+                "OS": {
+                    "type": "string",
+                    "example": "IOS"
                 },
-                "os": {
-                    "type": "string"
+                "OSversion": {
+                    "type": "string",
+                    "example": "99.192"
+                },
+                "appVersion": {
+                    "type": "string",
+                    "example": "0.0.1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "iphone 99xs"
+                },
+                "pushToken": {
+                    "type": "string",
+                    "example": "abcd"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "phone"
                 }
             }
         },

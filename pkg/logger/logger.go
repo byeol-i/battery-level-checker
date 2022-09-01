@@ -33,3 +33,11 @@ func Info(message string, fields ...zap.Field) {
 	// log.Sugar().Infow(message, fields)
 	log.Info(message, fields...)
 }
+
+func Error(message string, fields ...zap.Field) {
+	log.Error(message, fields...)
+}
+
+func Debug(message string, fields ...zap.Field) {
+	log.Debug(message, fields...)
+}

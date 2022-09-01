@@ -22,11 +22,23 @@ definitions:
     type: object
   models.DeviceDetail:
     properties:
-      name:
+      OS:
+        example: IOS
         type: string
-      os:
+      OSversion:
+        example: "99.192"
+        type: string
+      appVersion:
+        example: 0.0.1
+        type: string
+      name:
+        example: iphone 99xs
+        type: string
+      pushToken:
+        example: abcd
         type: string
       type:
+        example: phone
         type: string
     type: object
   models.JSONfailResult:
