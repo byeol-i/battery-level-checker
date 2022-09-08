@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aglide100/battery-level-checker/pkg/logger"
 	"github.com/aglide100/battery-level-checker/pkg/models"
 	"github.com/aglide100/battery-level-checker/pkg/producer"
 )
@@ -117,6 +118,7 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 	// if err != nil {
 	// 	respondError(resp, 405, "not valid form")
 	// }
+	logger.Info("Update Battery")
 
 	producer.Write()
 
