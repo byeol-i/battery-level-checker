@@ -1,0 +1,14 @@
+version: "3.4"
+
+services:
+    apid:
+        container_name: apid
+        image: ghcr.io/aglide100/battery-level-checker-apid:latest
+        networks:
+            - kafka-network
+        ports:
+            - "5999:80"
+
+networks:
+    kafka-network:
+        external: true
