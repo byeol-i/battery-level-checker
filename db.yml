@@ -12,6 +12,7 @@ services:
         ports:
             - "5432"
         environment:
+            POSTGRES_DB: battery
             POSTGRES_USER: table_admin
             POSTGRES_PASSWORD: HelloWorld
             POSTGRES_INITDB_ARGS: --encoding=UTF-8
@@ -32,6 +33,7 @@ services:
         depends_on:
             - primary
         environment:
+            POSTGRES_DB: battery
             POSTGRES_USER: table_admin
             POSTGRES_PASSWORD: HelloWorld
             POSTGRES_INITDB_ARGS: --encoding=UTF-8

@@ -1,0 +1,17 @@
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  swarmMode = true
+
+[api]
+  insecure = true
+  dashboard = true
+  debug = true
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+[accessLog]
+  filePath = "/var/log/traefik/access.log"
+  [accessLog.filters]
+    statusCodes = "404"

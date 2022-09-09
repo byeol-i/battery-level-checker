@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: "traefik:v2.8"
+    volumes:
+      - "./conf/traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+        #- "8888:8080"
+    deploy: 
+      labels: 
+        - traefik.http.routers.proxy-testapp.rule=Host(`traefik.${Domain1}`)
+        - traefik.http.services.proxy-testapp.loadbalancer.server.port=8080
+        - traefik.docker.network=traefik-network
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - traefik-network
+
+networks:
+  traefik-network:
+    external: true
+  
