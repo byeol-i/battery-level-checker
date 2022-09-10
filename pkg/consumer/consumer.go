@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
-	"github.com/aglide100/battery-level-checker/pkg/config"
+	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 
 func GetTopics() {

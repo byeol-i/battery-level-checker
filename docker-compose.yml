@@ -18,7 +18,7 @@ services:
     #         - kafka-network
 
     primary:
-        image: ghcr.io/aglide100/battery-level-checker-db-primary:latest
+        image: ghcr.io/byeol-i/battery-level-checker-db-primary:latest
         command: postgres -c log_destination=stderr -c log_statement=all
         hostname: primary-db
         ports:

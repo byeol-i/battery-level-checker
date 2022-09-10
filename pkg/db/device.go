@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/aglide100/battery-level-checker/pkg/models"
+	"github.com/byeol-i/battery-level-checker/pkg/models"
 )
 
 func (db *Database) AddNewDevice(device models.DeviceDetail) error {

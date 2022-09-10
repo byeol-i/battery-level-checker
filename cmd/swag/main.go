@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/aglide100/battery-level-checker/docs" // echo-swagger middleware
+	_ "github.com/byeol-i/battery-level-checker/docs" // echo-swagger middleware
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )

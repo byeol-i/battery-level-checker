@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aglide100/battery-level-checker/pkg/logger"
-	"github.com/aglide100/battery-level-checker/pkg/models"
-	"github.com/aglide100/battery-level-checker/pkg/producer"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/models"
+	"github.com/byeol-i/battery-level-checker/pkg/producer"
 )
 
 type BatteryController struct {

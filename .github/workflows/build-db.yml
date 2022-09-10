@@ -34,4 +34,4 @@ jobs:
                   file: ./cmd/db/Dockerfile.${{ matrix.appname }}
                   platforms: linux/amd64,linux/arm64
                   push: true
-                  tags: ghcr.io/aglide100/battery-level-checker-db-${{ matrix.appname }}:latest
+                  tags: ghcr.io/byeol-i/battery-level-checker-db-${{ matrix.appname }}:latest

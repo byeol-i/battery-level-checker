@@ -8,15 +8,15 @@ RUN mkdir -p /opt/bin/app/
 RUN go mod vendor \
     && go get -u -d -v ./...
     
-RUN go build -mod=mod -o /opt/bin/app/ ./cmd/apid 
+RUN go build -mod=mod -o /opt/bin/app/ ./cmd/auth 
 
 FROM debian:stretch-slim AS runtime
 COPY --from=builder /opt/bin/app /opt/bin/app
 
 #COPY ./keys ./keys
 
-RUN apt update && apt install -y ca-certificates
+#RUN apt update && apt install -y ca-certificates
 # RUN chmod 644 /usr/local/share/ca-certificates && update-ca-certificates
 
 #WORKDIR /opt/bin/app/
-CMD [ "/opt/bin/app/apid" ]
+CMD [ "/opt/bin/app/auth" ]

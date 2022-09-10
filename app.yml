@@ -2,12 +2,11 @@ version: "3"
 
 services:
    apid:
-        image: ghcr.io/aglide100/battery-level-checker-apid:latest
+        image: apid
+        # image: ghcr.io/byeol-i/battery-level-checker-apid:latest
         networks:
+            - kafka-network
             - traefik-network
-            - default
-              #ports:
-              #- "5999:80"
         deploy:
           labels:
               - traefik.enable=true
@@ -15,6 +14,10 @@ services:
               - traefik.http.routers.api-testapp.rule=Host(`api.${Domain1}`) # http setting
               - traefik.http.routers.api-testapp.entrypoints=web # open to :80
               - traefik.http.services.api-testapp.loadbalancer.server.port=80 # listening port
+          placement:
+            constraints: [node.role==manager]
 networks:
+    kafka-network:
+      external: true
     traefik-network:
-        external: true
+      external: true

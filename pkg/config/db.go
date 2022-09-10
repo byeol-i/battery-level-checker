@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/aglide100/battery-level-checker/pkg/db"
+	"github.com/byeol-i/battery-level-checker/pkg/db"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

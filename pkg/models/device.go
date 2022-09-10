@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/aglide100/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/go-playground/validator"
 	"go.uber.org/zap"
 )

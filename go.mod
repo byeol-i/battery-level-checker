@@ -1,4 +1,4 @@
-module github.com/aglide100/battery-level-checker
+module github.com/byeol-i/battery-level-checker
 
 go 1.18
 

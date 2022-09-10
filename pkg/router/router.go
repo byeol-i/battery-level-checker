@@ -7,7 +7,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/aglide100/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
 )
 
 

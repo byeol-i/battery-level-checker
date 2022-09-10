@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/aglide100/battery-level-checker/pkg/models"
+	"github.com/byeol-i/battery-level-checker/pkg/models"
 )
 
 func respondJSON(resp http.ResponseWriter, status int, message string, payload interface{}) {

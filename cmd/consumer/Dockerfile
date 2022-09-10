@@ -1,7 +1,7 @@
 FROM golang:1.18 AS builder
 
-COPY . "/go/src/github.com/aglide100/battery-level-checker/"
-WORKDIR "/go/src/github.com/aglide100/battery-level-checker/"
+COPY . "/go/src/github.com/byeol-i/battery-level-checker/"
+WORKDIR "/go/src/github.com/byeol-i/battery-level-checker/"
 
 RUN mkdir -p /opt/bin/app/
 
