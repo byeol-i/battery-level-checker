@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
 	"github.com/byeol-i/battery-level-checker/pkg/router"
-
 
 	"google.golang.org/grpc"
 

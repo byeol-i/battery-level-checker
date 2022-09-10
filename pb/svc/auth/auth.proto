@@ -3,6 +3,15 @@ syntax = "proto3";
 package pb.svc.auth;
 option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/auth";
 
-server Auth {
-    
+service Auth {
+    rpc AuthToken(AuthTokenReq) returns (AuthTokenRes);
 }
+
+message AuthTokenReq {
+    string token = 1;    
+}
+
+message AuthTokenRes {
+    string result = 1;
+    int32 code = 2;
+}  
