@@ -10,6 +10,7 @@ require (
 	github.com/swaggo/swag v1.8.5
 	go.uber.org/zap v1.23.0
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+	google.golang.org/grpc v1.31.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
@@ -27,6 +28,7 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -56,6 +58,8 @@ require (
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
+	google.golang.org/genproto v0.0.0-20200825200019-8632dd797987 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
