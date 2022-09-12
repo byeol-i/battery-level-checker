@@ -13,6 +13,7 @@ jobs:
             matrix:
                 appname:
                     - apid
+                    - auth
         steps:
             - name: Checkout
               uses: actions/checkout@v2
@@ -33,4 +34,4 @@ jobs:
                   file: ./cmd/${{ matrix.appname }}/Dockerfile
                   platforms: linux/amd64,linux/arm64
                   push: true
-                  tags: ghcr.io/byeol-i/battery-level-checker-${{ matrix.appname }}:latest
+                  tags: ghcr.io/byeol-i/battery-level-checker--${{ matrix.appname }}:latest

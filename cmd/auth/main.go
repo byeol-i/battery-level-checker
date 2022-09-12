@@ -2,32 +2,23 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net"
-	"net/http"
 	"os"
 
-	"github.com/byeol-i/battery-level-checker/pkg/controllers"
-	"github.com/byeol-i/battery-level-checker/pkg/router"
+	pb_svc_auth "github.com/byeol-i/battery-level-checker/pb/svc/auth"
+	"github.com/byeol-i/battery-level-checker/pkg/grpcSvc/server"
 
-	_ "github.com/byeol-i/battery-level-checker/docs" // echo-swagger middleware
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
 )
 
-// @title Battery level checker API
-// @version 0.0.1
-// @description This is a simple Battery level checker server.
-// @termsOfService http://swagger.io/terms/
+var (
+	grpcAddr = flag.String("apid grpc addr", "0.0.0.0:50010", "grpc address")
+	usingTls = flag.Bool("grpc.tls", false, "using http2")
+)
 
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email aglide100@gmail.com
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host localhost
-// @BasePath /api/v1
 func main() {
 	if err := realMain(); err != nil {
 		log.Printf("err :%s", err)
@@ -36,38 +27,30 @@ func main() {
 }
 
 func realMain() error {
-	wg, ctx := errgroup.WithContext(context.Background())
+	gRPCL, err := net.Listen("tcp", *grpcAddr)
+	if err != nil {
+		return err
+	}
+	defer gRPCL.Close()
 
-	notFoundCtrl := &controllers.NotFoundController{}
-	batteryCtrl := controllers.NewBatteryController()
-	
-	rtr := router.NewRouter(notFoundCtrl, "v1")
+	var opts []grpc.ServerOption
 
-	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)	
-	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
-	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)	
-	// rtr.AddRule("Battery", "GET", "/battery/", batteryCtrl.GetBattery)
-	// rtr.AddRule("Battery", "POST", "/battery/", batteryCtrl.UpdateBattery)
-	
-	_ = ctx
+	grpcServer := grpc.NewServer(opts...)
 
-	wg.Go(func () error  {
-		var err error
+	authSrv := server.NewAuthServiceServer()
 
-		ln, err := net.Listen("tcp", "0.0.0.0:80")
+	pb_svc_auth.RegisterAuthServer(grpcServer, authSrv)
+	wg, _ := errgroup.WithContext(context.Background())
+
+	wg.Go(func () error {
+		err := grpcServer.Serve(gRPCL)
 		if err != nil {
+			log.Fatalf("failed to serve: %v", err)
 			return err
 		}
 
-		defer ln.Close()
-
-		srv := http.Server{Handler: rtr}
-
-		err = srv.Serve(ln)
-
-		return err
+		return nil
 	})
-
 
 	return wg.Wait()
 }

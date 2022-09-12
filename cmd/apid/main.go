@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"net"
 	"net/http"
@@ -11,15 +10,8 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
 	"github.com/byeol-i/battery-level-checker/pkg/router"
 
-	"google.golang.org/grpc"
-
 	_ "github.com/byeol-i/battery-level-checker/docs" // echo-swagger middleware
 	"golang.org/x/sync/errgroup"
-)
-
-var (
-	grpcAddr = flag.String("apid grpc addr", "0.0.0.0:50010", "grpc address")
-	usingTls = flag.Bool("grpc.tls", false, "using http2")
 )
 
 // @title Battery level checker API
@@ -44,16 +36,6 @@ func main() {
 }
 
 func realMain() error {
-	gRPCL, err := net.Listen("tcp", *grpcAddr)
-	if err != nil {
-		return err
-	}
-	defer gRPCL.Close()
-
-	var opts []grpc.ServerOption
-
-	grpcServer := grpc.NewServer(opts...)
-
 	wg, ctx := errgroup.WithContext(context.Background())
 
 	notFoundCtrl := &controllers.NotFoundController{}
@@ -64,20 +46,8 @@ func realMain() error {
 	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)	
 	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
 	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)	
-	// rtr.AddRule("Battery", "GET", "/battery/", batteryCtrl.GetBattery)
-	// rtr.AddRule("Battery", "POST", "/battery/", batteryCtrl.UpdateBattery)
-	
+
 	_ = ctx
-
-	wg.Go(func () error {
-		err := grpcServer.Serve(gRPCL)
-		if err != nil {
-			log.Fatalf("failed to serve: %v", err)
-			return err
-		}
-
-		return nil
-	})
 
 	wg.Go(func () error  {
 		var err error

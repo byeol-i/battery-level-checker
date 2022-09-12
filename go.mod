@@ -10,7 +10,8 @@ require (
 	github.com/swaggo/swag v1.8.5
 	go.uber.org/zap v1.23.0
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
-	google.golang.org/grpc v1.31.0
+	google.golang.org/grpc v1.49.0
+	google.golang.org/protobuf v1.27.1
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
@@ -59,7 +60,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/genproto v0.0.0-20200825200019-8632dd797987 // indirect
-	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
