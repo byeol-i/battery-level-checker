@@ -1,0 +1,46 @@
+version: "3.4"
+
+services:
+  grafana:
+        image: grafana/grafana:latest
+        networks:
+            - kafka-network
+        ports:
+            - "3000:3000"
+        environment:
+            GF_PATHS_DATA: /var/lib/grafana
+            GF_SECURITY_ADMIN_PASSWORD: kafka
+        volumes:
+            #- ./conf/grafana/provisioning:/etc/grafana/provisioning
+            - ./conf/grafana/dashboards:/var/lib/grafana/dashboards
+        depends_on:
+            - prometheus
+        deploy:
+            placement:
+                constraints: [node.role==manager]
+    prometheus:
+        image: prom/prometheus:latest
+        networks:
+            - kafka-network
+        ports:
+            - "9090:9090"
+        volumes:
+            - ./conf/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        command: "--config.file=/etc/prometheus/prometheus.yml"
+        deploy:
+            placement:
+                constraints: [node.role==manager]
+    kafka_exporter:
+        image: danielqsj/kafka-exporter
+        networks:
+            - kafka-network
+        ports:
+            - "9308:9308"
+        command: --kafka.server=kafka-1:9094 --kafka.server=kafka-2:9094
+        deploy:
+            placement:
+                constraints: [node.role==manager]
+
+networks:
+    kafka-network:
+        external: true

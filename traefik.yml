@@ -3,18 +3,34 @@ version: '3.7'
 services:
   traefik:
     image: "traefik:v2.8"
+    command:
+      - --providers.file.watch=true 
+      #- --certificatesResolvers.leresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory 
+      #- --certificatesresolvers.leresolver.acme.httpchallenge=true
+      #- --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=http
+      #- --certificatesresolvers.leresolver.acme.email=aglide100@gmail.com
+      #- --certificatesresolvers.leresolver.acme.storage=/acme.json
     volumes:
+      - "/etc/letsencrypt/live/${Domain1}/:/cert/"
       - "./conf/traefik/traefik.toml:/etc/traefik/traefik.toml"
+      #- "./conf/traefik/dynamic.toml:/etc/traefik/dynamic_config"
+      - "./conf/traefik/acme.json:/acme.json"
       - "/var/run/docker.sock:/var/run/docker.sock"
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
-        #- "8888:8080"
     deploy: 
       labels: 
-        - traefik.http.routers.proxy-testapp.rule=Host(`traefik.${Domain1}`)
-        - traefik.http.services.proxy-testapp.loadbalancer.server.port=8080
+        - traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${Domain1}`)
+        - traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080
+        - traefik.http.routers.traefik-dashboard.entrypoints=web
+        - traefik.http.routers.traefik-dashboard.middlewares=redirect-to-https
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.routers.traefik-dashboard--https.rule=Host(`traefik.${Domain1}`)
+        - traefik.http.routers.traefik-dashboard--https.tls=true
+        - traefik.http.routers.traefik-dashboard--https.tls.certresolver=myresolver
+        - traefik.http.routers.traefik-dashboard--https.entrypoints=websecure
         - traefik.docker.network=traefik-network
       placement:
         constraints:

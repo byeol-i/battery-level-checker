@@ -11,16 +11,25 @@ services:
             labels:
                 - traefik.enable=true
                 - traefik.docker.network=traefik-network
-                - traefik.http.routers.api-testapp.rule=Host(`api.${Domain1}`) # http setting
-                - traefik.http.routers.api-testapp.entrypoints=web # open to :80
-                - traefik.http.services.api-testapp.loadbalancer.server.port=80 # listening port
-            # placement:
-            #   constraints: [node.role==manager]
+                - traefik.http.routers.battery-api.rule=Host(`api.${Domain1}`)
+                - traefik.http.routers.battery-api.middlewares=redirect-to-https
+                - traefik.http.routers.battery-api.entrypoints=web
+                - traefik.http.services.battery-api.loadbalancer.server.port=80
+                - traefik.http.routers.battery-api--https.rule=Host(`api.${Domain1}`)
+                - traefik.http.routers.battery-api--https.tls=true
+                - traefik.http.routers.battery-api--https.tls.certresolver=myresolver
+                - traefik.http.routers.battery-api--https.entrypoints=websecure
+                #- traefik.http.routers.battery-api.tls.certresolver=le
+            placement:
+              constraints: [node.role==worker]
     auth:
         image: ghcr.io/byeol-i/battery-level-checker--auth:latest
         networks:
             - kafka-network
             - traefik-network
+        deploy:
+            placement:
+              constraints: [node.role==worker]
 
 networks:
     kafka-network:

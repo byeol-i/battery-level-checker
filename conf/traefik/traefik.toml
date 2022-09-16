@@ -2,6 +2,10 @@
   endpoint = "unix:///var/run/docker.sock"
   swarmMode = true
 
+[http.routers.nas]
+  [http.routers.nas.tls]
+    certResolver = "lets-encrypt"
+
 [api]
   insecure = true
   dashboard = true
@@ -10,8 +14,17 @@
 [entryPoints]
   [entryPoints.web]
     address = ":80"
-
+  [entryPoints.websecure]
+    address = ":443"
+    
 [accessLog]
   filePath = "/var/log/traefik/access.log"
   [accessLog.filters]
     statusCodes = "404"
+
+[certificatesResolvers.myresolver.acme]
+  email = "aglide100@gmail.com"
+  storage = "acme.json"
+  [certificatesResolvers.myresolver.acme.httpChallenge]
+    # used during the challenge
+    entryPoint = "web"
