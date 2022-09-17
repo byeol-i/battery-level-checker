@@ -27,6 +27,8 @@ services:
         networks:
             - kafka-network
             - traefik-network
+        secrets:
+            - firebase-key
         deploy:
             placement:
               constraints: [node.role==worker]

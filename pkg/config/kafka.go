@@ -11,7 +11,7 @@ var (
 	partition         = kingpin.Flag("partition", "Partition number").Default("0").String()
 	offsetType        = kingpin.Flag("offsetType", "Offset Type (OffsetNewest | OffsetOldest)").Default("-1").Int()
 	messageCountStart = kingpin.Flag("messageCountStart", "Message counter start from:").Int()
-	maxRetry   = kingpin.Flag("maxRetry", "Retry limit").Default("5").Int()
+	maxRetry   		  = kingpin.Flag("maxRetry", "Retry limit").Default("5").Int()
 )
 
 

@@ -8,7 +8,8 @@ import (
 	"os"
 
 	pb_svc_auth "github.com/byeol-i/battery-level-checker/pb/svc/auth"
-	"github.com/byeol-i/battery-level-checker/pkg/grpcSvc/server"
+	auth "github.com/byeol-i/battery-level-checker/pkg/auth/firebase"
+	grpc_auth "github.com/byeol-i/battery-level-checker/pkg/svc/auth"
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -37,9 +38,14 @@ func realMain() error {
 
 	grpcServer := grpc.NewServer(opts...)
 
-	authSrv := server.NewAuthServiceServer()
+	authSrv := grpc_auth.NewAuthServiceServer()
 
 	pb_svc_auth.RegisterAuthServer(grpcServer, authSrv)
+
+	firebaseApp, err := auth.InitFirebaseApp()
+
+	auth.GetUser(context.Background(), firebaseApp)
+
 	wg, _ := errgroup.WithContext(context.Background())
 
 	wg.Go(func () error {

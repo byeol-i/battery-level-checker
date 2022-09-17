@@ -1,4 +1,4 @@
-package server
+package auth
 
 import (
 	pb_svc_auth "github.com/byeol-i/battery-level-checker/pb/svc/auth"
