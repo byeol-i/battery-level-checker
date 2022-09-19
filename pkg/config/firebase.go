@@ -3,7 +3,7 @@ package config
 import "gopkg.in/alecthomas/kingpin.v2"
 
 var (
-	firebaseCredFilePath = kingpin.Flag("firebaseCredFilePath", "./conf/firebase/key.json").Default("./conf/firebase/key.json").String()
+	firebaseCredFilePath = kingpin.Flag("firebaseCredFilePath", "path").Default("/run/secrets/firebase-key").String()
 	firebaseProjectID = kingpin.Flag("firebaseProjectID", "worker-51312").Default("worker-51312").String()
 )
 

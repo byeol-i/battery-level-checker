@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 services:
     apid:
@@ -38,3 +38,10 @@ networks:
         external: true
     traefik-network:
         external: true
+
+
+secrets:
+    firebase-key:
+        file: ./conf/firebase/key.json
+    # firebase-key:
+    #     external: true
