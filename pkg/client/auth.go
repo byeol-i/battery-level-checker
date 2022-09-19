@@ -5,7 +5,7 @@ import (
 	"flag"
 	"time"
 
-	pb_svc_auth "github.com/byeol-i/battery-level-checker/pb/svc/auth"
+	pb_svc_firebase "github.com/byeol-i/battery-level-checker/pb/svc/firebase"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -25,16 +25,16 @@ func CallAuth(token string) error {
 	}
 	defer conn.Close()
 
-	client := pb_svc_auth.NewAuthClient(conn)
+	client := pb_svc_firebase.NewFirebaseClient(conn)
 
-	in := &pb_svc_auth.AuthTokenReq{
+	in := &pb_svc_firebase.AuthcationTokenReq{
 		Token: token,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	_, err = client.AuthToken(ctx, in)
+	_, err = client.AuthcationToken(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
 		return err

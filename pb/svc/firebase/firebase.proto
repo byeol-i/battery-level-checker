@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package pb.svc.firebase;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/firebase";
+
+service Firebase {
+    rpc AuthcationToken(AuthcationTokenReq) returns (AuthcationTokenRes);
+    rpc GetUser(GetUserReq) returns (GetUserRes);
+}
+
+message AuthcationTokenReq {
+    string token = 1;    
+}
+
+message AuthcationTokenRes {
+    string result = 1;
+    int32 code = 2;
+}  
+
+message GetUserReq {
+    string uid = 1;
+}
+
+message GetUserRes {
+    string result = 1;
+    int32 code = 2;
+}

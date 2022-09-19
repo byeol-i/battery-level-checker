@@ -1,6 +1,6 @@
 #!/bin/bash
 cd ..
 
-protoc -I=. --go_out=plugins=grpc:../../.. pb/svc/auth/*.proto
+protoc -I=. --go_out=plugins=grpc:../../.. pb/svc/firebase/*.proto
 
 cd  shell

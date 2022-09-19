@@ -10,7 +10,11 @@ import (
 	"google.golang.org/api/option"
 )
 
-func InitFirebaseApp() (*firebase.App, error) {
+type Firebase struct {
+	app *firebase.App
+}
+
+func NewFirebaseApp() (*Firebase, error) {
 	path := config.GetFirebaseCredFilePath()
 
 	opt := option.WithCredentialsFile(path)
@@ -22,15 +26,16 @@ func InitFirebaseApp() (*firebase.App, error) {
 		return nil, err
 	}
 
-	return app, nil
+	return &Firebase{
+		app: app,
+	}, nil
 }
 
-func GetUser(ctx context.Context, app *firebase.App) *auth.UserRecord {
-	uid := "some_string_uid"
+func (hdl *Firebase) GetUser(ctx context.Context, uid string) *auth.UserRecord {
 
 	// [START get_user_golang]
 	// Get an auth client from the firebase.App
-	client, err := app.Auth(ctx)
+	client, err := hdl.app.Auth(ctx)
 	if err != nil {
 		log.Fatalf("error getting Auth client: %v\n", err)
 	}
