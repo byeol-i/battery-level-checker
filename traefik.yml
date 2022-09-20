@@ -5,11 +5,6 @@ services:
     image: "traefik:v2.8"
     command:
       - --providers.file.watch=true 
-      #- --certificatesResolvers.leresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory 
-      #- --certificatesresolvers.leresolver.acme.httpchallenge=true
-      #- --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=http
-      #- --certificatesresolvers.leresolver.acme.email=aglide100@gmail.com
-      #- --certificatesresolvers.leresolver.acme.storage=/acme.json
     volumes:
       - "/etc/letsencrypt/live/${Domain1}/:/cert/"
       - "./conf/traefik/traefik.toml:/etc/traefik/traefik.toml"

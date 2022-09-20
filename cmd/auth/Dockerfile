@@ -13,10 +13,4 @@ RUN go build -mod=mod -o /opt/bin/app/ ./cmd/auth
 FROM debian:stretch-slim AS runtime
 COPY --from=builder /opt/bin/app /opt/bin/app
 
-#COPY ./keys ./keys
-
-#RUN apt update && apt install -y ca-certificates
-# RUN chmod 644 /usr/local/share/ca-certificates && update-ca-certificates
-
-#WORKDIR /opt/bin/app/
 CMD [ "/opt/bin/app/auth" ]
