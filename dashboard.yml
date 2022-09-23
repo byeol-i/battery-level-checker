@@ -5,8 +5,9 @@ services:
         image: grafana/grafana:latest
         networks:
             - kafka-network
-        ports:
-            - "3000:3000"
+            - traefik-network
+        # ports:
+        #     - "3000:3000"
         environment:
             GF_PATHS_DATA: /var/lib/grafana
             GF_SECURITY_ADMIN_PASSWORD: kafka
@@ -16,31 +17,58 @@ services:
         depends_on:
             - prometheus
         deploy:
+            labels:
+                - traefik.enable=true
+                - traefik.docker.network=traefik-network
+                - traefik.http.routers.dashboard-grafana.rule=Host(`grafana.${Domain1}`)
+                - traefik.http.routers.dashboard-grafana.middlewares=redirect-to-https
+                - traefik.http.routers.dashboard-grafana.entrypoints=web
+                - traefik.http.services.dashboard-grafana.loadbalancer.server.port=3000
+                - traefik.http.routers.dashboard-grafana--https.rule=Host(`grafana.${Domain1}`)
+                - traefik.http.routers.dashboard-grafana--https.tls=true
+                - traefik.http.routers.dashboard-grafana--https.tls.certresolver=myresolver
+                - traefik.http.routers.dashboard-grafana--https.entrypoints=websecure
             placement:
                 constraints: [node.role==manager]
     prometheus:
         image: prom/prometheus:latest
+        hostname: promethues
         networks:
             - kafka-network
-        ports:
-            - "9090:9090"
+            - traefik-network
+        # ports:
+        #     - "9090:9090"
         volumes:
             - ./conf/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
         command: "--config.file=/etc/prometheus/prometheus.yml"
         deploy:
+            labels:
+                - traefik.enable=true
+                - traefik.docker.network=traefik-network
+                - traefik.http.routers.dashboard-prometheus.rule=Host(`prometheus.${Domain1}`)
+                - traefik.http.routers.dashboard-prometheus.middlewares=redirect-to-https
+                - traefik.http.routers.dashboard-prometheus.entrypoints=web
+                - traefik.http.services.dashboard-prometheus.loadbalancer.server.port=9090
+                - traefik.http.routers.dashboard-prometheus--https.rule=Host(`prometheus.${Domain1}`)
+                - traefik.http.routers.dashboard-prometheus--https.tls=true
+                - traefik.http.routers.dashboard-prometheus--https.tls.certresolver=myresolver
+                - traefik.http.routers.dashboard-prometheus--https.entrypoints=websecure
             placement:
                 constraints: [node.role==manager]
     kafka_exporter:
         image: danielqsj/kafka-exporter
+        hostname: kafka_exporter
         networks:
             - kafka-network
         ports:
             - "9308:9308"
-        command: --kafka.server=kafka-1:9094 --kafka.server=kafka-2:9094
+        command: --kafka.server=kafka-1:9094 --kafka.server=kafka-2:9094 --kafka.server=kafka-3:9094
         deploy:
             placement:
                 constraints: [node.role==manager]
 
 networks:
     kafka-network:
+        external: true
+    traefik-network:
         external: true
