@@ -27,6 +27,8 @@ services:
         - traefik.http.routers.traefik-dashboard--https.tls.certresolver=myresolver
         - traefik.http.routers.traefik-dashboard--https.entrypoints=websecure
         - traefik.docker.network=traefik-network
+        - traefik.http.middlewares.http-auth.basicauth.users=${Httpasswd1}
+        - traefik.http.routers.traefik-dashboard--https.middlewares=http-auth
       placement:
         constraints:
           - node.role == manager
