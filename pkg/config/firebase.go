@@ -10,7 +10,8 @@ var (
 func GetFirebaseCredFilePath() string {
 	kingpin.Parse()
 
-	return *firebaseCredFilePath
+	// return *firebaseCredFilePath
+	return "conf/firebase/key.json"
 }
 
 func GetFirebaseProjectID() string {

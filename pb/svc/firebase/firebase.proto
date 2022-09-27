@@ -6,6 +6,24 @@ option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/firebase";
 service Firebase {
     rpc AuthcationToken(AuthcationTokenReq) returns (AuthcationTokenRes);
     rpc GetUser(GetUserReq) returns (GetUserRes);
+    rpc CreateCustomToken(CreateCustomTokenReq) returns (CreateCustomTokenRes);
+    rpc VerifyToken(VerifyTokenReq) returns (VerifyTokenRes);
+}
+
+message VerifyTokenReq {
+    string token = 1;
+}
+
+message VerifyTokenRes {
+    string msg = 1;
+}
+
+message CreateCustomTokenReq {
+    string uid = 1;
+}
+
+message CreateCustomTokenRes {
+    string token = 1;
 }
 
 message AuthcationTokenReq {
