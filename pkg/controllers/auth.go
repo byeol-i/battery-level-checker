@@ -16,7 +16,26 @@ func NewAuthController() *AuthControllers {
 }
 
 func (hdl *AuthControllers) CreateNewToken(resp http.ResponseWriter, req *http.Request) {
+	
+}
 
+func (hdl *AuthControllers) LoginTest(resp http.ResponseWriter, req *http.Request) {
+	resp.Header().Set("Content-Type", "text/html")
+
+	script := `
+	<html>
+	<head>
+		<script type="module">
+
+		</script>
+	</head>
+	<body></body>
+  	</html>`
+	content := []byte{}
+	content = []byte(script)
+	resp.Write(
+		content,
+	)
 }
 
 func (hdl *AuthControllers) CreateCustom(resp http.ResponseWriter, req *http.Request) {
@@ -29,6 +48,3 @@ func (hdl *AuthControllers) CreateCustom(resp http.ResponseWriter, req *http.Req
 
 	respondJSON(resp, 200, "done", token)
 }
-
-
-

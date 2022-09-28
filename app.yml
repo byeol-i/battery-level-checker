@@ -19,16 +19,23 @@ services:
                 - traefik.http.routers.battery-api--https.tls=true
                 - traefik.http.routers.battery-api--https.tls.certresolver=myresolver
                 - traefik.http.routers.battery-api--https.entrypoints=websecure
-                #- traefik.http.routers.battery-api.tls.certresolver=le
             placement:
               constraints: [node.role==worker]
     auth:
         image: ghcr.io/byeol-i/battery-level-checker--auth:latest
         networks:
             - kafka-network
-            - traefik-network
         secrets:
             - firebase-key
+        environment:
+            - SWARM: true
+        deploy:
+            placement:
+              constraints: [node.role==worker]
+    consumer:
+        image: ghcr.io/byeol-i/battery-level-checker--consumer:latest
+        networks:
+            - kafka-network
         deploy:
             placement:
               constraints: [node.role==worker]

@@ -40,12 +40,15 @@ func realMain() error {
 
 	notFoundCtrl := &controllers.NotFoundController{}
 	batteryCtrl := controllers.NewBatteryController()
-	
+	authCtrl := controllers.NewAuthController()
 	rtr := router.NewRouter(notFoundCtrl, "v1")
 
 	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)	
 	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
 	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)	
+	
+	rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)	
+	rtr.AddRule("Auth", "GET", `/auth/test$`, authCtrl.LoginTest)	
 
 	_ = ctx
 

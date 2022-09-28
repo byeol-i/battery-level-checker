@@ -24,6 +24,7 @@ type Router struct {
 	version 		string
 }
 
+
 func NewRouter(notFoundHandler http.Handler, version string) *Router {
 	return &Router{
 		rules:           make([]*routeRule, 0),
@@ -46,6 +47,7 @@ func (rtr *Router) AddRule(name string, method, pattern string, handler http.Han
 func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	method := req.Method
 	path := req.URL.Path
+	
 	for _, rule := range rtr.rules {
 		if rule.method != method {
 			continue
