@@ -20,17 +20,21 @@ type routeRule struct {
 
 type Router struct {
 	rules           []*routeRule
-	notFoundHandler http.Handler
+	defaultHandler http.Handler
+	middleware  func(http.Handler, http.ResponseWriter, *http.Request) http.Handler
 	version 		string
 }
 
-
-func NewRouter(notFoundHandler http.Handler, version string) *Router {
+func NewRouter(defaultHandler http.Handler, version string) *Router {
 	return &Router{
 		rules:           make([]*routeRule, 0),
-		notFoundHandler:  notFoundHandler,
+		defaultHandler:  defaultHandler,
 		version: version,
 	}
+}
+
+func (rtr *Router) Use(middleware func(http.Handler, http.ResponseWriter, *http.Request) http.Handler) {
+	rtr.middleware = middleware
 }
 
 func (rtr *Router) AddRule(name string, method, pattern string, handler http.HandlerFunc) {
@@ -56,11 +60,25 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		if !rule.pattern.MatchString(path) {
 			continue
 		}
+		
 		logger.Info("found handler", zap.String("rule", rule.name), zap.String("path", path))
-		handler := rule.handler
-		handler.ServeHTTP(resp, req)
+			
+		if rtr.middleware != nil {
+			handler := rtr.middleware(rule.handler, resp, req) 
+			if handler != nil {
+				handler.ServeHTTP(resp, req)
+			}
+		} else {
+			handler := rule.handler
+			handler.ServeHTTP(resp, req)
+		}
+
 		return
 	}
 
-	rtr.notFoundHandler.ServeHTTP(resp, req)
+	rtr.defaultHandler.ServeHTTP(resp, req)
 }
+// func (rtr *Router) wrapMiddleWare(next http.Handler) http.Handler {
+// 	rtr.middleware
+// 	return next
+// }

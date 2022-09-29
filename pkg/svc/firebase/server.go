@@ -1,4 +1,4 @@
-package server
+package firebaseSvc
 
 import (
 	"context"
@@ -14,14 +14,6 @@ type AuthSrv struct {
 
 func NewAuthServiceServer(app *auth.FirebaseApp) *AuthSrv {
 	return &AuthSrv{app: app}
-}
-
-func (s AuthSrv) AuthcationToken(ctx context.Context, in *pb_svc_firebase.AuthcationTokenReq) (*pb_svc_firebase.AuthcationTokenRes, error) {
-	// if in != nil {
-	// 	logger.Error("in is not nil")
-	// }
-
-	return &pb_svc_firebase.AuthcationTokenRes{}, nil
 }
 
 func (s AuthSrv) GetUser(ctx context.Context, in *pb_svc_firebase.GetUserReq) (*pb_svc_firebase.GetUserRes, error) {
