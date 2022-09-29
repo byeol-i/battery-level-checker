@@ -80,6 +80,12 @@ paths:
       consumes:
       - application/json
       description: Get devices's battery
+      parameters:
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -112,6 +118,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -142,6 +153,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Device'
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -168,6 +184,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.DeviceDetail'
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -191,6 +212,11 @@ paths:
       - description: Device ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: With the bearer started
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:

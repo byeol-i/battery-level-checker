@@ -24,6 +24,7 @@ func NewBatteryController() *BatteryController {
 // @Accept json
 // @Produce json
 // @Param id path string true "Device ID"
+// @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=models.Device{}}
 // @Router /battery/{deviceID} [get]
@@ -47,6 +48,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 // @Tags Battery
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{} 
 // @Success 200 {object} models.JSONsuccessResult{data=[]models.Device{}}
 // @Router /battery/ [get]
@@ -91,6 +93,7 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 // @Accept json
 // @Produce json
 // @Param device body models.Device true "Battery input form"
+// @Param Authorization header string true "With the bearer started"
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Failure 400 {object} models.JSONfailResult{}
 // @Router /battery/{deviceID} [put]

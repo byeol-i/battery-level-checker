@@ -17,6 +17,7 @@ func NewDeviceController() *DeviceControllers {
 // @Accept json
 // @Produce json
 // @Param deviceInfo body models.DeviceDetail true "add device"
+// @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Router /device [post]
@@ -31,6 +32,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 // @Accept json
 // @Produce json
 // @Param id path string true "Device ID"
+// @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Router /device/{deviceID} [delete]

@@ -38,6 +38,15 @@ const docTemplate = `{
                     "Battery"
                 ],
                 "summary": "Get All Device's Battery Level",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -89,6 +98,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -139,6 +155,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Device"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -179,6 +202,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.DeviceDetail"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -216,6 +246,13 @@ const docTemplate = `{
                         "description": "Device ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],

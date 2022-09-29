@@ -78,7 +78,3 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 	rtr.defaultHandler.ServeHTTP(resp, req)
 }
-// func (rtr *Router) wrapMiddleWare(next http.Handler) http.Handler {
-// 	rtr.middleware
-// 	return next
-// }
