@@ -11,6 +11,9 @@ RUN go mod vendor \
 RUN go build -mod=mod -o /opt/bin/app/ ./cmd/auth 
 
 FROM debian:stretch-slim AS runtime
+
+RUN apk add ca-certificates
+
 COPY --from=builder /opt/bin/app /opt/bin/app
 
 CMD [ "/opt/bin/app/auth" ]

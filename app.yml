@@ -28,7 +28,7 @@ services:
         secrets:
             - firebase-key
         environment:
-            - SWARM: true
+            SWARM: "true"
         deploy:
             placement:
               constraints: [node.role==worker]
