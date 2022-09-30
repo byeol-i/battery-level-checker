@@ -12,7 +12,7 @@ RUN go build -mod=mod -o /opt/bin/app/ ./cmd/auth
 
 FROM debian:stretch-slim AS runtime
 
-RUN apk add ca-certificates
+RUN apt-get update && apt-get -y install ca-certificates
 
 COPY --from=builder /opt/bin/app /opt/bin/app
 
