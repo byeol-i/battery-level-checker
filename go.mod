@@ -7,7 +7,7 @@ require (
 	github.com/Shopify/sarama v1.37.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/labstack/echo/v4 v4.9.0
-	github.com/swaggo/echo-swagger v1.3.4
+	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.6
 	go.uber.org/zap v1.23.0
 	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7
