@@ -5,6 +5,8 @@ import (
 
 	pb_svc_firebase "github.com/byeol-i/battery-level-checker/pb/svc/firebase"
 	auth "github.com/byeol-i/battery-level-checker/pkg/authentication/firebase"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"go.uber.org/zap"
 )
 
 type AuthSrv struct {
@@ -50,11 +52,14 @@ func (s AuthSrv) VerifyToken(ctx context.Context, in *pb_svc_firebase.VerifyToke
 	// }
 	result, err := s.app.VerifyIDToken(ctx, in.Token)
 	if err != nil {
-		return &pb_svc_firebase.VerifyTokenRes{}, err
+		logger.Error("Can't verify token", zap.Error(err))
+		return &pb_svc_firebase.VerifyTokenRes{
+			Error: err.Error(),
+		}, err
 	}
 	
-
 	return &pb_svc_firebase.VerifyTokenRes{
 		Msg: result,
+		Error: "",
 	}, nil
 }

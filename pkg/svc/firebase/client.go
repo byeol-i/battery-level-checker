@@ -15,6 +15,8 @@ var (
 	addr = flag.String("auth addr", "app_auth:50010", "auth grpc addr")
 )
 
+
+// auth서버가 죽거나 timeout이 발생하여야 하는데 발생하지 않는거 같음. 
 func CallVerifyToken(token string) error {
 	// logger.Info("make grpc call at auth server", zap.String("token", token))
 

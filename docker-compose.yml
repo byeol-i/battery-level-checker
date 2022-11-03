@@ -1,52 +1,80 @@
 version: "3"
 
 services:
-    # apid:
-    #     container_name: apid
-    #     image: apid:latest
-    #     networks:
-    #         - kafka-network
-    # producer:
-    #     container_name: producer
-    #     image: producer:latest
-    #     networks:
-    #         - kafka-network
-    # consumer:
-    #     container_name: consumer
-    #     image: consumer:latest
-    #     networks:
-    #         - kafka-network
-
-    primary:
-        image: ghcr.io/byeol-i/battery-level-checker-db-primary:latest
-        command: postgres -c log_destination=stderr -c log_statement=all
-        hostname: primary-db
-        ports:
-            - "5432"
-        environment:
-            POSTGRES_USER: table_admin
-            POSTGRES_PASSWORD: HelloWorld
-            POSTGRES_INITDB_ARGS: --encoding=UTF-8
-    zookeeper:
-        container_name: local-zookeeper
+    # primary:
+    #     image: ghcr.io/byeol-i/battery-level-checker-db-primary:latest
+    #     command: postgres -c log_destination=stderr -c log_statement=all
+    #     hostname: primary-db
+    #     ports:
+    #         - "5432"
+    #     environment:
+    #         POSTGRES_USER: table_admin
+    #         POSTGRES_PASSWORD: HelloWorld
+    #         POSTGRES_INITDB_ARGS: --encoding=UTF-8
+    zoo1:
         image: wurstmeister/zookeeper:3.4.6
+        networks:
+            - kafka-network
         ports:
             - "2181:2181"
     kafka-1:
-        container_name: local-kafka
         image: wurstmeister/kafka:2.12-2.3.0
+        networks:
+            - kafka-network
         depends_on:
-            - zookeeper
+            - zoo1
         ports:
-            - "9092:9092"
+            - "9094:9094"
         environment:
-            KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
-            KAFKA_ADVERTISED_PORT: 9092
-            KAFKA_CREATE_TOPICS: "test_topic:1:1" # Topic명:Partition개수:Replica개수
-            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_BROKER_ID: 1
+            DOCKER_API_VERSION: 1.41
+            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
+            KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+            KAFKA_MIN_INSYNC_REPLICAS: 1
+            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+            KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
+            KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
+            KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+            KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_LOG_RETENTION_BYTES: -1
+            KAFKA_LOG_RETENTION_DAYS: 2
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
+    apid:
+        # container_name: apid
+        image: apid
+        ports:
+            - "80:80"
+        networks:
+            - kafka-network
+    # producer:
+    #     # container_name: producer
+    #     image: producer
+    #     networks:
+    #         - kafka-network
+    consumer:
+        # container_name: consumer
+        image: consumer
+        networks:
+            - kafka-network
+    auth:
+        image: auth
+        ports:
+            - "50010:50010"
+        networks:
+            - kafka-network
+        secrets:
+            - firebase-key
+        environment:
+            - SWARM=true
 
 networks:
     kafka-network:
         external: true
+
+secrets:
+    firebase-key:
+        file: ./conf/firebase/key.json

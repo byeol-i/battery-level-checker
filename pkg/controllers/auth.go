@@ -38,7 +38,6 @@ func (hdl *AuthControllers) ReturnServeHttp(code int, msg string) (ServeHTTP fun
 	}
 }
 
-
 func (hdl *AuthControllers) LoginTest(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Content-Type", "text/html")
 

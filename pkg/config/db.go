@@ -5,7 +5,6 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-
 var (
 	dbHost			= kingpin.Flag("dbHost", "db's addr").Default("localhost").String()
 	dbPort			= kingpin.Flag("dbPort", "db's port").Default("5432").Int()
