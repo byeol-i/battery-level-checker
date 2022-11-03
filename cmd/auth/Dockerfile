@@ -11,7 +11,8 @@ RUN go mod vendor \
 RUN go build -mod=mod -o /opt/bin/app/ ./cmd/auth 
 
 FROM debian:stretch-slim AS runtime
-RUN apt update && apt install -y ca-certificates 
+
+RUN apt-get update && apt-get -y install ca-certificates
 
 COPY --from=builder /opt/bin/app /opt/bin/app
 
