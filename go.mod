@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	firebase.google.com/go/v4 v4.10.0
-	github.com/Shopify/sarama v1.37.0
+	github.com/Shopify/sarama v1.37.2
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/swaggo/echo-swagger v1.3.5
