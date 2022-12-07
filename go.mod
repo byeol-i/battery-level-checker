@@ -6,7 +6,7 @@ require (
 	firebase.google.com/go/v4 v4.10.0
 	github.com/Shopify/sarama v1.37.0
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/labstack/echo/v4 v4.9.0
+	github.com/labstack/echo/v4 v4.9.1
 	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.8
 	go.uber.org/zap v1.23.0
@@ -56,7 +56,7 @@ require (
 	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
-	github.com/labstack/gommon v0.3.1 // indirect
+	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
