@@ -1,0 +1,3 @@
+[submodule "authUI"]
+	path = authUI
+	url = https://github.com/aglide100/firebase-auth-with-react

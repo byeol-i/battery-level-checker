@@ -2,7 +2,9 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"log"
+	"time"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
@@ -33,24 +35,78 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 	}, nil
 }
 
-func (hdl *FirebaseApp) GetUser(ctx context.Context, uid string) (*auth.UserRecord, error) {
+type GetResult struct {
+	Result interface{}
+	Error  error
+}
 
-	// [START get_user_golang]
-	// Get an auth client from the firebase.App
-	client, err := hdl.app.Auth(ctx)
+func GetUserFromFirebase(app *FirebaseApp, ctx context.Context, uid string) GetResult {
+	client, err := app.app.Auth(ctx)
 	if err != nil {
 		logger.Error("error getting Auth client", zap.Error(err))
-		return nil, err
+		return GetResult{
+			Result: nil,
+			Error:  errors.New("error getting Auth client"),
+		}
 	}
 
 	u, err := client.GetUser(ctx, uid)
 	if err != nil {
-		logger.Error("error getting user", zap.Error(err), zap.String("uid",uid))
-		return nil, err
+		logger.Error("error getting user", zap.Error(err), zap.String("uid", uid))
+		return GetResult{
+			Result: nil,
+			Error:  errors.New("error getting user"),
+		}
 	}
-	log.Printf("Successfully fetched user data: %v\n", u)
-	// [END get_user_golang]
-	return u, nil
+
+	return GetResult{
+		Result: u,
+		Error:  nil,
+	}
+}
+
+func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken string) GetResult {
+	client, err := app.app.Auth(ctx)
+	if err != nil {
+		logger.Error("error getting Auth client", zap.Error(err))
+		return GetResult{
+			Result: nil,
+			Error:  errors.New("error getting Auth client"),
+		}
+	}
+
+	decodedToken, err := client.VerifyIDToken(ctx, idToken)
+	if err != nil {
+		logger.Error("Can't verify token", zap.Error(err))
+		return GetResult{
+			Result: nil,
+			Error:  errors.New("Can't verify token"),
+		}
+	}
+
+	return GetResult{
+		Result: decodedToken.UID,
+		Error:  nil,
+	}
+}
+
+func (hdl *FirebaseApp) GetUser(ctx context.Context, uid string) (*auth.UserRecord, error) {
+	result := make(chan GetResult)
+
+	go func() {
+		result <- GetUserFromFirebase(hdl, ctx, uid)
+	}()
+	select {
+	case <-time.After(5 * time.Second):
+		return nil, errors.New("timed out")
+	case result := <-result:
+		// Should be error...
+		// if _, ok := result.Result.(auth.UserRecord); ok {
+		// 	return result.Result, result.Error
+		// }
+
+		return result.Result.(*auth.UserRecord), result.Error
+	}
 }
 
 func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (string, error) {
@@ -67,21 +123,33 @@ func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (stri
 	}
 
 	return token, nil
-	
+
 }
 
 func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
-	client, err := hdl.app.Auth(ctx)
-	if err != nil {
-		logger.Error("error getting Auth client", zap.Error(err))
-		return "", err
-	}
+	// client, err := hdl.app.Auth(ctx)
+	// if err != nil {
+	// 	logger.Error("error getting Auth client", zap.Error(err))
+	// 	return "", err
+	// }
 
-	decodedToken, err := client.VerifyIDToken(ctx, idToken)
-	if err != nil {
-		logger.Error("can't verify token", zap.Error(err))
-		return "", err
-	}
+	// decodedToken, err := client.VerifyIDToken(ctx, idToken)
+	// if err != nil {
+	// 	logger.Error("can't verify token", zap.Error(err))
+	// 	return "", err
+	// }
 
-	return decodedToken.UID, nil
+	// return decodedToken.UID, nil1
+
+	result := make(chan GetResult)
+
+	go func() {
+		result <- VerifyIDTokenFromFirebase(hdl, ctx, idToken)
+	}()
+	select {
+	case <-time.After(5 * time.Second):
+		return "", errors.New("timed out")
+	case result := <-result:
+		return result.Result.(string), result.Error
+	}
 }
