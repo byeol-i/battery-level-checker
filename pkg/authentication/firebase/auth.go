@@ -127,20 +127,6 @@ func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (stri
 }
 
 func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
-	// client, err := hdl.app.Auth(ctx)
-	// if err != nil {
-	// 	logger.Error("error getting Auth client", zap.Error(err))
-	// 	return "", err
-	// }
-
-	// decodedToken, err := client.VerifyIDToken(ctx, idToken)
-	// if err != nil {
-	// 	logger.Error("can't verify token", zap.Error(err))
-	// 	return "", err
-	// }
-
-	// return decodedToken.UID, nil1
-
 	result := make(chan GetResult)
 
 	go func() {
@@ -150,6 +136,10 @@ func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (stri
 	case <-time.After(5 * time.Second):
 		return "", errors.New("timed out")
 	case result := <-result:
-		return result.Result.(string), result.Error
+		if _, ok := result.Result.(string); ok {
+			return result.Result.(string), result.Error
+		} else {
+			return "", errors.New("Type error...")
+		}
 	}
 }
