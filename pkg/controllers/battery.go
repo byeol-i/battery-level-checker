@@ -1,16 +1,17 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/models"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
+	"github.com/gofrs/uuid"
 )
 
 type BatteryController struct {
-
 }
 
 func NewBatteryController() *BatteryController {
@@ -30,14 +31,19 @@ func NewBatteryController() *BatteryController {
 // @Router /battery/{deviceID} [get]
 func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Request) {
 	t := time.Now()
-	
+	uuid, err := uuid.NewV4()
+	if err != nil {
+		panic(err)
+	}
+
 	mock := &models.Device{
-		Name: req.URL.Path,
-		Time: &t,
-		BatteryLevel: 20,
+		DeviceID:      uuid.String(),
+		Name:          req.URL.Path,
+		Time:          &t,
+		BatteryLevel:  20,
 		BatteryStatus: "charging",
 	}
-	
+
 	// consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "success", mock)
 }
@@ -49,39 +55,45 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "With the bearer started"
-// @Failure 400 {object} models.JSONfailResult{} 
+// @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=[]models.Device{}}
 // @Router /battery/ [get]
 func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http.Request) {
 	t := time.Now()
-	
+	uuid, err := uuid.NewV4()
+	if err != nil {
+		log.Printf("%v", err)
+	}
 	mock1 := &models.Device{
-		Name: "test1",
-		Time: &t,
-		BatteryLevel: 20,
+		DeviceID:      uuid.String(),
+		Name:          "test1",
+		Time:          &t,
+		BatteryLevel:  20,
 		BatteryStatus: "charging",
 	}
 
 	mock2 := &models.Device{
-		Name: "test2",
-		Time: &t,
-		BatteryLevel: 20,
+		DeviceID:      uuid.String(),
+		Name:          "test2",
+		Time:          &t,
+		BatteryLevel:  20,
 		BatteryStatus: "charging",
 	}
 
 	mock3 := &models.Device{
-		Name: "test3",
-		Time: &t,
-		BatteryLevel: 20,
+		DeviceID:      uuid.String(),
+		Name:          "test3",
+		Time:          &t,
+		BatteryLevel:  20,
 		BatteryStatus: "charging",
 	}
-	
+
 	data := []*models.Device{
-		mock1, 
+		mock1,
 		mock2,
 		mock3,
 	}
-	
+
 	// consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "success", data)
 }
@@ -126,4 +138,4 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 	producer.Write()
 
 	respondJSON(resp, 200, "success", "")
-} 
+}

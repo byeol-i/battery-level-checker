@@ -9,19 +9,21 @@ import (
 )
 
 type Device struct {
-	Name string `validate:"required" json:"name" example:"iphone 99xs"` 
-	Time *time.Time `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
-	BatteryLevel int `validate:"required" json:"batteryLevel" example:"50"`
-	BatteryStatus string `validate:"required" json:"batteryStatus" example:"charging"`
+	DeviceID      string     `validate:"required" json:"deviceID" example:"f782fd74-d264-4901-8df5-c905f9df08db"`
+	Name          string     `validate:"required" json:"name" example:"iphone 99xs"`
+	Time          *time.Time `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
+	BatteryLevel  int        `validate:"required" json:"batteryLevel" example:"50"`
+	BatteryStatus string     `validate:"required" json:"batteryStatus" example:"charging"`
 }
 
 type DeviceDetail struct {
-	Name string `json:"name" example:"iphone 99xs"`
-	Type string `json:"type" example:"phone"`
-	OS string `json:"OS" example:"IOS"`
-	OSversion string `json:"OSversion" example:"99.192"`
+	DeviceID   string `json:"deviceID" example:"f782fd74-d264-4901-8df5-c905f9df08db"`
+	Name       string `json:"name" example:"iphone 99xs"`
+	Type       string `json:"type" example:"phone"`
+	OS         string `json:"OS" example:"IOS"`
+	OSversion  string `json:"OSversion" example:"99.192"`
 	AppVersion string `json:"appVersion" example:"0.0.1"`
-	PushToken string `json:"pushToken" example:"abcd"`
+	PushToken  string `json:"pushToken" example:"abcd"`
 }
 
 func DeviceValidation(device *Device) error {

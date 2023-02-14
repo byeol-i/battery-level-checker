@@ -14,7 +14,7 @@ message VerifyTokenReq {
 }
 
 message VerifyTokenRes {
-    string msg = 1;
+    string result = 1;
     string error = 2;
 }
 
@@ -32,5 +32,5 @@ message GetUserReq {
 
 message GetUserRes {
     string result = 1;
-    int32 code = 2;
+    string error = 2;
 }

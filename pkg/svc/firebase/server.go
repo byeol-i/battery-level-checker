@@ -2,6 +2,7 @@ package firebaseSvc
 
 import (
 	"context"
+	"encoding/json"
 
 	pb_svc_firebase "github.com/byeol-i/battery-level-checker/pb/svc/firebase"
 	auth "github.com/byeol-i/battery-level-checker/pkg/authentication/firebase"
@@ -23,12 +24,25 @@ func (s AuthSrv) GetUser(ctx context.Context, in *pb_svc_firebase.GetUserReq) (*
 	// 	logger.Error("in is not nil")
 	// }
 
-	_, err := s.app.GetUser(ctx, in.Uid)
+	result, err := s.app.GetUser(ctx, in.Uid)
 	if err != nil {
-		return &pb_svc_firebase.GetUserRes{}, err
+		return &pb_svc_firebase.GetUserRes{
+			// Result: "",
+			Error: err.Error(),
+		}, err
 	}
 
-	return &pb_svc_firebase.GetUserRes{}, nil
+	jsonRes, err := json.Marshal(result)
+	if err != nil {
+		return &pb_svc_firebase.GetUserRes{
+			// Result: "",
+			Error: err.Error(),
+		}, err
+	}
+
+	return &pb_svc_firebase.GetUserRes{
+		Result: string(jsonRes),
+	}, nil
 }
 
 func (s AuthSrv) CreateCustomToken(ctx context.Context, in *pb_svc_firebase.CreateCustomTokenReq) (*pb_svc_firebase.CreateCustomTokenRes, error) {
@@ -47,9 +61,6 @@ func (s AuthSrv) CreateCustomToken(ctx context.Context, in *pb_svc_firebase.Crea
 }
 
 func (s AuthSrv) VerifyToken(ctx context.Context, in *pb_svc_firebase.VerifyTokenReq) (*pb_svc_firebase.VerifyTokenRes, error) {
-	// if in != nil {
-	// 	logger.Error("in is not nil")
-	// }
 	result, err := s.app.VerifyIDToken(ctx, in.Token)
 	if err != nil {
 		logger.Error("Can't verify token", zap.Error(err))
@@ -57,9 +68,16 @@ func (s AuthSrv) VerifyToken(ctx context.Context, in *pb_svc_firebase.VerifyToke
 			Error: err.Error(),
 		}, err
 	}
-	
+	jsonRes, err := json.Marshal(result)
+	if err != nil {
+		return &pb_svc_firebase.VerifyTokenRes{
+			// Result: "",
+			Error: err.Error(),
+		}, err
+	}
+
 	return &pb_svc_firebase.VerifyTokenRes{
-		Msg: result,
-		Error: "",
+		Result: string(jsonRes),
+		// Error:  "",
 	}, nil
 }

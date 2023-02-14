@@ -50,7 +50,7 @@ func realMain() error {
 
 	wg, _ := errgroup.WithContext(context.Background())
 
-	wg.Go(func () error {
+	wg.Go(func() error {
 		logger.Info("Starting grpc server...")
 		err := grpcServer.Serve(gRPCL)
 		if err != nil {

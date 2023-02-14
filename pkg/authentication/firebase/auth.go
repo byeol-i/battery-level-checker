@@ -80,12 +80,12 @@ func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken st
 		logger.Error("Can't verify token", zap.Error(err))
 		return GetResult{
 			Result: nil,
-			Error:  errors.New("Can't verify token"),
+			Error:  err,
 		}
 	}
 
 	return GetResult{
-		Result: decodedToken.UID,
+		Result: decodedToken,
 		Error:  nil,
 	}
 }
@@ -100,12 +100,15 @@ func (hdl *FirebaseApp) GetUser(ctx context.Context, uid string) (*auth.UserReco
 	case <-time.After(5 * time.Second):
 		return nil, errors.New("timed out")
 	case result := <-result:
-		// Should be error...
-		// if _, ok := result.Result.(auth.UserRecord); ok {
-		// 	return result.Result, result.Error
-		// }
+		if result.Error != nil {
+			return nil, result.Error
+		}
 
-		return result.Result.(*auth.UserRecord), result.Error
+		if _, ok := result.Result.(*auth.UserRecord); ok {
+			return nil, errors.New("Type error!")
+		}
+
+		return result.Result.(*auth.UserRecord), nil
 	}
 }
 
@@ -126,7 +129,7 @@ func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (stri
 
 }
 
-func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
+func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
 	result := make(chan GetResult)
 
 	go func() {
@@ -134,12 +137,17 @@ func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (stri
 	}()
 	select {
 	case <-time.After(5 * time.Second):
-		return "", errors.New("timed out")
+		return nil, errors.New("timed out")
 	case result := <-result:
-		if _, ok := result.Result.(string); ok {
-			return result.Result.(string), result.Error
-		} else {
-			return "", errors.New("Type error...")
+		if result.Error != nil {
+			return nil, result.Error
 		}
+
+		if _, ok := result.Result.(*auth.Token); ok {
+			return nil, errors.New("Type error")
+		}
+
+		log.Println(result.Result)
+		return result.Result.(*auth.Token), nil
 	}
 }

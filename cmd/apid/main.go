@@ -45,16 +45,15 @@ func realMain() error {
 
 	rtr.Use(authCtrl.VerifyToken)
 
-	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)	
+	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)
 	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
-	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)	
-	
-	// rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)	
-	rtr.AddRule("Auth", "GET", `/auth/test$`, authCtrl.LoginTest)	
+	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)
+
+	// rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)
 
 	_ = ctx
 
-	wg.Go(func () error  {
+	wg.Go(func() error {
 		var err error
 
 		ln, err := net.Listen("tcp", "0.0.0.0:80")

@@ -10,7 +10,6 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 )
 
-
 type routeRule struct {
 	name    string
 	method  string
@@ -19,17 +18,17 @@ type routeRule struct {
 }
 
 type Router struct {
-	rules           []*routeRule
+	rules          []*routeRule
 	defaultHandler http.Handler
-	middleware  func(http.Handler, http.ResponseWriter, *http.Request) http.Handler
-	version 		string
+	middleware     func(http.Handler, http.ResponseWriter, *http.Request) http.Handler
+	version        string
 }
 
 func NewRouter(defaultHandler http.Handler, version string) *Router {
 	return &Router{
-		rules:           make([]*routeRule, 0),
-		defaultHandler:  defaultHandler,
-		version: version,
+		rules:          make([]*routeRule, 0),
+		defaultHandler: defaultHandler,
+		version:        version,
 	}
 }
 
@@ -51,20 +50,20 @@ func (rtr *Router) AddRule(name string, method, pattern string, handler http.Han
 func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	method := req.Method
 	path := req.URL.Path
-	
+
 	for _, rule := range rtr.rules {
 		if rule.method != method {
 			continue
 		}
-		
+
 		if !rule.pattern.MatchString(path) {
 			continue
 		}
-		
+
 		logger.Info("found handler", zap.String("rule", rule.name), zap.String("path", path))
-			
+
 		if rtr.middleware != nil {
-			handler := rtr.middleware(rule.handler, resp, req) 
+			handler := rtr.middleware(rule.handler, resp, req)
 			if handler != nil {
 				handler.ServeHTTP(resp, req)
 			}
@@ -77,4 +76,10 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	rtr.defaultHandler.ServeHTTP(resp, req)
+}
+
+func InitialRouter() *Router {
+	rtr := NewRouter(nil, "di")
+
+	return rtr
 }
