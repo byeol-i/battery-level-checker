@@ -272,6 +272,7 @@
             "required": [
                 "batteryLevel",
                 "batteryStatus",
+                "deviceID",
                 "name",
                 "time"
             ],
@@ -283,6 +284,10 @@
                 "batteryStatus": {
                     "type": "string",
                     "example": "charging"
+                },
+                "deviceID": {
+                    "type": "string",
+                    "example": "f782fd74-d264-4901-8df5-c905f9df08db"
                 },
                 "name": {
                     "type": "string",
@@ -308,6 +313,10 @@
                 "appVersion": {
                     "type": "string",
                     "example": "0.0.1"
+                },
+                "deviceID": {
+                    "type": "string",
+                    "example": "f782fd74-d264-4901-8df5-c905f9df08db"
                 },
                 "name": {
                     "type": "string",
