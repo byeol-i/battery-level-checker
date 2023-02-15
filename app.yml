@@ -32,7 +32,7 @@ services:
     deploy:
       placement:
         constraints: [node.role==worker]
-  dbd:
+  db:
     image: ghcr.io/byeol-i/battery-level-checker--db:latest
     networks:
       - kafka-network

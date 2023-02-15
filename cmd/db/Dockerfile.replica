@@ -2,6 +2,4 @@ FROM postgres:11-alpine
 
 ENV LANG C.UTF-8
 
-RUN apk --update add openssh-client && rm -rf /var/cache/apk/*
-
-COPY ./cmd/db/setup-replica.sh /docker-entrypoint-initdb.d/setup-primary.sh
+COPY ./cmd/db/replica/init.sh /docker-entrypoint-initdb.d/init.sh

@@ -7,13 +7,17 @@ import (
 	"net"
 	"os"
 
+	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
+
+	server "github.com/byeol-i/battery-level-checker/pkg/svc/db"
+
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 )
 
 var (
-	grpcAddr = flag.String("apid grpc addr", "0.0.0.0:50011", "grpc address")
+	grpcAddr = flag.String("apid grpc addr", "0.0.0.0:50012", "grpc address")
 	usingTls = flag.Bool("grpc.tls", false, "using http2")
 )
 
@@ -33,6 +37,9 @@ func realMain() error {
 	var opts []grpc.ServerOption
 
 	grpcServer := grpc.NewServer(opts...)
+
+	dbSrv := server.NewDBServiceServer()
+	pb_svc_db.RegisterDBServer(grpcServer, dbSrv)
 
 	wg, _ := errgroup.WithContext(context.Background())
 

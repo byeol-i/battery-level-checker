@@ -2,9 +2,8 @@ version: "3.3"
 
 services:
   db--primary:
-    # image: db-primary
-    image: ghcr.io/byeol-i/battery-level-checker-postgresql--primary:latest
-    command: postgres -c log_destination=stderr -c log_statement=all
+    # image: postgres:11-alpine
+    image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
     volumes:
       - pg-primary-vol:/var/lib/postgresql/data
     hostname: primary-db
@@ -22,9 +21,8 @@ services:
         constraints:
           - node.role == manager
   db--replica:
-    # image: db-replica
-    image: ghcr.io/byeol-i/battery-level-checker-postgresql--replica:latest
-    command: postgres -c log_destination=stderr -c log_statement=all
+    # image: postgres:11-alpine
+    image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
     volumes:
       - pg-replica-vol:/var/lib/postgresql/data
     hostname: replica-db
