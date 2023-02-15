@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb.unit.device;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/unit/device";
+
+message Device {
+    ID id = 1;
+    Spec spec = 2;
+}
+
+message ID {
+    string uuid = 1;
+}
+
+message Spec {
+
+}

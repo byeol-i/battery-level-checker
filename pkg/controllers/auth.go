@@ -32,6 +32,10 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 	return next
 }
 
+func (hdl *AuthControllers) SignUpByToken(resp http.ResponseWriter, req *http.Request) {
+
+}
+
 func (hdl *AuthControllers) ReturnServeHttp(code int, msg string) (ServeHTTP func(resp http.ResponseWriter, req *http.Request)) {
 	return func(resp http.ResponseWriter, req *http.Request) {
 		respondError(resp, code, msg)

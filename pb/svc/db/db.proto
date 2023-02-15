@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package pb.svc.db;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/db";
+
+import "pb/unit/device/device.proto";
+
+service DB {
+    rpc SignUp(SignUpReq) returns (SignUpRes);
+    rpc AddDevice(AddDeviceReq) returns (AddDeviceRes);
+    rpc GetDevices(GetDevicesReq) returns (GetDevicesRes);
+}
+
+message SignUpReq {
+    string uid = 1;
+}
+
+message SignUpRes {
+    string result = 1;
+    string error = 2;
+}
+
+message AddDeviceReq {
+    unit.device.Device Device = 1;
+}
+
+message AddDeviceRes {
+    string result = 1;
+    string error = 2;
+}
+
+message GetDevicesReq {
+    string uid = 1;
+}
+
+message GetDevicesRes {
+    repeated unit.device.Device Devices = 1;
+}
