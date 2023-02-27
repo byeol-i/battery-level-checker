@@ -8,6 +8,7 @@ import "pb/unit/device/device.proto";
 service DB {
     rpc SignUp(SignUpReq) returns (SignUpRes);
     rpc AddDevice(AddDeviceReq) returns (AddDeviceRes);
+    rpc RemoveDevice(RemoveDeviceReq) returns (RemoveDeviceRes);
     rpc GetDevices(GetDevicesReq) returns (GetDevicesRes);
 }
 
@@ -35,4 +36,12 @@ message GetDevicesReq {
 
 message GetDevicesRes {
     repeated unit.device.Device Devices = 1;
+}
+
+message RemoveDeviceReq {
+
+}
+
+message RemoveDeviceRes {
+
 }

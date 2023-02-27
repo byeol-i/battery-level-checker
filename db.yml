@@ -1,12 +1,12 @@
 version: "3.3"
 
 services:
-  db--primary:
-    # image: postgres:11-alpine
-    image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
-    volumes:
-      - pg-primary-vol:/var/lib/postgresql/data
-    hostname: primary-db
+  pgmaster:
+    image: db-primary
+    # image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
+    # volumes:
+    #   - pg-primary-vol:/var/lib/postgresql/data
+    hostname: master
     networks:
       - kafka-network
     ports:
@@ -20,18 +20,15 @@ services:
       placement:
         constraints:
           - node.role == manager
-  db--replica:
-    # image: postgres:11-alpine
-    image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
-    volumes:
-      - pg-replica-vol:/var/lib/postgresql/data
-    hostname: replica-db
+  pgslave:
+    image: db-replica
+    # image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
+    # volumes:
+    #   - pg-replica-vol:/var/lib/postgresql/data
     networks:
       - kafka-network
     ports:
       - "8432:5432"
-    depends_on:
-      - db--primary
     environment:
       POSTGRES_DB: battery
       POSTGRES_USER: table_admin

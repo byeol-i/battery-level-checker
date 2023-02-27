@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"os"
+	"strconv"
 
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
 
+	"github.com/byeol-i/battery-level-checker/pkg/db"
 	server "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
@@ -17,8 +20,8 @@ import (
 )
 
 var (
-	grpcAddr = flag.String("apid grpc addr", "0.0.0.0:50012", "grpc address")
-	usingTls = flag.Bool("grpc.tls", false, "using http2")
+	grpcAddr = flag.String("addr", "0.0.0.0:50012", "grpc address")
+	usingTls = flag.Bool("tls", false, "using http2")
 )
 
 func main() {
@@ -29,6 +32,31 @@ func main() {
 }
 
 func realMain() error {
+	dbAddr := os.Getenv("DB_ADDR")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPasswd := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	dbport, err := strconv.Atoi(dbPort)
+	if err != nil {
+		fmt.Errorf("Can't read dbPort!: %v %v", dbPort, err)
+		dbport = 8432
+	}
+
+	myDB, err := db.ConnectDB(&db.DBConfig{
+		Host:     dbAddr,
+		Port:     dbport,
+		User:     dbUser,
+		Password: dbPasswd,
+		DBname:   dbName,
+		SSLmode:  "disable",
+		// Sslmode : "verify-full",
+		// Sslrootcert : "keys/ca.crt",
+		// Sslkey : "keys/client.key",
+		// Sslsert : "keys/client.crt",
+	})
+
 	gRPCL, err := net.Listen("tcp", *grpcAddr)
 	if err != nil {
 		return err
@@ -38,7 +66,7 @@ func realMain() error {
 
 	grpcServer := grpc.NewServer(opts...)
 
-	dbSrv := server.NewDBServiceServer()
+	dbSrv := server.NewDBServiceServer(myDB)
 	pb_svc_db.RegisterDBServer(grpcServer, dbSrv)
 
 	wg, _ := errgroup.WithContext(context.Background())
