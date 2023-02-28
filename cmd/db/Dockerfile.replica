@@ -33,4 +33,4 @@ RUN apk add --update iputils
 ENV LANG C.UTF-8
 RUN apk add --update iputils
 COPY ./cmd/db/replica/init.sh /docker-entrypoint-initdb.d/init.sh
-CMD ["gosu", "postgres", "postgres"]
+# CMD ["gosu", "postgres", "postgres"]
