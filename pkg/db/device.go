@@ -10,6 +10,9 @@ import (
 
 func (db *Database) AddNewDevice(device models.DeviceDetail) error {
 	const q = `
+	INSERT INTO Device (
+		"Id", "Name", "",
+	)
 	`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)

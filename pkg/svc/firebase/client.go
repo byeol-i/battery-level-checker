@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	addr = flag.String("auth addr", "app_auth:50010", "auth grpc addr")
+	addr = flag.String("auth addr", "battery_auth:50010", "auth grpc addr")
 )
 
 func CallVerifyToken(token string) error {

@@ -6,8 +6,8 @@ services:
     hostname: master
     networks:
         - kafka-network
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
     volumes:
       - /media/pi/OS3/contaner-config/battery/data:/var/lib/postgresql/data
     environment:
@@ -24,8 +24,8 @@ services:
     image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
     networks:
         - kafka-network
-    # ports:
-    #   - "8432:5432"
+    ports:
+      - "8432:5432"
     volumes:
         - /home/data/battery/data:/var/lib/postgresql/data
     links:

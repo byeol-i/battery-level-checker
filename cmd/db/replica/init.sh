@@ -8,7 +8,7 @@ if [ ! -f ${PGDATA}/recovery.conf ]; then
   sleep 1
   rm -rf ${PGDATA}/*
 
-  PGPASSWORD="password" pg_basebackup -h master -p 5432 -D ${PGDATA} -U replicator -X stream -v
+  PGPASSWORD="TestPassword!" pg_basebackup -h master -p 5432 -D ${PGDATA} -U replicator -X stream -v
 
   # TODO: Do this with ALTER SYSTEM
   cat >> "${PGDATA}/postgresql.conf" <<EOF
@@ -21,7 +21,7 @@ EOF
 
   cat >> "${PGDATA}/recovery.conf" <<EOF
   standby_mode = 'on'
-  primary_conninfo = 'host=master port=5432 user=replicator password=password'
+  primary_conninfo = 'host=master port=5432 user=replicator password=TestPassword!'
   trigger_file = '/tmp/postgresql.trigger'
   #primary_slot_name = 'replica1'
 EOF

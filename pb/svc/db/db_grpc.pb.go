@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DBClient interface {
 	SignUp(ctx context.Context, in *SignUpReq, opts ...grpc.CallOption) (*SignUpRes, error)
 	AddDevice(ctx context.Context, in *AddDeviceReq, opts ...grpc.CallOption) (*AddDeviceRes, error)
+	RemoveDevice(ctx context.Context, in *RemoveDeviceReq, opts ...grpc.CallOption) (*RemoveDeviceRes, error)
 	GetDevices(ctx context.Context, in *GetDevicesReq, opts ...grpc.CallOption) (*GetDevicesRes, error)
 }
 
@@ -53,6 +54,15 @@ func (c *dBClient) AddDevice(ctx context.Context, in *AddDeviceReq, opts ...grpc
 	return out, nil
 }
 
+func (c *dBClient) RemoveDevice(ctx context.Context, in *RemoveDeviceReq, opts ...grpc.CallOption) (*RemoveDeviceRes, error) {
+	out := new(RemoveDeviceRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/RemoveDevice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dBClient) GetDevices(ctx context.Context, in *GetDevicesReq, opts ...grpc.CallOption) (*GetDevicesRes, error) {
 	out := new(GetDevicesRes)
 	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/GetDevices", in, out, opts...)
@@ -68,6 +78,7 @@ func (c *dBClient) GetDevices(ctx context.Context, in *GetDevicesReq, opts ...gr
 type DBServer interface {
 	SignUp(context.Context, *SignUpReq) (*SignUpRes, error)
 	AddDevice(context.Context, *AddDeviceReq) (*AddDeviceRes, error)
+	RemoveDevice(context.Context, *RemoveDeviceReq) (*RemoveDeviceRes, error)
 	GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error)
 	mustEmbedUnimplementedDBServer()
 }
@@ -81,6 +92,9 @@ func (UnimplementedDBServer) SignUp(context.Context, *SignUpReq) (*SignUpRes, er
 }
 func (UnimplementedDBServer) AddDevice(context.Context, *AddDeviceReq) (*AddDeviceRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDevice not implemented")
+}
+func (UnimplementedDBServer) RemoveDevice(context.Context, *RemoveDeviceReq) (*RemoveDeviceRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveDevice not implemented")
 }
 func (UnimplementedDBServer) GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
@@ -134,6 +148,24 @@ func _DB_AddDevice_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DB_RemoveDevice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveDeviceReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBServer).RemoveDevice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.svc.db.DB/RemoveDevice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBServer).RemoveDevice(ctx, req.(*RemoveDeviceReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DB_GetDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDevicesReq)
 	if err := dec(in); err != nil {
@@ -166,6 +198,10 @@ var DB_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddDevice",
 			Handler:    _DB_AddDevice_Handler,
+		},
+		{
+			MethodName: "RemoveDevice",
+			Handler:    _DB_RemoveDevice_Handler,
 		},
 		{
 			MethodName: "GetDevices",

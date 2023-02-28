@@ -32,6 +32,8 @@ func main() {
 }
 
 func realMain() error {
+
+	// get env from docker, not a config pkg
 	dbAddr := os.Getenv("DB_ADDR")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
