@@ -1,65 +1,65 @@
 version: "3.3"
 
 services:
-  apid:
-    #image: apid
-    image: ghcr.io/byeol-i/battery-level-checker--apid:latest
-    networks:
-      - kafka-network
-      - traefik-network
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.docker.network=traefik-network
-        - traefik.http.routers.battery-api.rule=Host(`api.${Domain1}`)
-        - traefik.http.routers.battery-api.middlewares=redirect-to-https
-        - traefik.http.routers.battery-api.entrypoints=web
-        - traefik.http.services.battery-api.loadbalancer.server.port=80
-        - traefik.http.routers.battery-api--https.rule=Host(`api.${Domain1}`)
-        - traefik.http.routers.battery-api--https.tls=true
-        - traefik.http.routers.battery-api--https.tls.certresolver=myresolver
-        - traefik.http.routers.battery-api--https.entrypoints=websecure
-      placement:
-        constraints: [node.role==worker]
-  auth:
-    image: ghcr.io/byeol-i/battery-level-checker--auth:latest
-    networks:
-      - kafka-network
-    secrets:
-      - firebase-key
-    environment:
-      - SWARM="true"
-    deploy:
-      placement:
-        constraints: [node.role==worker]
-  db:
-    image: ghcr.io/byeol-i/battery-level-checker--db:latest
-    networks:
-      - kafka-network
-    environment:
-      - POSTGRES_DB=battery
-      - POSTGRES_USER=table_admin
-      - POSTGRES_PASSWORD=HelloWorld
-      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
-    deploy:
-      placement:
-        constraints: [node.role==worker]
-  # consumer:
-  #     image: ghcr.io/byeol-i/battery-level-checker--consumer:latest
-  #     networks:
-  #         - kafka-network
-  #     deploy:
-  #         placement:
-  #             constraints: [node.role==worker]
+    apid:
+        #image: apid
+        image: ghcr.io/byeol-i/battery-level-checker--apid:latest
+        networks:
+            - kafka-network
+            - traefik-network
+        deploy:
+            labels:
+                - traefik.enable=true
+                - traefik.docker.network=traefik-network
+                - traefik.http.routers.battery-api.rule=Host(`api.${Domain1}`)
+                - traefik.http.routers.battery-api.middlewares=redirect-to-https
+                - traefik.http.routers.battery-api.entrypoints=web
+                - traefik.http.services.battery-api.loadbalancer.server.port=80
+                - traefik.http.routers.battery-api--https.rule=Host(`api.${Domain1}`)
+                - traefik.http.routers.battery-api--https.tls=true
+                - traefik.http.routers.battery-api--https.tls.certresolver=myresolver
+                - traefik.http.routers.battery-api--https.entrypoints=websecure
+            placement:
+                constraints: [node.role==worker]
+    auth:
+        image: ghcr.io/byeol-i/battery-level-checker--auth:latest
+        networks:
+            - kafka-network
+        secrets:
+            - firebase-key
+        environment:
+            - SWARM="true"
+        deploy:
+            placement:
+                constraints: [node.role==worker]
+    db:
+        image: ghcr.io/byeol-i/battery-level-checker--db:latest
+        networks:
+            - kafka-network
+        environment:
+            - POSTGRES_DB=battery_pgmaster
+            - POSTGRES_USER=table_admin
+            - POSTGRES_PASSWORD=HelloWorld
+            - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+        deploy:
+            placement:
+                constraints: [node.role==worker]
+    # consumer:
+    #     image: ghcr.io/byeol-i/battery-level-checker--consumer:latest
+    #     networks:
+    #         - kafka-network
+    #     deploy:
+    #         placement:
+    #             constraints: [node.role==worker]
 
 networks:
-  kafka-network:
-    external: true
-  traefik-network:
-    external: true
+    kafka-network:
+        external: true
+    traefik-network:
+        external: true
 
 secrets:
-  firebase-key:
-    file: ./conf/firebase/key.json
-  # firebase-key:
-  #     external: true
+    firebase-key:
+        file: ./conf/firebase/key.json
+    # firebase-key:
+    #     external: true

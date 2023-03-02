@@ -3,13 +3,13 @@ version: "3"
 services:
     pgmaster:
         image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
-        hostname: master
+        hostname: pgmaster
         networks:
             - kafka-network
         ports:
             - "5432:5432"
         volumes:
-            - /media/pi/OS3/contaner-config/battery/data:/var/lib/postgresql/data
+            - /media/pi/OS3/container-config/battery/data:/var/lib/postgresql/data
         environment:
             POSTGRES_DB: battery
             POSTGRES_USER: table_admin
@@ -28,8 +28,6 @@ services:
             - "8432:5432"
         volumes:
             - postgres-vol:/var/lib/postgresql/data
-        links:
-            - pgmaster:master
         environment:
             POSTGRES_DB: battery
             POSTGRES_USER: table_admin
