@@ -9,12 +9,12 @@ import (
 
 type DBSrv struct {
 	pb_svc_db.DBServer
-	db.Database
+	db db.Database
 }
 
 func NewDBServiceServer(database *db.Database) *DBSrv {
 	return &DBSrv{
-		Database: *database,
+		db: *database,
 	}
 }
 

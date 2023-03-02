@@ -51,7 +51,7 @@ func realMain() error {
 	wg, _ := errgroup.WithContext(context.Background())
 
 	wg.Go(func() error {
-		logger.Info("Starting grpc server...")
+		logger.Info("Starting grpc server..." + *grpcAddr)
 		err := grpcServer.Serve(gRPCL)
 		if err != nil {
 			log.Fatalf("failed to serve: %v", err)

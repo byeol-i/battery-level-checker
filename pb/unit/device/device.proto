@@ -13,5 +13,9 @@ message ID {
 }
 
 message Spec {
-
+    string name = 1;
+    string type = 2;
+    string os = 3;
+    string osVersion = 4;
+    string appVersion = 5;
 }

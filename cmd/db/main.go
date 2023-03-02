@@ -22,6 +22,7 @@ import (
 var (
 	grpcAddr = flag.String("addr", "0.0.0.0:50012", "grpc address")
 	usingTls = flag.Bool("tls", false, "using http2")
+	test = flag.Bool("test", false, "testing")
 )
 
 func main() {
@@ -32,6 +33,7 @@ func main() {
 }
 
 func realMain() error {
+	flag.Parse()
 
 	// get env from docker, not a config pkg
 	dbAddr := os.Getenv("DB_ADDR")
@@ -46,6 +48,14 @@ func realMain() error {
 		dbport = 8432
 	}
 
+	if *test {
+		dbAddr = "localhost"
+		dbport = 5432
+		dbUser = "table_admin"
+		dbPasswd = "HelloWorld"
+		dbName = "battery"
+	}
+
 	myDB, err := db.ConnectDB(&db.DBConfig{
 		Host:     dbAddr,
 		Port:     dbport,
@@ -58,6 +68,9 @@ func realMain() error {
 		// Sslkey : "keys/client.key",
 		// Sslsert : "keys/client.crt",
 	})
+	if err != nil {
+		return err
+	}
 
 	gRPCL, err := net.Listen("tcp", *grpcAddr)
 	if err != nil {
@@ -74,7 +87,7 @@ func realMain() error {
 	wg, _ := errgroup.WithContext(context.Background())
 
 	wg.Go(func() error {
-		logger.Info("Starting grpc server...")
+		logger.Info("Starting grpc server..." + *grpcAddr)
 		err := grpcServer.Serve(gRPCL)
 		if err != nil {
 			log.Fatalf("failed to serve: %v", err)

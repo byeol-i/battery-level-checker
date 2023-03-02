@@ -31,21 +31,29 @@ func NewBatteryController() *BatteryController {
 // @Router /battery/{deviceID} [get]
 func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Request) {
 	t := time.Now()
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		panic(err)
-	}
+	// uuid, err := uuid.NewV4()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	mock := &models.Device{
-		DeviceID:      uuid.String(),
-		Name:          req.URL.Path,
+	device := models.NewDevice()
+	
+	device.SetBatteryLevel(models.BatteryLevel{
 		Time:          &t,
 		BatteryLevel:  20,
 		BatteryStatus: "charging",
-	}
+	})
+
+	// mock := &models.Device{
+	// 	DeviceID:      uuid.String(),
+	// 	Name:          req.URL.Path,
+	// 	Time:          &t,
+	// 	BatteryLevel:  20,
+	// 	BatteryStatus: "charging",
+	// }
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", mock)
+	respondJSON(resp, http.StatusOK, "success", device.GetBatteryLevel())
 }
 
 // GetBatteryList godoc
@@ -64,31 +72,56 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 	if err != nil {
 		log.Printf("%v", err)
 	}
-	mock1 := &models.Device{
-		DeviceID:      uuid.String(),
-		Name:          "test1",
-		Time:          &t,
-		BatteryLevel:  20,
-		BatteryStatus: "charging",
+
+	mock1 := &models.DeviceImpl{
+		Id: uuid.String(),
+		BatteryLevel: models.BatteryLevel{
+			Time:          &t,
+			BatteryLevel:  20,
+			BatteryStatus: "charging",
+		},
+		Spec: models.Spec{
+			Name: "test1",
+			Type: "test",
+			OS: "test",
+			OSversion: "",
+			AppVersion: "",
+		},
 	}
 
-	mock2 := &models.Device{
-		DeviceID:      uuid.String(),
-		Name:          "test2",
-		Time:          &t,
-		BatteryLevel:  20,
-		BatteryStatus: "charging",
+	mock2 := &models.DeviceImpl{
+		Id: uuid.String(),
+		BatteryLevel: models.BatteryLevel{
+			Time:          &t,
+			BatteryLevel:  20,
+			BatteryStatus: "charging",
+		},
+		Spec: models.Spec{
+			Name: "test2",
+			Type: "test",
+			OS: "test",
+			OSversion: "",
+			AppVersion: "",
+		},
 	}
 
-	mock3 := &models.Device{
-		DeviceID:      uuid.String(),
-		Name:          "test3",
-		Time:          &t,
-		BatteryLevel:  20,
-		BatteryStatus: "charging",
+	mock3 := &models.DeviceImpl{
+		Id: uuid.String(),
+		BatteryLevel: models.BatteryLevel{
+			Time:          &t,
+			BatteryLevel:  20,
+			BatteryStatus: "charging",
+		},
+		Spec: models.Spec{
+			Name: "test3",
+			Type: "test",
+			OS: "test",
+			OSversion: "",
+			AppVersion: "",
+		},
 	}
 
-	data := []*models.Device{
+	data := []*models.DeviceImpl{
 		mock1,
 		mock2,
 		mock3,

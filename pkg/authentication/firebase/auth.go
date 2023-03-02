@@ -143,11 +143,12 @@ func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*aut
 			return nil, result.Error
 		}
 
-		// if _, ok := result.Result.(*auth.Token); ok {
-		// 	return nil, errors.New("Type error")
-		// }
+		if _, ok := result.Result.(*auth.Token); ok {
+			if (!ok) {
+				return nil, errors.New("Type error")
+			}
+		}
 
-		log.Println(result.Result)
 		return result.Result.(*auth.Token), nil
 	}
 }

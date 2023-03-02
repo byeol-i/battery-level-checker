@@ -60,24 +60,59 @@ func (s AuthSrv) CreateCustomToken(ctx context.Context, in *pb_svc_firebase.Crea
 	}, nil
 }
 
-func (s AuthSrv) VerifyToken(ctx context.Context, in *pb_svc_firebase.VerifyTokenReq) (*pb_svc_firebase.VerifyTokenRes, error) {
+type Res struct {
+	Uid string `json:"uid"`
+}
+
+func (s AuthSrv) VerifyIdToken(ctx context.Context, in *pb_svc_firebase.VerifyIdTokenReq) (*pb_svc_firebase.VerifyIdTokenRes, error) {
 	result, err := s.app.VerifyIDToken(ctx, in.Token)
 	if err != nil {
 		logger.Error("Can't verify token", zap.Error(err))
-		return &pb_svc_firebase.VerifyTokenRes{
+		return &pb_svc_firebase.VerifyIdTokenRes{
 			Error: err.Error(),
 		}, err
 	}
 	jsonRes, err := json.Marshal(result)
 	if err != nil {
-		return &pb_svc_firebase.VerifyTokenRes{
+		return &pb_svc_firebase.VerifyIdTokenRes{
 			// Result: "",
 			Error: err.Error(),
 		}, err
 	}
 
-	return &pb_svc_firebase.VerifyTokenRes{
+	return &pb_svc_firebase.VerifyIdTokenRes{
 		Result: string(jsonRes),
+		// Error:  "",
+	}, nil
+}
+
+func (s AuthSrv) GetUserIdByIdToken(ctx context.Context, in *pb_svc_firebase.GetUserIdByIdTokenReq) (*pb_svc_firebase.GetUserIdByIdTokenRes, error) {
+	result, err := s.app.VerifyIDToken(ctx, in.Token)
+	if err != nil {
+		logger.Error("Can't verify token", zap.Error(err))
+		return &pb_svc_firebase.GetUserIdByIdTokenRes{
+			Error: err.Error(),
+		}, err
+	}
+
+	jsonRes, err := json.Marshal(result)
+	if err != nil {
+		return &pb_svc_firebase.GetUserIdByIdTokenRes{
+			// Result: "",
+			Error: err.Error(),
+		}, err
+	}
+	res := Res{}
+	err = json.Unmarshal([]byte(jsonRes), &res)
+	if err != nil {
+		return &pb_svc_firebase.GetUserIdByIdTokenRes{
+			// Result: "",
+			Error: err.Error(),
+		}, err
+	}
+
+	return &pb_svc_firebase.GetUserIdByIdTokenRes{
+		Result: res.Uid,
 		// Error:  "",
 	}, nil
 }

@@ -26,14 +26,14 @@ func CallVerifyToken(token string) error {
 
 	client := pb_svc_firebase.NewFirebaseClient(conn)
 
-	in := &pb_svc_firebase.VerifyTokenReq{
+	in := &pb_svc_firebase.VerifyIdTokenReq{
 		Token: token,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 
-	_, err = client.VerifyToken(ctx, in)
+	_, err = client.VerifyIdToken(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
 		return err

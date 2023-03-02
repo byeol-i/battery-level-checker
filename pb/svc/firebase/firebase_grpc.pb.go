@@ -24,7 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type FirebaseClient interface {
 	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserRes, error)
 	CreateCustomToken(ctx context.Context, in *CreateCustomTokenReq, opts ...grpc.CallOption) (*CreateCustomTokenRes, error)
-	VerifyToken(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*VerifyTokenRes, error)
+	VerifyIdToken(ctx context.Context, in *VerifyIdTokenReq, opts ...grpc.CallOption) (*VerifyIdTokenRes, error)
+	GetUserIdByIdToken(ctx context.Context, in *GetUserIdByIdTokenReq, opts ...grpc.CallOption) (*GetUserIdByIdTokenRes, error)
 }
 
 type firebaseClient struct {
@@ -53,9 +54,18 @@ func (c *firebaseClient) CreateCustomToken(ctx context.Context, in *CreateCustom
 	return out, nil
 }
 
-func (c *firebaseClient) VerifyToken(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*VerifyTokenRes, error) {
-	out := new(VerifyTokenRes)
-	err := c.cc.Invoke(ctx, "/pb.svc.firebase.Firebase/VerifyToken", in, out, opts...)
+func (c *firebaseClient) VerifyIdToken(ctx context.Context, in *VerifyIdTokenReq, opts ...grpc.CallOption) (*VerifyIdTokenRes, error) {
+	out := new(VerifyIdTokenRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.firebase.Firebase/VerifyIdToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firebaseClient) GetUserIdByIdToken(ctx context.Context, in *GetUserIdByIdTokenReq, opts ...grpc.CallOption) (*GetUserIdByIdTokenRes, error) {
+	out := new(GetUserIdByIdTokenRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.firebase.Firebase/GetUserIdByIdToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +78,8 @@ func (c *firebaseClient) VerifyToken(ctx context.Context, in *VerifyTokenReq, op
 type FirebaseServer interface {
 	GetUser(context.Context, *GetUserReq) (*GetUserRes, error)
 	CreateCustomToken(context.Context, *CreateCustomTokenReq) (*CreateCustomTokenRes, error)
-	VerifyToken(context.Context, *VerifyTokenReq) (*VerifyTokenRes, error)
+	VerifyIdToken(context.Context, *VerifyIdTokenReq) (*VerifyIdTokenRes, error)
+	GetUserIdByIdToken(context.Context, *GetUserIdByIdTokenReq) (*GetUserIdByIdTokenRes, error)
 	mustEmbedUnimplementedFirebaseServer()
 }
 
@@ -82,8 +93,11 @@ func (UnimplementedFirebaseServer) GetUser(context.Context, *GetUserReq) (*GetUs
 func (UnimplementedFirebaseServer) CreateCustomToken(context.Context, *CreateCustomTokenReq) (*CreateCustomTokenRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCustomToken not implemented")
 }
-func (UnimplementedFirebaseServer) VerifyToken(context.Context, *VerifyTokenReq) (*VerifyTokenRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
+func (UnimplementedFirebaseServer) VerifyIdToken(context.Context, *VerifyIdTokenReq) (*VerifyIdTokenRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyIdToken not implemented")
+}
+func (UnimplementedFirebaseServer) GetUserIdByIdToken(context.Context, *GetUserIdByIdTokenReq) (*GetUserIdByIdTokenRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserIdByIdToken not implemented")
 }
 func (UnimplementedFirebaseServer) mustEmbedUnimplementedFirebaseServer() {}
 
@@ -134,20 +148,38 @@ func _Firebase_CreateCustomToken_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Firebase_VerifyToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyTokenReq)
+func _Firebase_VerifyIdToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyIdTokenReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FirebaseServer).VerifyToken(ctx, in)
+		return srv.(FirebaseServer).VerifyIdToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.svc.firebase.Firebase/VerifyToken",
+		FullMethod: "/pb.svc.firebase.Firebase/VerifyIdToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FirebaseServer).VerifyToken(ctx, req.(*VerifyTokenReq))
+		return srv.(FirebaseServer).VerifyIdToken(ctx, req.(*VerifyIdTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Firebase_GetUserIdByIdToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserIdByIdTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FirebaseServer).GetUserIdByIdToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.svc.firebase.Firebase/GetUserIdByIdToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FirebaseServer).GetUserIdByIdToken(ctx, req.(*GetUserIdByIdTokenReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,8 +200,12 @@ var Firebase_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Firebase_CreateCustomToken_Handler,
 		},
 		{
-			MethodName: "VerifyToken",
-			Handler:    _Firebase_VerifyToken_Handler,
+			MethodName: "VerifyIdToken",
+			Handler:    _Firebase_VerifyIdToken_Handler,
+		},
+		{
+			MethodName: "GetUserIdByIdToken",
+			Handler:    _Firebase_GetUserIdByIdToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
