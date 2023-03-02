@@ -21,7 +21,7 @@ EOF
 
   cat >> "${PGDATA}/recovery.conf" <<EOF
   standby_mode = 'on'
-  primary_conninfo = 'host=battery_pgmaster port=5432 user=replicator password=password'
+  primary_conninfo = 'host=pgmaster port=5432 user=replicator password=password'
   trigger_file = '/tmp/postgresql.trigger'
   #primary_slot_name = 'replica1'
 EOF
