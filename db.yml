@@ -22,12 +22,18 @@ services:
                     - node.role == manager
     pgslave:
         image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
+        # command:
+        #     [
+        #         "sh",
+        #         "-c",
+        #         "while ! pg_isready -h pgmaster; do sleep 2; done; /bin/bash /docker-entrypoint-initdb.d/init.sh",
+        #     ]
         networks:
             - kafka-network
         ports:
             - "8432:5432"
         volumes:
-            - postgres-vol:/var/lib/postgresql/data
+            - postgres-vol:/var/lib/postgresql/data:z
         environment:
             POSTGRES_DB: battery
             POSTGRES_USER: table_admin
