@@ -9,8 +9,13 @@ services:
             - kafka-network
         ports:
             - "5432:5432"
+<<<<<<< HEAD
         volumes:
             - pgmaster-data:/var/lib/postgresql/data
+=======
+        # volumes:
+        #     - pgmaster-data:/var/lib/postgresql/data
+>>>>>>> 1dbbe89bca8f25fdfc4a24eb85e2aad150a4fed7
         #   - /media/pi/OS3/contaner-config/battery/data:/var/lib/postgresql/data
         environment:
             POSTGRES_DB: battery
@@ -30,7 +35,11 @@ services:
         ports:
             - "8432:5432"
         volumes:
+<<<<<<< HEAD
             - pgslave-data:/var/lib/postgresql/data
+=======
+            - pgslave-data:/var/lib/postgresql/data:z
+>>>>>>> 1dbbe89bca8f25fdfc4a24eb85e2aad150a4fed7
         links:
             - pgmaster:master
         environment:
