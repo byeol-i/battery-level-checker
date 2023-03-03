@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package pb.unit.common;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/unit/common";
+
+message ReturnMsg {
+    string result = 1;
+    string error = 2;
+}

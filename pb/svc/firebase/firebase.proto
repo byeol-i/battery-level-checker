@@ -3,6 +3,9 @@ syntax = "proto3";
 package pb.svc.firebase;
 option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/firebase";
 
+
+import "pb/unit/common/msg.proto";
+
 service Firebase {
     rpc GetUser(GetUserReq) returns (GetUserRes);
     rpc CreateCustomToken(CreateCustomTokenReq) returns (CreateCustomTokenRes);
@@ -15,8 +18,7 @@ message VerifyIdTokenReq {
 }
 
 message VerifyIdTokenRes {
-    string result = 1;
-    string error = 2;
+    unit.common.ReturnMsg Result = 1;
 }
 
 message CreateCustomTokenReq {
@@ -25,6 +27,7 @@ message CreateCustomTokenReq {
 
 message CreateCustomTokenRes {
     string token = 1;
+    string error = 2;
 }
 
 message GetUserReq {
@@ -32,8 +35,7 @@ message GetUserReq {
 }
 
 message GetUserRes {
-    string result = 1;
-    string error = 2;
+    unit.common.ReturnMsg Result = 1;
 }
 
 message GetUserIdByIdTokenReq {
@@ -41,6 +43,5 @@ message GetUserIdByIdTokenReq {
 }
 
 message GetUserIdByIdTokenRes {
-    string result = 1;
-    string error = 2;
+    unit.common.ReturnMsg Result = 1;
 }

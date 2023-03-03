@@ -1,7 +1,6 @@
 package router
 
 import (
-	"log"
 	"net/http"
 	"regexp"
 
@@ -44,7 +43,8 @@ func (rtr *Router) AddRule(name string, method, pattern string, handler http.Han
 		handler: handler,
 	}
 	rtr.rules = append(rtr.rules, newRule)
-	log.Println("add router rule :", name, pattern)
+	logger.Info("add router rule :", zap.String("name", name), zap.String("pattern", pattern))
+	// log.Println("add router rule :", name, pattern)
 }
 
 func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -78,8 +78,3 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	rtr.defaultHandler.ServeHTTP(resp, req)
 }
 
-func InitialRouter() *Router {
-	rtr := NewRouter(nil, "di")
-
-	return rtr
-}

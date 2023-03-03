@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	pb_svc_firebase "github.com/byeol-i/battery-level-checker/pb/svc/firebase"
+	pb_unit_common "github.com/byeol-i/battery-level-checker/pb/unit/common"
 	auth "github.com/byeol-i/battery-level-checker/pkg/authentication/firebase"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"go.uber.org/zap"
@@ -28,7 +29,9 @@ func (s AuthSrv) GetUser(ctx context.Context, in *pb_svc_firebase.GetUserReq) (*
 	if err != nil {
 		return &pb_svc_firebase.GetUserRes{
 			// Result: "",
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 
@@ -36,12 +39,16 @@ func (s AuthSrv) GetUser(ctx context.Context, in *pb_svc_firebase.GetUserReq) (*
 	if err != nil {
 		return &pb_svc_firebase.GetUserRes{
 			// Result: "",
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 
 	return &pb_svc_firebase.GetUserRes{
-		Result: string(jsonRes),
+		Result: &pb_unit_common.ReturnMsg{
+			Result: string(jsonRes),
+		},	
 	}, nil
 }
 
@@ -69,19 +76,25 @@ func (s AuthSrv) VerifyIdToken(ctx context.Context, in *pb_svc_firebase.VerifyId
 	if err != nil {
 		logger.Error("Can't verify token", zap.Error(err))
 		return &pb_svc_firebase.VerifyIdTokenRes{
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 	jsonRes, err := json.Marshal(result)
 	if err != nil {
 		return &pb_svc_firebase.VerifyIdTokenRes{
 			// Result: "",
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 
 	return &pb_svc_firebase.VerifyIdTokenRes{
-		Result: string(jsonRes),
+		Result: &pb_unit_common.ReturnMsg{
+			Result: string(jsonRes),
+		},	
 		// Error:  "",
 	}, nil
 }
@@ -91,7 +104,9 @@ func (s AuthSrv) GetUserIdByIdToken(ctx context.Context, in *pb_svc_firebase.Get
 	if err != nil {
 		logger.Error("Can't verify token", zap.Error(err))
 		return &pb_svc_firebase.GetUserIdByIdTokenRes{
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 
@@ -99,7 +114,9 @@ func (s AuthSrv) GetUserIdByIdToken(ctx context.Context, in *pb_svc_firebase.Get
 	if err != nil {
 		return &pb_svc_firebase.GetUserIdByIdTokenRes{
 			// Result: "",
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 	res := Res{}
@@ -107,12 +124,16 @@ func (s AuthSrv) GetUserIdByIdToken(ctx context.Context, in *pb_svc_firebase.Get
 	if err != nil {
 		return &pb_svc_firebase.GetUserIdByIdTokenRes{
 			// Result: "",
-			Error: err.Error(),
+			Result: &pb_unit_common.ReturnMsg{
+				Error: err.Error(),
+			},	
 		}, err
 	}
 
 	return &pb_svc_firebase.GetUserIdByIdTokenRes{
-		Result: res.Uid,
+		Result: &pb_unit_common.ReturnMsg{
+			Result: res.Uid,
+		},	
 		// Error:  "",
 	}, nil
 }

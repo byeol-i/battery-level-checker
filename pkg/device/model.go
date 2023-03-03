@@ -1,23 +1,13 @@
-package models
+package device
 
 import (
 	"time"
 
-	"github.com/byeol-i/battery-level-checker/pkg/logger"
-
-	// pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
-	"github.com/go-playground/validator"
-	"go.uber.org/zap"
+	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
 )
 
 type Device struct {
-	DeviceInfo
-	// DeviceImpl
-	// Spec
-	// BatteryLevel
-	// Spec Spec
-	// BatteryLevel BatteryLevel
-	// Validator error
+	DeviceInterface
 }
 
 type DeviceImpl struct {
@@ -26,7 +16,7 @@ type DeviceImpl struct {
 	Spec Spec
 }
 
-type DeviceInfo interface {
+type DeviceInterface interface {
 	GetDeviceSpec() Spec
 	GetBatteryLevel() BatteryLevel
 	SetSpec(Spec)
@@ -46,7 +36,23 @@ type Spec struct {
 	OS         string `validate:"required" json:"OS" example:"IOS"`
 	OSversion  string `validate:"required" json:"OSversion" example:"99.192"`
 	AppVersion string `validate:"required" json:"appVersion" example:"0.0.1"`
+	ToProtoModel
 	// PushToken  string `json:"pushToken" example:"abcd"`
+}
+
+type ToProtoModel interface {
+	ProtoSpec() pb_unit_device.Spec
+	ProtoBatteryLevel(BatteryLevel) pb_unit_device.BatteryLevel
+}
+
+func (spec Spec) ProtoSpec() pb_unit_device.Spec {
+	return pb_unit_device.Spec{
+		Name: spec.Name,
+		Type: spec.Type,
+		Os: spec.OS,
+		OsVersion: spec.OSversion,
+		AppVersion: spec.AppVersion,
+	}
 }
 
 type Id struct {
@@ -57,31 +63,6 @@ func NewDevice() *Device {
 	m := &Device{}
 
 	return m
-}
-
-func SpecValidator(spec *Spec) error {
-	var validate *validator.Validate
-
-	err := validate.Struct(spec)
-	if err != nil {
-		logger.Error("Device's Spec is not valid", zap.Any("spec", spec))
-		return err
-	}
-
-	return nil
-}
-
-
-func BatteryLevelValidator(level *BatteryLevel) error {
-	var validate *validator.Validate
-
-	err := validate.Struct(level)
-	if err != nil {
-		logger.Error("Device's BatteryLevel is not valid", zap.Any("BatteryLevel", level))
-		return err
-	}
-
-	return nil
 }
 
 
@@ -102,16 +83,3 @@ func (d *DeviceImpl) SetSpec(spec Spec) {
 	d.Spec = spec
 }
 
-
-
-// func DeviceDetailValidation(deviceDetail *DeviceDetail) error {
-// 	var validate *validator.Validate
-
-// 	err := validate.Struct(deviceDetail)
-// 	if err != nil {
-// 		logger.Error("deviceDetail models is not valid", zap.Any("deviceDetail", deviceDetail))
-// 		return err
-// 	}
-
-// 	return nil
-// }

@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
-	"github.com/byeol-i/battery-level-checker/pkg/models"
+
+	// "github.com/byeol-i/battery-level-checker/pkg/models"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	"github.com/gofrs/uuid"
 )
@@ -36,9 +38,9 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	// 	panic(err)
 	// }
 
-	device := models.NewDevice()
+	newDevice := device.NewDevice()
 	
-	device.SetBatteryLevel(models.BatteryLevel{
+	newDevice.SetBatteryLevel(device.BatteryLevel{
 		Time:          &t,
 		BatteryLevel:  20,
 		BatteryStatus: "charging",
@@ -53,7 +55,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	// }
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", device.GetBatteryLevel())
+	respondJSON(resp, http.StatusOK, "success", newDevice.GetBatteryLevel())
 }
 
 // GetBatteryList godoc
@@ -73,14 +75,14 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 		log.Printf("%v", err)
 	}
 
-	mock1 := &models.DeviceImpl{
+	mock1 := &device.DeviceImpl{
 		Id: uuid.String(),
-		BatteryLevel: models.BatteryLevel{
+		BatteryLevel: device.BatteryLevel{
 			Time:          &t,
 			BatteryLevel:  20,
 			BatteryStatus: "charging",
 		},
-		Spec: models.Spec{
+		Spec: device.Spec{
 			Name: "test1",
 			Type: "test",
 			OS: "test",
@@ -89,14 +91,14 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 		},
 	}
 
-	mock2 := &models.DeviceImpl{
+	mock2 := &device.DeviceImpl{
 		Id: uuid.String(),
-		BatteryLevel: models.BatteryLevel{
+		BatteryLevel: device.BatteryLevel{
 			Time:          &t,
 			BatteryLevel:  20,
 			BatteryStatus: "charging",
 		},
-		Spec: models.Spec{
+		Spec: device.Spec{
 			Name: "test2",
 			Type: "test",
 			OS: "test",
@@ -105,14 +107,14 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 		},
 	}
 
-	mock3 := &models.DeviceImpl{
+	mock3 := &device.DeviceImpl{
 		Id: uuid.String(),
-		BatteryLevel: models.BatteryLevel{
+		BatteryLevel: device.BatteryLevel{
 			Time:          &t,
 			BatteryLevel:  20,
 			BatteryStatus: "charging",
 		},
-		Spec: models.Spec{
+		Spec: device.Spec{
 			Name: "test3",
 			Type: "test",
 			OS: "test",
@@ -121,7 +123,7 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 		},
 	}
 
-	data := []*models.DeviceImpl{
+	data := []*device.DeviceImpl{
 		mock1,
 		mock2,
 		mock3,

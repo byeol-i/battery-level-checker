@@ -199,7 +199,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DeviceDetail"
+                            "$ref": "#/definitions/models.Spec"
                         }
                     },
                     {
@@ -275,67 +275,8 @@ const docTemplate = `{
     "definitions": {
         "models.Device": {
             "type": "object",
-            "required": [
-                "batteryLevel",
-                "batteryStatus",
-                "deviceID",
-                "name",
-                "time"
-            ],
             "properties": {
-                "batteryLevel": {
-                    "type": "integer",
-                    "example": 50
-                },
-                "batteryStatus": {
-                    "type": "string",
-                    "example": "charging"
-                },
-                "deviceID": {
-                    "type": "string",
-                    "example": "f782fd74-d264-4901-8df5-c905f9df08db"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "iphone 99xs"
-                },
-                "time": {
-                    "type": "string",
-                    "example": "2006-01-02 15:04:05"
-                }
-            }
-        },
-        "models.DeviceDetail": {
-            "type": "object",
-            "properties": {
-                "OS": {
-                    "type": "string",
-                    "example": "IOS"
-                },
-                "OSversion": {
-                    "type": "string",
-                    "example": "99.192"
-                },
-                "appVersion": {
-                    "type": "string",
-                    "example": "0.0.1"
-                },
-                "deviceID": {
-                    "type": "string",
-                    "example": "f782fd74-d264-4901-8df5-c905f9df08db"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "iphone 99xs"
-                },
-                "pushToken": {
-                    "type": "string",
-                    "example": "abcd"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "phone"
-                }
+                "DeviceInfo": {}
             }
         },
         "models.JSONfailResult": {
@@ -363,6 +304,38 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "success"
+                }
+            }
+        },
+        "models.Spec": {
+            "type": "object",
+            "required": [
+                "OS",
+                "OSversion",
+                "appVersion",
+                "name",
+                "type"
+            ],
+            "properties": {
+                "OS": {
+                    "type": "string",
+                    "example": "IOS"
+                },
+                "OSversion": {
+                    "type": "string",
+                    "example": "99.192"
+                },
+                "appVersion": {
+                    "type": "string",
+                    "example": "0.0.1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "iphone 99xs"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "phone"
                 }
             }
         }

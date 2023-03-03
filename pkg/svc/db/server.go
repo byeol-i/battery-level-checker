@@ -4,6 +4,7 @@ import (
 	"context"
 
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
+
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 )
 
@@ -47,5 +48,23 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	return &pb_svc_db.GetDevicesRes{}, nil
+	// raws, err := s.db.GetDevices(in.Id)
+	// if err != nil {
+	// 	return &pb_svc_db.GetDevicesRes{
+	// 		Error: err.Error(),
+	// 	}, err
+	// }
+
+	// var devices []*pb_unit_device.Device
+	// for _, v := range *raws {
+	// 	device := &pb_unit_device.Device{
+	// 		Spec: v.GetDeviceSpec().ToProtoModel(),
+	// 	}
+
+	// }
+
+
+	return &pb_svc_db.GetDevicesRes{
+		// Devices: devices,
+	}, nil
 }

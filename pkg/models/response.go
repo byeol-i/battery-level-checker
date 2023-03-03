@@ -6,7 +6,7 @@ type JSONresult struct {
 	Data interface{} `json:"data"`
 }
 
-/** just using swag doc */
+/** just using for define swag doc */
 
 type JSONsuccessResult struct {
 	Code int `json:"code" example:"200"`

@@ -26,6 +26,8 @@ type DBClient interface {
 	AddDevice(ctx context.Context, in *AddDeviceReq, opts ...grpc.CallOption) (*AddDeviceRes, error)
 	RemoveDevice(ctx context.Context, in *RemoveDeviceReq, opts ...grpc.CallOption) (*RemoveDeviceRes, error)
 	GetDevices(ctx context.Context, in *GetDevicesReq, opts ...grpc.CallOption) (*GetDevicesRes, error)
+	// rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
+	UpdateBatteryLevel(ctx context.Context, in *UpdateBatteryLevelReq, opts ...grpc.CallOption) (*UpdateBatteryLevelRes, error)
 }
 
 type dBClient struct {
@@ -72,6 +74,15 @@ func (c *dBClient) GetDevices(ctx context.Context, in *GetDevicesReq, opts ...gr
 	return out, nil
 }
 
+func (c *dBClient) UpdateBatteryLevel(ctx context.Context, in *UpdateBatteryLevelReq, opts ...grpc.CallOption) (*UpdateBatteryLevelRes, error) {
+	out := new(UpdateBatteryLevelRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/UpdateBatteryLevel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DBServer is the server API for DB service.
 // All implementations must embed UnimplementedDBServer
 // for forward compatibility
@@ -80,6 +91,8 @@ type DBServer interface {
 	AddDevice(context.Context, *AddDeviceReq) (*AddDeviceRes, error)
 	RemoveDevice(context.Context, *RemoveDeviceReq) (*RemoveDeviceRes, error)
 	GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error)
+	// rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
+	UpdateBatteryLevel(context.Context, *UpdateBatteryLevelReq) (*UpdateBatteryLevelRes, error)
 	mustEmbedUnimplementedDBServer()
 }
 
@@ -98,6 +111,9 @@ func (UnimplementedDBServer) RemoveDevice(context.Context, *RemoveDeviceReq) (*R
 }
 func (UnimplementedDBServer) GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
+}
+func (UnimplementedDBServer) UpdateBatteryLevel(context.Context, *UpdateBatteryLevelReq) (*UpdateBatteryLevelRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBatteryLevel not implemented")
 }
 func (UnimplementedDBServer) mustEmbedUnimplementedDBServer() {}
 
@@ -184,6 +200,24 @@ func _DB_GetDevices_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DB_UpdateBatteryLevel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBatteryLevelReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBServer).UpdateBatteryLevel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.svc.db.DB/UpdateBatteryLevel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBServer).UpdateBatteryLevel(ctx, req.(*UpdateBatteryLevelReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DB_ServiceDesc is the grpc.ServiceDesc for DB service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +240,10 @@ var DB_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDevices",
 			Handler:    _DB_GetDevices_Handler,
+		},
+		{
+			MethodName: "UpdateBatteryLevel",
+			Handler:    _DB_UpdateBatteryLevel_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

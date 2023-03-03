@@ -5,10 +5,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/byeol-i/battery-level-checker/pkg/models"
+	"github.com/byeol-i/battery-level-checker/pkg/device"
+	// "github.com/byeol-i/battery-level-checker/pb/unit/device"
 )
 
-func (db *Database) AddNewDevice(device models.Device) error {
+func (db *Database) AddNewDevice(device device.Spec) error {
 	const q = `
 	INSERT INTO Device (
 		"Id", "Name", "",
@@ -25,21 +26,21 @@ func (db *Database) AddNewDevice(device models.Device) error {
 }
 
 
-func (db *Database) RemoveDevice(device models.Id) error {
+func (db *Database) RemoveDevice(deviceId device.Id) error {
 	const q = `
 	`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	res := db.Conn.QueryRowContext(ctx, q)
+	res := db.Conn.QueryRowContext(ctx, q, deviceId)
 	if res != nil {
 		return errors.New(res.Err().Error())
 	}
 	return nil
 }
 
-func (db *Database) GetDevices(uid string) (*[]models.Device, error) {
+func (db *Database) GetDevices(uid string) (*[]device.Device, error) {
 	const q = `
 	SELECT * FROM Device 
 	WHERE "userId" = $1
@@ -60,7 +61,7 @@ func (db *Database) GetDevices(uid string) (*[]models.Device, error) {
 	return nil, nil
 }
 
-func (db *Database) GetDevice(deviceId string) (*models.Device, error) {
+func (db *Database) GetDevice(deviceId string) (*device.Spec, error) {
 	const q = `
 	SELECT * FROM "Device"
 	`

@@ -2,51 +2,7 @@ basePath: /api/v1
 definitions:
   models.Device:
     properties:
-      batteryLevel:
-        example: 50
-        type: integer
-      batteryStatus:
-        example: charging
-        type: string
-      deviceID:
-        example: f782fd74-d264-4901-8df5-c905f9df08db
-        type: string
-      name:
-        example: iphone 99xs
-        type: string
-      time:
-        example: "2006-01-02 15:04:05"
-        type: string
-    required:
-    - batteryLevel
-    - batteryStatus
-    - deviceID
-    - name
-    - time
-    type: object
-  models.DeviceDetail:
-    properties:
-      OS:
-        example: IOS
-        type: string
-      OSversion:
-        example: "99.192"
-        type: string
-      appVersion:
-        example: 0.0.1
-        type: string
-      deviceID:
-        example: f782fd74-d264-4901-8df5-c905f9df08db
-        type: string
-      name:
-        example: iphone 99xs
-        type: string
-      pushToken:
-        example: abcd
-        type: string
-      type:
-        example: phone
-        type: string
+      DeviceInfo: {}
     type: object
   models.JSONfailResult:
     properties:
@@ -67,6 +23,30 @@ definitions:
       message:
         example: success
         type: string
+    type: object
+  models.Spec:
+    properties:
+      OS:
+        example: IOS
+        type: string
+      OSversion:
+        example: "99.192"
+        type: string
+      appVersion:
+        example: 0.0.1
+        type: string
+      name:
+        example: iphone 99xs
+        type: string
+      type:
+        example: phone
+        type: string
+    required:
+    - OS
+    - OSversion
+    - appVersion
+    - name
+    - type
     type: object
 host: localhost
 info:
@@ -190,7 +170,7 @@ paths:
         name: deviceInfo
         required: true
         schema:
-          $ref: '#/definitions/models.DeviceDetail'
+          $ref: '#/definitions/models.Spec'
       - description: With the bearer started
         in: header
         name: Authorization

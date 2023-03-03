@@ -22,27 +22,13 @@ services:
                     - node.role == manager
     pgslave:
         image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
-<<<<<<< HEAD
-        command:
-            [
-                "sh",
-                "-c",
-                "while ! pg_isready -h pgmaster; do sleep 2; done; /bin/bash /docker-entrypoint-initdb.d/init.sh",
-            ]
-=======
-        # command:
-        #     [
-        #         "sh",
-        #         "-c",
-        #         "while ! pg_isready -h pgmaster; do sleep 2; done; /bin/bash /docker-entrypoint-initdb.d/init.sh",
-        #     ]
->>>>>>> 1dbbe89bca8f25fdfc4a24eb85e2aad150a4fed7
         networks:
             - kafka-network
         ports:
             - "8432:5432"
         volumes:
-            - postgres-vol:/var/lib/postgresql/data:z
+            # must be empty, when deleting postgres file in container shell, permission should be stuck...
+            - /home/data/battery/data:/var/lib/postgresql/data:z
         environment:
             POSTGRES_DB: battery
             POSTGRES_USER: table_admin

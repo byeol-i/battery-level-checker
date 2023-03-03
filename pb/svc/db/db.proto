@@ -4,20 +4,23 @@ package pb.svc.db;
 option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/db";
 
 import "pb/unit/device/device.proto";
+import "pb/unit/common/msg.proto";
 
 service DB {
     rpc SignUp(SignUpReq) returns (SignUpRes);
     rpc AddDevice(AddDeviceReq) returns (AddDeviceRes);
     rpc RemoveDevice(RemoveDeviceReq) returns (RemoveDeviceRes);
     rpc GetDevices(GetDevicesReq) returns (GetDevicesRes);
+    // rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
+    rpc UpdateBatteryLevel(UpdateBatteryLevelReq) returns (UpdateBatteryLevelRes);
 }
 
 message SignUpReq {
-    string uid = 1;
+    string id = 1;
 }
 
 message SignUpRes {
-    string result = 1;
+    unit.common.ReturnMsg Result = 1;
     string error = 2;
 }
 
@@ -26,22 +29,34 @@ message AddDeviceReq {
 }
 
 message AddDeviceRes {
-    string result = 1;
+    unit.common.ReturnMsg Result = 1;
     string error = 2;
 }
 
 message GetDevicesReq {
-    string uid = 1;
+    string id = 1;
+    // decided send include Spec
+    bool detailed = 2;
 }
 
 message GetDevicesRes {
     repeated unit.device.Device Devices = 1;
+    string error = 2;
 }
 
 message RemoveDeviceReq {
-
+    string id = 1;
 }
 
 message RemoveDeviceRes {
+    unit.common.ReturnMsg Result = 1;
+}
 
+message UpdateBatteryLevelReq {
+    string id = 1;
+    unit.device.Device BatteryLevel = 2;
+}
+
+message UpdateBatteryLevelRes {
+    unit.common.ReturnMsg Result = 1;
 }
