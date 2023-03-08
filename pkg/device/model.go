@@ -1,6 +1,7 @@
 package device
 
 import (
+	"errors"
 	"time"
 
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
@@ -8,20 +9,26 @@ import (
 
 type Device struct {
 	DeviceInterface
-}
-
-type DeviceImpl struct {
-	Id string
-	BatteryLevel BatteryLevel
-	Spec Spec
+	DeviceImpl
 }
 
 type DeviceInterface interface {
-	GetDeviceSpec() Spec
-	GetBatteryLevel() BatteryLevel
-	SetSpec(Spec)
-	SetBatteryLevel(BatteryLevel)
+	GetDeviceSpec() *DeviceSpec
+	GetProtoDeviceSpec() *pb_unit_device.Spec
+	GetBatteryLevel() *BatteryLevel
+	SetDeviceSpec(*DeviceSpec) error
+	SetBatteryLevel(*BatteryLevel)
+	SetDeviceId(string)
+	GetDeviceId() string
 	Validator() error
+	Clone() *Device
+	ToProto() (*pb_unit_device.Device, error)
+}
+
+type DeviceImpl struct {
+	Id string `validate:"required" json:"id" example:"1"`
+	BatteryLevel BatteryLevel
+	Spec DeviceSpec
 }
 
 type BatteryLevel struct {	
@@ -29,30 +36,13 @@ type BatteryLevel struct {
 	BatteryLevel  int        `validate:"required" json:"batteryLevel" example:"50"`
 	BatteryStatus string     `validate:"required" json:"batteryStatus" example:"charging"`
 }
-
-type Spec struct {
+ 
+type DeviceSpec struct {
 	Name       string `validate:"required" json:"name" example:"iphone 99xs"`
 	Type       string `validate:"required" json:"type" example:"phone"`
 	OS         string `validate:"required" json:"OS" example:"IOS"`
 	OSversion  string `validate:"required" json:"OSversion" example:"99.192"`
 	AppVersion string `validate:"required" json:"appVersion" example:"0.0.1"`
-	ToProtoModel
-	// PushToken  string `json:"pushToken" example:"abcd"`
-}
-
-type ToProtoModel interface {
-	ProtoSpec() pb_unit_device.Spec
-	ProtoBatteryLevel(BatteryLevel) pb_unit_device.BatteryLevel
-}
-
-func (spec Spec) ProtoSpec() pb_unit_device.Spec {
-	return pb_unit_device.Spec{
-		Name: spec.Name,
-		Type: spec.Type,
-		Os: spec.OS,
-		OsVersion: spec.OSversion,
-		AppVersion: spec.AppVersion,
-	}
 }
 
 type Id struct {
@@ -65,21 +55,96 @@ func NewDevice() *Device {
 	return m
 }
 
+func Clone(d *Device) *Device {
+	m := NewDevice()
+	m.SetDeviceSpec(d.GetDeviceSpec())
 
-func (d *DeviceImpl) GetSpec() Spec {
-	return d.Spec
+	// m.SetDeviceSpec(d.GetDeviceSpec())
+	return m
 }
 
-func (d *DeviceImpl) GetBatteryLevel() BatteryLevel {
+func NewDeviceFromProto(pbDevice *pb_unit_device.Device) (*Device, error){
+	spec := &DeviceSpec{
+		Name: pbDevice.Spec.Name,
+		Type: pbDevice.Spec.Type,
+		OS: pbDevice.Spec.OS,
+		OSversion: pbDevice.Spec.OsVersion,
+		AppVersion: pbDevice.Spec.AppVersion,
+	}
+
+	err := SpecValidator(spec)
+	if err != nil {
+		return nil, err
+	}
+	
+	m := NewDevice()
+	m.SetDeviceSpec(spec) 
+
+	return m, nil
+}
+func (d *Device) SetDeviceId(id string) {
+	d.Id=id
+}
+
+func (d *Device) GetDeviceId() string {
+	return d.Id
+}
+
+func (d *Device) GetDeviceSpec() *DeviceSpec {
+	return &d.Spec
+}
+
+func (d *Device) GetProtoDeviceSpec() *pb_unit_device.Spec {
+	return &pb_unit_device.Spec{
+		Name: d.Spec.Name,
+		Type: d.Spec.Type,
+		OS: d.Spec.OS,
+		OsVersion: d.Spec.OSversion,
+		AppVersion: d.Spec.AppVersion,
+	}
+}
+
+
+func (d *Device) GetBatteryLevel() BatteryLevel {
 	return d.BatteryLevel
 }
 
-
-func (d *DeviceImpl) SetBatteryLevel(batteryLevel BatteryLevel) {
-	d.BatteryLevel = batteryLevel
+func (d *Device) SetBatteryLevel(batteryLevel *BatteryLevel) {
+	d.BatteryLevel = *batteryLevel
 }
 
-func (d *DeviceImpl) SetSpec(spec Spec) {
-	d.Spec = spec
+func (d *Device) SetDeviceSpec(spec *DeviceSpec) error {
+	if spec == nil {
+		return errors.New("spec is nil")
+	}
+
+	err := SpecValidator(spec)
+	if err != nil {
+		return err
+	}
+	d.Spec = *spec
+
+	return nil
 }
 
+func (d *Device) ToProto() (*pb_unit_device.Device ,error) {
+	
+	pbUnit := &pb_unit_device.Device{}
+
+	id := &pb_unit_device.ID{
+		Uuid: d.Id,
+	}
+
+	spec := &pb_unit_device.Spec{
+		Name: d.Spec.Name,
+		Type: d.Spec.Type,
+		OS: d.Spec.OS,
+		OsVersion: d.Spec.OSversion,
+		AppVersion: d.Spec.AppVersion,
+	}
+
+	pbUnit.Id = id
+	pbUnit.Spec = spec
+
+	return pbUnit, nil
+}

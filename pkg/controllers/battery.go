@@ -40,7 +40,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 
 	newDevice := device.NewDevice()
 	
-	newDevice.SetBatteryLevel(device.BatteryLevel{
+	newDevice.SetBatteryLevel(&device.BatteryLevel{
 		Time:          &t,
 		BatteryLevel:  20,
 		BatteryStatus: "charging",
@@ -82,7 +82,7 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 			BatteryLevel:  20,
 			BatteryStatus: "charging",
 		},
-		Spec: device.Spec{
+		Spec: device.DeviceSpec{
 			Name: "test1",
 			Type: "test",
 			OS: "test",
@@ -98,7 +98,7 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 			BatteryLevel:  20,
 			BatteryStatus: "charging",
 		},
-		Spec: device.Spec{
+		Spec: device.DeviceSpec{
 			Name: "test2",
 			Type: "test",
 			OS: "test",
@@ -114,7 +114,7 @@ func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http
 			BatteryLevel:  20,
 			BatteryStatus: "charging",
 		},
-		Spec: device.Spec{
+		Spec: device.DeviceSpec{
 			Name: "test3",
 			Type: "test",
 			OS: "test",

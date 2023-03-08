@@ -11,7 +11,7 @@ alter table "User"
 
 create table if not exists "Device"
 (
-    id              varchar not null
+    id              SERIAL not null
         constraint device_pk
             primary key,
     name            varchar,
@@ -21,7 +21,6 @@ create table if not exists "Device"
     "appVersion"    varchar,
     "batteryLevel"  integer,
     "batteryStatus" varchar,
-    "pushToken"     varchar,
     "userId"        varchar
         constraint "userId"
             references "User"

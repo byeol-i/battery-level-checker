@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DBClient interface {
-	SignUp(ctx context.Context, in *SignUpReq, opts ...grpc.CallOption) (*SignUpRes, error)
+	AddNewUser(ctx context.Context, in *AddNewUserReq, opts ...grpc.CallOption) (*AddNewUserRes, error)
 	AddDevice(ctx context.Context, in *AddDeviceReq, opts ...grpc.CallOption) (*AddDeviceRes, error)
 	RemoveDevice(ctx context.Context, in *RemoveDeviceReq, opts ...grpc.CallOption) (*RemoveDeviceRes, error)
 	GetDevices(ctx context.Context, in *GetDevicesReq, opts ...grpc.CallOption) (*GetDevicesRes, error)
@@ -38,9 +38,9 @@ func NewDBClient(cc grpc.ClientConnInterface) DBClient {
 	return &dBClient{cc}
 }
 
-func (c *dBClient) SignUp(ctx context.Context, in *SignUpReq, opts ...grpc.CallOption) (*SignUpRes, error) {
-	out := new(SignUpRes)
-	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/SignUp", in, out, opts...)
+func (c *dBClient) AddNewUser(ctx context.Context, in *AddNewUserReq, opts ...grpc.CallOption) (*AddNewUserRes, error) {
+	out := new(AddNewUserRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/AddNewUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (c *dBClient) UpdateBatteryLevel(ctx context.Context, in *UpdateBatteryLeve
 // All implementations must embed UnimplementedDBServer
 // for forward compatibility
 type DBServer interface {
-	SignUp(context.Context, *SignUpReq) (*SignUpRes, error)
+	AddNewUser(context.Context, *AddNewUserReq) (*AddNewUserRes, error)
 	AddDevice(context.Context, *AddDeviceReq) (*AddDeviceRes, error)
 	RemoveDevice(context.Context, *RemoveDeviceReq) (*RemoveDeviceRes, error)
 	GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error)
@@ -100,8 +100,8 @@ type DBServer interface {
 type UnimplementedDBServer struct {
 }
 
-func (UnimplementedDBServer) SignUp(context.Context, *SignUpReq) (*SignUpRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+func (UnimplementedDBServer) AddNewUser(context.Context, *AddNewUserReq) (*AddNewUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddNewUser not implemented")
 }
 func (UnimplementedDBServer) AddDevice(context.Context, *AddDeviceReq) (*AddDeviceRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDevice not implemented")
@@ -128,20 +128,20 @@ func RegisterDBServer(s grpc.ServiceRegistrar, srv DBServer) {
 	s.RegisterService(&DB_ServiceDesc, srv)
 }
 
-func _DB_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignUpReq)
+func _DB_AddNewUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddNewUserReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DBServer).SignUp(ctx, in)
+		return srv.(DBServer).AddNewUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.svc.db.DB/SignUp",
+		FullMethod: "/pb.svc.db.DB/AddNewUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DBServer).SignUp(ctx, req.(*SignUpReq))
+		return srv.(DBServer).AddNewUser(ctx, req.(*AddNewUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,8 +226,8 @@ var DB_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DBServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SignUp",
-			Handler:    _DB_SignUp_Handler,
+			MethodName: "AddNewUser",
+			Handler:    _DB_AddNewUser_Handler,
 		},
 		{
 			MethodName: "AddDevice",

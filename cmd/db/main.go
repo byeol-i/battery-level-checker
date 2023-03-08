@@ -71,7 +71,6 @@ func realMain() error {
 	if err != nil {
 		return err
 	}
-
 	gRPCL, err := net.Listen("tcp", *grpcAddr)
 	if err != nil {
 		return err

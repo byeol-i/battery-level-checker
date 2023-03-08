@@ -14,11 +14,11 @@ message ID {
 }
 
 message Spec {
-    string name = 1;
-    string type = 2;
-    string os = 3;
-    string osVersion = 4;
-    string appVersion = 5;
+    string name = 2;
+    string type = 3;
+    string OS = 4;
+    string osVersion = 5;
+    string appVersion = 6;
 }
 
 message BatteryLevel {

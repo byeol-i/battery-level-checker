@@ -7,7 +7,7 @@ import "pb/unit/device/device.proto";
 import "pb/unit/common/msg.proto";
 
 service DB {
-    rpc SignUp(SignUpReq) returns (SignUpRes);
+    rpc AddNewUser(AddNewUserReq) returns (AddNewUserRes);
     rpc AddDevice(AddDeviceReq) returns (AddDeviceRes);
     rpc RemoveDevice(RemoveDeviceReq) returns (RemoveDeviceRes);
     rpc GetDevices(GetDevicesReq) returns (GetDevicesRes);
@@ -15,17 +15,18 @@ service DB {
     rpc UpdateBatteryLevel(UpdateBatteryLevelReq) returns (UpdateBatteryLevelRes);
 }
 
-message SignUpReq {
+message AddNewUserReq {
     string id = 1;
 }
 
-message SignUpRes {
+message AddNewUserRes {
     unit.common.ReturnMsg Result = 1;
     string error = 2;
 }
 
 message AddDeviceReq {
     unit.device.Device Device = 1;
+    string uid = 2;
 }
 
 message AddDeviceRes {
@@ -34,7 +35,7 @@ message AddDeviceRes {
 }
 
 message GetDevicesReq {
-    string id = 1;
+    string uid = 1;
     // decided send include Spec
     bool detailed = 2;
 }

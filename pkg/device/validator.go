@@ -2,12 +2,14 @@ package device
 
 import (
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/models"
 	"github.com/go-playground/validator"
 	"go.uber.org/zap"
 )
 
-func SpecValidator(spec *Spec) error {
-	var validate *validator.Validate
+func SpecValidator(spec *DeviceSpec) error {
+	validate := validator.New()
+	validate.RegisterValidation("script", models.ValidateScript)
 
 	err := validate.Struct(spec)
 	if err != nil {
@@ -20,7 +22,8 @@ func SpecValidator(spec *Spec) error {
 
 
 func BatteryLevelValidator(level *BatteryLevel) error {
-	var validate *validator.Validate
+	validate := validator.New()
+	validate.RegisterValidation("script", models.ValidateScript)
 
 	err := validate.Struct(level)
 	if err != nil {

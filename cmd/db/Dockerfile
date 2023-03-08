@@ -1,17 +1,24 @@
 FROM golang:1.18 AS builder
 
-COPY . "/go/src/github.com/byeol-i/battery-level-checker/"
+RUN apt update && apt install -y upx
+
 WORKDIR "/go/src/github.com/byeol-i/battery-level-checker/"
+
+COPY go.mod .
+COPY go.sum .
 
 RUN mkdir -p /opt/bin/app/
 
-RUN go mod vendor \
+RUN go mod tidy \
     && go get -u -d -v ./...
 
-RUN go build -mod=mod -o /opt/bin/app/ ./cmd/db 
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o /opt/bin/app/main cmd/db/main.go \    
+    && upx --lzma /opt/bin/app/main
 
 FROM debian:stretch-slim AS runtime
+
 COPY --from=builder /opt/bin/app /opt/bin/app
 
-#WORKDIR /opt/bin/app/
-CMD [ "/opt/bin/app/db" ]
+CMD [ "/opt/bin/app/main" ]

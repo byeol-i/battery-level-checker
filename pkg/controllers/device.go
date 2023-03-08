@@ -1,6 +1,12 @@
 package controllers
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/byeol-i/battery-level-checker/pkg/device"
+	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
+)
 
 type DeviceControllers struct {
 
@@ -37,5 +43,26 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Router /device/{deviceID} [delete]
 func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.Request) {
+	
+	var deviceSpec device.DeviceSpec
+
+	err := json.NewDecoder(req.Body).Decode(&deviceSpec)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, "invalid format")
+	}
+
+	err = device.SpecValidator(&deviceSpec)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, err.Error())	
+	}
+
+	newDevice := device.NewDevice()
+	newDevice.SetDeviceSpec(&deviceSpec)
+	
+	err = dbSvc.CallAddNewDevice(newDevice)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, err.Error())
+	}
+
 	respondJSON(resp, http.StatusOK, "success", nil)
 }
