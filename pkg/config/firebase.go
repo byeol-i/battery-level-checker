@@ -3,24 +3,26 @@ package config
 import (
 	"flag"
 	"os"
+
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
 )
 
 
 var (
-	local = flag.Bool("test",  false, "using local key")
+	local = flag.Bool("localcred",  false, "using local cred")
 	credFilePath = flag.String("firebaseCredFilePath", "/run/secrets/firebase-key", "cred path")
 	firebaseProjectID = flag.String("firebaseProjectID", "worker-51312", "firebaseProjectID")
-	
 )
 
 func GetFirebaseCredFilePath() string {
 	flag.Parse()
 
-	if !*local {
+	if *local {
+		logger.Info("Using local conf")
 		return "conf/firebase/key.json"
-	} else {
-		return *credFilePath
 	}
+
+	return *credFilePath
 }
 
 func GetFirebaseProjectID() string {
