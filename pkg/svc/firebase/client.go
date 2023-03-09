@@ -17,8 +17,8 @@ var (
 
 func CallVerifyToken(token string) error {
 	// logger.Info("make grpc call at auth server", zap.String("token", token))
-
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	dialTimeout := 3 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,8 @@ func CallVerifyToken(token string) error {
 func CallGetUser(uid string) error {
 	// logger.Info("make grpc call at auth server", zap.String("uid", uid))
 
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	dialTimeout := 3 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
 	}

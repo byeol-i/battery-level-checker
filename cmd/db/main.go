@@ -22,7 +22,7 @@ import (
 var (
 	grpcAddr = flag.String("addr", "0.0.0.0:50012", "grpc address")
 	usingTls = flag.Bool("tls", false, "using http2")
-	test = flag.Bool("test", false, "testing")
+	test = flag.Bool("dbsvc-test", false, "testing")
 )
 
 func main() {

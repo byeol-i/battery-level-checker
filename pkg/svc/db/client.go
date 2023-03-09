@@ -13,11 +13,12 @@ import (
 )
 
 var (
-	addr = flag.String("db svc addr", "battery_db:50012", "db grpc addr")
+	addr = flag.String("dbsvc-addr", "battery_db:50012", "db grpc addr")
 )
 
 func CallAddNewUser(token string) error {
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	dialTimeout := 3 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
 	}
@@ -40,7 +41,8 @@ func CallAddNewUser(token string) error {
 }
 
 func CallAddNewDevice(newDevice *device.Device) error {
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	dialTimeout := 3 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
 	}
@@ -62,6 +64,32 @@ func CallAddNewDevice(newDevice *device.Device) error {
 	defer cancel()
 
 	_, err = client.AddDevice(ctx, in)
+	if err != nil {
+		logger.Error("Can't call grpc call")
+		return err
+	}
+
+	return nil
+}
+
+func CallRemoveDevice(deviceID string) error {
+	dialTimeout := 3 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	client := pb_svc_db.NewDBClient(conn)
+
+	in := &pb_svc_db.RemoveDeviceReq{
+		Id: deviceID,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
+
+	_, err = client.RemoveDevice(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
 		return err

@@ -24,6 +24,7 @@ type Router struct {
 }
 
 func NewRouter(defaultHandler http.Handler, version string) *Router {
+	logger.Info("New Router base url : api/" + version)
 	return &Router{
 		rules:          make([]*routeRule, 0),
 		defaultHandler: defaultHandler,

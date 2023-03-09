@@ -2,16 +2,22 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net"
 	"net/http"
 	"os"
 
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/router"
 
 	_ "github.com/byeol-i/battery-level-checker/docs" // echo-swagger middleware
 	"golang.org/x/sync/errgroup"
+)
+
+var (
+	test = flag.Bool("apisvc-test", false, "for testing")
 )
 
 // @title Battery level checker API
@@ -36,6 +42,7 @@ func main() {
 }
 
 func realMain() error {
+	// flag.Parse()
 	wg, ctx := errgroup.WithContext(context.Background())
 
 	notFoundCtrl := &controllers.NotFoundController{}
@@ -44,13 +51,19 @@ func realMain() error {
 	authCtrl := controllers.NewAuthController()
 	rtr := router.NewRouter(notFoundCtrl, "v1")
 
-	rtr.Use(authCtrl.VerifyToken)
 
-	rtr.AddRule("Device", "GET", `/battery$`, batteryCtrl.GetBatteryList)
-	rtr.AddRule("Device", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
-	rtr.AddRule("Device", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)
+	if (!*test) {
+		rtr.Use(authCtrl.VerifyToken)
+	} else {
+		logger.Info("Didn't using auth server")
+	}
+
+	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)
+	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
+	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)
 	
-	rtr.AddRule("New", "POST", `/device`, deviceCtrl.AddNewDevice)
+	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
+	rtr.AddRule("Device", "DELETE", `/device/`, deviceCtrl.DeleteDevice)
 	// rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)
 
 	_ = ctx
