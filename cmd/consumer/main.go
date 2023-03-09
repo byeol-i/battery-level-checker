@@ -1,28 +1,27 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"os/signal"
-
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
 
 	"github.com/Shopify/sarama"
 )
 
 var (
-	brokerList        = kingpin.Flag("brokerList", "List of brokers to connect").Default("kafka-1:9092").Strings()
-	topic             = kingpin.Flag("topic", "Topic name").Default("important").String()
-	partition         = kingpin.Flag("partition", "Partition number").Default("0").String()
-	offsetType        = kingpin.Flag("offsetType", "Offset Type (OffsetNewest | OffsetOldest)").Default("-1").Int()
-	messageCountStart = kingpin.Flag("messageCountStart", "Message counter start from:").Int()
-)
+	brokerList = flag.String("brokerList", "kafka-1:9092", "List of brokers to connect")
+	topic = flag.String("topic", "important", "Topic name")
+	partition = flag.Int("partition", 0, "Partition number")
+	offsetType = flag.Int("offsetType", -1, "Offset Type (OffsetNewest | OffsetOldest)")
+	messageCountStart = flag.Int("messageCountStart", 0, "Message counter start from:")
+	)
 
 func main() {
-	kingpin.Parse()
+	flag.Parse()
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
-	brokers := *brokerList
+	brokers := []string{*brokerList}
 	master, err := sarama.NewConsumer(brokers, config)
 	if err != nil {
 		log.Panic(err)
@@ -38,6 +37,7 @@ func main() {
 	}
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
+	
 	doneCh := make(chan struct{})
 	go func() {
 		for {

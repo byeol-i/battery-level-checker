@@ -1,24 +1,25 @@
 package config
 
 import (
+	"flag"
+
 	"github.com/byeol-i/battery-level-checker/pkg/db"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
-	dbHost			= kingpin.Flag("dbHost", "db's addr").Default("localhost").String()
-	dbPort			= kingpin.Flag("dbPort", "db's port").Default("5432").Int()
-	dbUser			= kingpin.Flag("dbUser", "db's user id").Default("table_admin").String()
-	dbPassword		= kingpin.Flag("dbPassword", "db's user password").Default("HelloWorld").String()
-	dbName			= kingpin.Flag("dbName", "db's name").Default("kafka").String()
-	dbSSLmode		= kingpin.Flag("dbSSLMode", "Retry limit").Default("disable").String()
-	dbSSLrootCert	= kingpin.Flag("dbSSLrootCert", "db's rootCert").Default("").String()
-	dbSSLkey		= kingpin.Flag("dbSSLkey", "db's SSLkey").Default("").String()
-	dbSSLcert		= kingpin.Flag("dbSSLcert", "db's SSLcert").Default("").String()
+	dbHost			= flag.String("dbHost", "localhost", "db's addr")
+	dbPort			= flag.Int("dbPort", 5432, "db's port")
+	dbUser			= flag.String("dbUser", "table_admin", "db's user id")
+	dbPassword		= flag.String("dbPassword", "HelloWorld", "db's user password")
+	dbName			= flag.String("dbName", "kafka", "db's name")
+	dbSSLmode		= flag.String("dbSSLMode", "disable", "Retry limit")
+	dbSSLrootCert	= flag.String("dbSSLrootCert", "", "db's rootCert")
+	dbSSLkey		= flag.String("dbSSLkey", "", "db's SSLkey")
+	dbSSLcert		= flag.String("dbSSLcert", "", "db's SSLcert")
 )
 
 func GetDBConfig() *db.DBConfig {
-	kingpin.Parse()
+	flag.Parse()
 	return &db.DBConfig{
 		Host: *dbHost,
 		Port: *dbPort,

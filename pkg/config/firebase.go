@@ -1,30 +1,30 @@
 package config
 
 import (
+	"flag"
 	"os"
-
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
+
 var (
-	firebaseCredFilePath = kingpin.Flag("firebaseCredFilePath", "path").Default("/run/secrets/firebase-key").String()
-	firebaseProjectID = kingpin.Flag("firebaseProjectID", "worker-51312").Default("worker-51312").String()
+	local = flag.Bool("test",  false, "using local key")
+	credFilePath = flag.String("firebaseCredFilePath", "/run/secrets/firebase-key", "cred path")
+	firebaseProjectID = flag.String("firebaseProjectID", "worker-51312", "firebaseProjectID")
+	
 )
 
 func GetFirebaseCredFilePath() string {
-	kingpin.Parse()
+	flag.Parse()
 
-	deploy := os.Getenv("SWARM")
-	if deploy == "true" {
-		return *firebaseCredFilePath
-	} else {
+	if *local {
 		return "conf/firebase/key.json"
+	} else {
+		return *credFilePath
 	}
 }
 
 func GetFirebaseProjectID() string {
-	kingpin.Parse()
-
+	flag.Parse()
 	return *firebaseProjectID
 }
 

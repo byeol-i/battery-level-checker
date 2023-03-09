@@ -1,42 +1,39 @@
 package config
 
 import (
+	"flag"
+	"strings"
+
 	"github.com/Shopify/sarama"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
-	brokerList        = kingpin.Flag("brokerList", "List of brokers to connect").Default("kafka-1:9094", "kafka-2:9094", "kafka-3:9094").Strings()
-	topic             = kingpin.Flag("topic", "Topic name").Default("important").String()
-	partition         = kingpin.Flag("partition", "Partition number").Default("0").String()
-	offsetType        = kingpin.Flag("offsetType", "Offset Type (OffsetNewest | OffsetOldest)").Default("-1").Int()
-	messageCountStart = kingpin.Flag("messageCountStart", "Message counter start from:").Int()
-	maxRetry   		  = kingpin.Flag("maxRetry", "Retry limit").Default("5").Int()
+	brokerList        = flag.String("brokerList", "kafka-1:9094,kafka-2:9094,kafka-3:9094", "List of brokers to connect")
+	topic             = flag.String("topic", "important", "Topic name")
+	partition         = flag.String("partition", "0", "Partition number")
+	offsetType        = flag.Int("offsetType", -1, "Offset Type (OffsetNewest | OffsetOldest)")
+	messageCountStart = flag.Int("messageCountStart", 0, "Message counter start from:")
+	maxRetry   		  = flag.Int("maxRetry", 5, "Retry limit")
 )
 
+func init() {
+	flag.Parse()
+}
 
 func GetKafkaSarama() *sarama.Config {
-	kingpin.Parse()
 	config := sarama.NewConfig()
 
 	return config
 }
 
 func GetBrokerList() []string {
-	kingpin.Parse()
-
-	return *brokerList
+	return strings.Split(*brokerList, ",")
 }
 
 func GetMaxRetry() int {
-	kingpin.Parse()
-
 	return *maxRetry
 }
 
 func GetTopic() string {
-	kingpin.Parse()
-
 	return *topic
 }
-
