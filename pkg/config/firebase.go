@@ -16,7 +16,7 @@ var (
 func GetFirebaseCredFilePath() string {
 	flag.Parse()
 
-	if *local {
+	if !*local {
 		return "conf/firebase/key.json"
 	} else {
 		return *credFilePath
