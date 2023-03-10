@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
@@ -17,7 +18,8 @@ import (
 )
 
 var (
-	test = flag.Bool("apisvc-test", false, "for testing")
+	noAuth = flag.Bool("noAuth", false, "for testing")
+	cacheExpirationTime = 3 * time.Second
 )
 
 // @title Battery level checker API
@@ -35,6 +37,7 @@ var (
 // @host localhost
 // @BasePath /api/v1
 func main() {
+	flag.Parse()
 	if err := realMain(); err != nil {
 		log.Printf("err :%s", err)
 		os.Exit(1)
@@ -42,7 +45,6 @@ func main() {
 }
 
 func realMain() error {
-	// flag.Parse()
 	wg, ctx := errgroup.WithContext(context.Background())
 
 	notFoundCtrl := &controllers.NotFoundController{}
@@ -52,7 +54,7 @@ func realMain() error {
 	rtr := router.NewRouter(notFoundCtrl, "v1")
 
 
-	if (!*test) {
+	if (!*noAuth) {
 		rtr.Use(authCtrl.VerifyToken)
 	} else {
 		logger.Info("Didn't using auth server")
@@ -70,7 +72,7 @@ func realMain() error {
 
 	wg.Go(func() error {
 		var err error
-
+		
 		ln, err := net.Listen("tcp", "0.0.0.0:80")
 		if err != nil {
 			return err
@@ -79,7 +81,7 @@ func realMain() error {
 		defer ln.Close()
 
 		srv := http.Server{Handler: rtr}
-
+		
 		err = srv.Serve(ln)
 
 		return err

@@ -10,12 +10,19 @@ import (
 	"firebase.google.com/go/v4/auth"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/api/option"
 )
 
+var (
+	cacheExpirationTime = 60 * time.Minute
+)
+
+
 type FirebaseApp struct {
 	app *firebase.App
+	cache *cache.Cache
 }
 
 func NewFirebaseApp() (*FirebaseApp, error) {
@@ -29,9 +36,12 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 		log.Fatalf("error initializing app: %v\n", err)
 		return nil, err
 	}
+	idTokenCache := cache.New(cacheExpirationTime, 1*time.Minute)
+
 
 	return &FirebaseApp{
 		app: app,
+		cache: idTokenCache,
 	}, nil
 }
 
@@ -65,7 +75,7 @@ func GetUserFromFirebase(app *FirebaseApp, ctx context.Context, uid string) GetR
 	}
 }
 
-func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken string) GetResult {
+func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken string, cache *cache.Cache) GetResult {
 	client, err := app.app.Auth(ctx)
 	if err != nil {
 		logger.Error("error getting Auth client", zap.Error(err))
@@ -74,19 +84,31 @@ func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken st
 			Error:  errors.New("error getting Auth client"),
 		}
 	}
-
-	decodedToken, err := client.VerifyIDToken(ctx, idToken)
-	if err != nil {
-		logger.Error("Can't verify token", zap.Error(err))
+	
+	res, found := cache.Get(idToken)
+	if found {
+		logger.Info("Using cahce")
 		return GetResult{
-			Result: nil,
-			Error:  err,
+			Result: res,
+			Error:  nil,
 		}
-	}
+	} else {
+		logger.Info("Verify Token!")
+		decodedToken, err := client.VerifyIDToken(ctx, idToken)
+		if err != nil {
+			logger.Error("Can't verify token", zap.Error(err))
+			return GetResult{
+				Result: nil,
+				Error:  err,
+			}
+		}
+		cache.Set(idToken, decodedToken, cacheExpirationTime)
 
-	return GetResult{
-		Result: decodedToken,
-		Error:  nil,
+		return GetResult{
+			Result: decodedToken,
+			Error:  nil,
+		}
+
 	}
 }
 
@@ -133,7 +155,7 @@ func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*aut
 	result := make(chan GetResult)
 
 	go func() {
-		result <- VerifyIDTokenFromFirebase(hdl, ctx, idToken)
+		result <- VerifyIDTokenFromFirebase(hdl, ctx, idToken, hdl.cache)
 	}()
 	select {
 	case <-time.After(5 * time.Second):

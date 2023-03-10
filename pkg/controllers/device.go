@@ -49,6 +49,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	err = dbSvc.CallAddNewDevice(newDevice)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	respondJSON(resp, http.StatusOK, "success", nil)
