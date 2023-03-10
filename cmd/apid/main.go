@@ -51,6 +51,7 @@ func realMain() error {
 	batteryCtrl := controllers.NewBatteryController()
 	deviceCtrl := controllers.NewDeviceController()
 	authCtrl := controllers.NewAuthController()
+	userCtrl := controllers.NewUserController()
 	rtr := router.NewRouter(notFoundCtrl, "v1")
 
 
@@ -66,6 +67,9 @@ func realMain() error {
 	
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
 	rtr.AddRule("Device", "DELETE", `/device/`, deviceCtrl.DeleteDevice)
+
+	rtr.AddRule("User", "POST", "/user$", userCtrl.AddNewUser)
+	rtr.AddRule("User", "DELETE", "/user/", userCtrl.DeleteUser)
 	// rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)
 
 	_ = ctx

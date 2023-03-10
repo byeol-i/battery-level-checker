@@ -45,7 +45,6 @@ func (rtr *Router) AddRule(name string, method, pattern string, handler http.Han
 	}
 	rtr.rules = append(rtr.rules, newRule)
 	logger.Info("add router rule :", zap.String("name", name), zap.String("pattern", pattern))
-	// log.Println("add router rule :", name, pattern)
 }
 
 func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -61,7 +60,7 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			continue
 		}
 
-		logger.Info("found handler", zap.String("rule", rule.name), zap.String("path", path))
+		// logger.Info("found handler", zap.String("rule", rule.name), zap.String("path", path))
 
 		if rtr.middleware != nil {
 			handler := rtr.middleware(rule.handler, resp, req)

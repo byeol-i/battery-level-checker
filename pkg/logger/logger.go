@@ -19,9 +19,6 @@ func init() {
  
 	log, err = config.Build(zap.AddCallerSkip(1))
  
-	// log, err = config.Build()
- 
-	//log, err = zap.NewProduction()
 	if err != nil {
 		panic(err)
 	}

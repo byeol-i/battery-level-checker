@@ -5,9 +5,12 @@ import (
 	"flag"
 	"time"
 
+	pb_unit_user "github.com/byeol-i/battery-level-checker/pb/unit/user"
+
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -16,7 +19,7 @@ var (
 	addr = flag.String("dbsvc-addr", "battery_db:50012", "db grpc addr")
 )
 
-func CallAddNewUser(token string) error {
+func CallAddNewUser(userSpec *user.UserImpl) error {
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -26,7 +29,14 @@ func CallAddNewUser(token string) error {
 
 	client := pb_svc_db.NewDBClient(conn)
 
-	in := &pb_svc_db.AddNewUserReq{}
+	in := &pb_svc_db.AddNewUserReq{
+		User: &pb_unit_user.User{
+			Id: &pb_unit_user.ID{
+				Uuid: userSpec.Id,
+			},
+			Name: userSpec.Name,
+		},
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()

@@ -4,6 +4,7 @@ package pb.svc.db;
 option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/db";
 
 import "pb/unit/device/device.proto";
+import "pb/unit/user/user.proto";
 import "pb/unit/common/msg.proto";
 
 service DB {
@@ -16,12 +17,11 @@ service DB {
 }
 
 message AddNewUserReq {
-    string id = 1;
+    unit.user.User User = 1;
 }
 
 message AddNewUserRes {
     unit.common.ReturnMsg Result = 1;
-    // string error = 2;
 }
 
 message AddDeviceReq {
@@ -31,7 +31,6 @@ message AddDeviceReq {
 
 message AddDeviceRes {
     unit.common.ReturnMsg Result = 1;
-    // string error = 2;
 }
 
 message GetDevicesReq {

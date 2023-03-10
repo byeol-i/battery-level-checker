@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	cacheExpirationTime = 60 * time.Minute
+	cacheExpirationTime = 30 * time.Minute
 )
 
 
@@ -87,13 +87,11 @@ func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken st
 	
 	res, found := cache.Get(idToken)
 	if found {
-		logger.Info("Using cahce")
 		return GetResult{
 			Result: res,
 			Error:  nil,
 		}
 	} else {
-		logger.Info("Verify Token!")
 		decodedToken, err := client.VerifyIDToken(ctx, idToken)
 		if err != nil {
 			logger.Error("Can't verify token", zap.Error(err))

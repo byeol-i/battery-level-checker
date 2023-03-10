@@ -11,6 +11,7 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
 
 type DBSrv struct {
@@ -29,7 +30,27 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	return &pb_svc_db.AddNewUserRes{}, nil
+	newUser, err := user.NewUserFromProto(in.User)
+	if err != nil {
+		return &pb_svc_db.AddNewUserRes{Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+
+	err = s.db.AddNewUser(newUser.UserImpl)
+	if err != nil {
+		return &pb_svc_db.AddNewUserRes{Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+
+	return &pb_svc_db.AddNewUserRes{
+		Result: &common.ReturnMsg{
+			Result: "success",
+		},
+	}, nil
 }
 
 func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_svc_db.AddDeviceRes, error) {

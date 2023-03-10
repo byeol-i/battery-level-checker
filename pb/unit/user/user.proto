@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb.unit.user;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/unit/user";
+
+message User {
+    ID id = 1;
+    string name = 2;
+}
+
+message ID {
+    string uuid = 1;
+}
