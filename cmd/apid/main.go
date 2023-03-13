@@ -96,7 +96,6 @@ func realMain() error {
 	rtr.AddRule("User", "POST", "/user$", userCtrl.AddNewUser)
 	rtr.AddRule("User", "DELETE", "/user/", userCtrl.DeleteUser)
 
-
 	rtr.AddRule("Server", "GET", "/stress", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, strconv.Itoa(cw.Count()))
 	})
