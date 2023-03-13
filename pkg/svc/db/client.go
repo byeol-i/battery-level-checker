@@ -22,7 +22,7 @@ var (
 )
 
 func CallAddNewUser(userSpec *user.UserImpl) error {
-	dialTimeout := 3 * time.Second
+	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func CallAddNewUser(userSpec *user.UserImpl) error {
 }
 
 func CallAddNewDevice(newDevice *device.Device) error {
-	dialTimeout := 3 * time.Second
+	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
@@ -81,7 +81,7 @@ func CallAddNewDevice(newDevice *device.Device) error {
 }
 
 func CallRemoveDevice(deviceID string, uid string) error {
-	dialTimeout := 3 * time.Second
+	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func CallRemoveDevice(deviceID string, uid string) error {
 }
 
 func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, error) {
-	dialTimeout := 3 * time.Second
+	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, err
 }
 
 func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
-	dialTimeout := 3 * time.Second
+	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return nil, err
@@ -185,7 +185,7 @@ func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 }
 
 func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.BatteryLevel) error {
-	dialTimeout := 3 * time.Second
+	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err

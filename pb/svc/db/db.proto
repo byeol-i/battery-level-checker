@@ -39,20 +39,20 @@ message GetAllBatteryRes {
 }
 
 message AddNewUserReq {
-    unit.user.User User = 1;
+    unit.user.User user = 1;
 }
 
 message AddNewUserRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }
 
 message AddDeviceReq {
-    unit.device.Device Device = 1;
+    unit.device.Device device = 1;
     string uid = 2;
 }
 
 message AddDeviceRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }
 
 message GetDevicesReq {
@@ -62,7 +62,7 @@ message GetDevicesReq {
 }
 
 message GetDevicesRes {
-    repeated unit.device.Device Devices = 1;
+    repeated unit.device.Device devices = 1;
     string error = 2;
 }
 
@@ -72,15 +72,15 @@ message RemoveDeviceReq {
 }
 
 message RemoveDeviceRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }
 
 message UpdateBatteryLevelReq {
     unit.device.ID deviceId = 1;
     unit.user.ID uid = 2;
-    unit.device.BatteryLevel BatteryLevel = 3;
+    unit.device.BatteryLevel batteryLevel = 3;
 }
 
 message UpdateBatteryLevelRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }

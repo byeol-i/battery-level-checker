@@ -7,15 +7,16 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 )
 
-func (db *Database) GetBattery(deviceId string) (*device.BatteryLevel, error) {
+func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLevel, error) {
 	const q = `
 	SELECT * FROM "BatteryLevel"
-	WHERE "deviceId" = $1;	
+	WHERE "deviceId" = $1 AND
+	"userId" = $2	
 	ORDER BY time DESC
 	LIMIT 1;
 	`
 	batteryLevel := &device.BatteryLevel{}
-	err := db.Conn.QueryRow(q).Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
+	err := db.Conn.QueryRow(q, deviceId, uid).Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
 	if err != nil {
 		return nil, err
 	}
@@ -23,15 +24,19 @@ func (db *Database) GetBattery(deviceId string) (*device.BatteryLevel, error) {
 	return batteryLevel, nil
 }
 
-func (db *Database) GetAllBatteryLevels(deviceId string) ([]*device.BatteryLevel, error) {
+func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.BatteryLevel, error) {
 	var batteryLevels []*device.BatteryLevel
+
 	q := `
 	SELECT * FROM "BatteryLevel"
-	WHERE "deviceId" = $1`
-	rows, err := db.Conn.Query(q)
+	WHERE "deviceId" = $1 AND
+	"userId" = $2`
+
+	rows, err := db.Conn.Query(q, deviceId, uid)
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -49,4 +54,23 @@ func (db *Database) GetAllBatteryLevels(deviceId string) ([]*device.BatteryLevel
 	}
 
 	return batteryLevels, nil
+}
+
+func (db *Database) UpdateBattery(deviceId string, uid string, batteryLevel *device.BatteryLevel) error {
+	const q = `
+	INSERT INTO "BatteryLevel"("deviceId", "userId", "time", "batteryLevel", "batteryStatus")
+	VALUES ($1, $2, $3, $4, $5)
+	`
+
+	err := device.BatteryLevelValidator(batteryLevel)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Conn.Exec(q, deviceId, uid, batteryLevel.Time, batteryLevel.BatteryLevel, batteryLevel.BatteryStatus)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -9,8 +9,7 @@ import (
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
 )
 
-type BatteryController struct {
-}
+type BatteryController struct {}
 
 func NewBatteryController() *BatteryController {
 	return &BatteryController{}
@@ -55,10 +54,10 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=[]models.Device{}}
-// @Router /battery/ [get]
+// @Router /battery/history/{deviceId}} [get]
 func (hdl *BatteryController) GetAllBattery(resp http.ResponseWriter, req *http.Request) {
 	
-	pattern := regexp.MustCompile(`/battery/(\w+)`)
+	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
     matches := pattern.FindStringSubmatch(req.URL.Path)
 	if len(matches) < 2 {
         http.NotFound(resp, req)

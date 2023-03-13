@@ -86,7 +86,7 @@ func realMain() error {
 		logger.Info("Didn't using auth server")
 	}
 
-	rtr.AddRule("Battery", "GET", `/battery/`, batteryCtrl.GetAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery/history/`, batteryCtrl.GetAllBattery)
 	rtr.AddRule("Battery", "GET", `/battery/`, batteryCtrl.GetBattery)
 	rtr.AddRule("Battery", "POST", `/battery/`, batteryCtrl.UpdateBattery)
 	

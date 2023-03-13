@@ -132,22 +132,59 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	// raws, err := s.db.GetDevices(in.Uid)
-	// if err != nil {
-	// 	return &pb_svc_db.GetBatteryRes{
-	// 		Error: err.Error(),
-	// 	}, err
-	// }
+	raw, err := s.db.GetBattery(in.DeviceId.Id, in.Uid.Id)
+	if err != nil {
+		return &pb_svc_db.GetBatteryRes{
+			Error: err.Error(),
+		}, err
+	}
 	
-	// var devices []*pb_unit_device.Device
-	// for _, v := range raws {
-	// 	device := &pb_unit_device.Device{
-	// 		Spec: v.GetProtoDeviceSpec(),
-	// 	}
-
-	// 	devices = append(devices, device)
-	// }
+	pbUnit := &pb_unit_device.BatteryLevel{
+		Time: raw.Time.GoString(),
+		BatteryLevel: int64(raw.BatteryLevel),
+		BatteryStatus: raw.BatteryStatus,
+	}
 
 	return &pb_svc_db.GetBatteryRes{
+		BatteryLevel: pbUnit,
+	}, nil
+}
+
+func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq) (*pb_svc_db.GetAllBatteryRes, error) {
+	// if in != nil {
+	// 	logger.Error("in is not nil")
+	// }
+
+	raws, err := s.db.GetAllBatteryLevels(in.DeviceId.Id, in.Uid.Id)
+	if err != nil {
+		return &pb_svc_db.GetAllBatteryRes{
+			Error: err.Error(),
+		}, err
+	}
+	
+	var batteryLevels []*pb_unit_device.BatteryLevel
+	for _, v := range raws {
+		newBatteryLevel := &pb_unit_device.BatteryLevel{
+			Time: v.Time.GoString(),
+			BatteryLevel: int64(v.BatteryLevel),
+			BatteryStatus: v.BatteryStatus,
+		}
+
+
+		batteryLevels = append(batteryLevels, newBatteryLevel)
+	}
+
+	return &pb_svc_db.GetAllBatteryRes{
+		AllBatteryLevel: batteryLevels,
+	}, nil
+}
+
+func (s DBSrv) UpdateBatteryLevel(ctx context.Context, in *pb_svc_db.UpdateBatteryLevelReq) (*pb_svc_db.UpdateBatteryLevelRes, error) {
+	// if in != nil {
+	// 	logger.Error("in is not nil")
+	// }
+
+	return &pb_svc_db.UpdateBatteryLevelRes{
+
 	}, nil
 }

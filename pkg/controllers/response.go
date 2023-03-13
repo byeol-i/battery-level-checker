@@ -22,6 +22,7 @@ func respondJSON(resp http.ResponseWriter, status int, message string, payload i
 	resp.Header().Set("Content-Type", "application/json")
 	resp.WriteHeader(status)
 	resp.Write([]byte(response))
+	return
 }
 
 func respondError(resp http.ResponseWriter, code int, message string) {

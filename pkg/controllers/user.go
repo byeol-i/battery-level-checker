@@ -8,9 +8,7 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
 
-type UserControllers struct {
-
-}
+type UserControllers struct {}
 
 func NewUserController() *UserControllers {
 	return &UserControllers{}

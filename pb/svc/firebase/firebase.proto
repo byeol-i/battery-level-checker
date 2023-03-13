@@ -18,7 +18,7 @@ message VerifyIdTokenReq {
 }
 
 message VerifyIdTokenRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }
 
 message CreateCustomTokenReq {
@@ -35,7 +35,7 @@ message GetUserReq {
 }
 
 message GetUserRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }
 
 message GetUserIdByIdTokenReq {
@@ -43,5 +43,5 @@ message GetUserIdByIdTokenReq {
 }
 
 message GetUserIdByIdTokenRes {
-    unit.common.ReturnMsg Result = 1;
+    unit.common.ReturnMsg result = 1;
 }
