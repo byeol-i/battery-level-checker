@@ -125,3 +125,29 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 		Devices: devices,
 	}, nil
 }
+
+
+func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb_svc_db.GetBatteryRes, error) {
+	// if in != nil {
+	// 	logger.Error("in is not nil")
+	// }
+
+	// raws, err := s.db.GetDevices(in.Uid)
+	// if err != nil {
+	// 	return &pb_svc_db.GetBatteryRes{
+	// 		Error: err.Error(),
+	// 	}, err
+	// }
+	
+	// var devices []*pb_unit_device.Device
+	// for _, v := range raws {
+	// 	device := &pb_unit_device.Device{
+	// 		Spec: v.GetProtoDeviceSpec(),
+	// 	}
+
+	// 	devices = append(devices, device)
+	// }
+
+	return &pb_svc_db.GetBatteryRes{
+	}, nil
+}

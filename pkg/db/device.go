@@ -85,6 +85,8 @@ func (db *Database) RemoveDevice(deviceId device.Id) error {
 	return nil
 }
 
+
+
 func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	const q = `
 	SELECT * FROM "Device" 

@@ -26,6 +26,8 @@ type DBClient interface {
 	AddDevice(ctx context.Context, in *AddDeviceReq, opts ...grpc.CallOption) (*AddDeviceRes, error)
 	RemoveDevice(ctx context.Context, in *RemoveDeviceReq, opts ...grpc.CallOption) (*RemoveDeviceRes, error)
 	GetDevices(ctx context.Context, in *GetDevicesReq, opts ...grpc.CallOption) (*GetDevicesRes, error)
+	GetBattery(ctx context.Context, in *GetBatteryReq, opts ...grpc.CallOption) (*GetBatteryRes, error)
+	GetAllBattery(ctx context.Context, in *GetAllBatteryReq, opts ...grpc.CallOption) (*GetAllBatteryRes, error)
 	// rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
 	UpdateBatteryLevel(ctx context.Context, in *UpdateBatteryLevelReq, opts ...grpc.CallOption) (*UpdateBatteryLevelRes, error)
 }
@@ -74,6 +76,24 @@ func (c *dBClient) GetDevices(ctx context.Context, in *GetDevicesReq, opts ...gr
 	return out, nil
 }
 
+func (c *dBClient) GetBattery(ctx context.Context, in *GetBatteryReq, opts ...grpc.CallOption) (*GetBatteryRes, error) {
+	out := new(GetBatteryRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/GetBattery", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dBClient) GetAllBattery(ctx context.Context, in *GetAllBatteryReq, opts ...grpc.CallOption) (*GetAllBatteryRes, error) {
+	out := new(GetAllBatteryRes)
+	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/GetAllBattery", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dBClient) UpdateBatteryLevel(ctx context.Context, in *UpdateBatteryLevelReq, opts ...grpc.CallOption) (*UpdateBatteryLevelRes, error) {
 	out := new(UpdateBatteryLevelRes)
 	err := c.cc.Invoke(ctx, "/pb.svc.db.DB/UpdateBatteryLevel", in, out, opts...)
@@ -91,6 +111,8 @@ type DBServer interface {
 	AddDevice(context.Context, *AddDeviceReq) (*AddDeviceRes, error)
 	RemoveDevice(context.Context, *RemoveDeviceReq) (*RemoveDeviceRes, error)
 	GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error)
+	GetBattery(context.Context, *GetBatteryReq) (*GetBatteryRes, error)
+	GetAllBattery(context.Context, *GetAllBatteryReq) (*GetAllBatteryRes, error)
 	// rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
 	UpdateBatteryLevel(context.Context, *UpdateBatteryLevelReq) (*UpdateBatteryLevelRes, error)
 	mustEmbedUnimplementedDBServer()
@@ -111,6 +133,12 @@ func (UnimplementedDBServer) RemoveDevice(context.Context, *RemoveDeviceReq) (*R
 }
 func (UnimplementedDBServer) GetDevices(context.Context, *GetDevicesReq) (*GetDevicesRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
+}
+func (UnimplementedDBServer) GetBattery(context.Context, *GetBatteryReq) (*GetBatteryRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBattery not implemented")
+}
+func (UnimplementedDBServer) GetAllBattery(context.Context, *GetAllBatteryReq) (*GetAllBatteryRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllBattery not implemented")
 }
 func (UnimplementedDBServer) UpdateBatteryLevel(context.Context, *UpdateBatteryLevelReq) (*UpdateBatteryLevelRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBatteryLevel not implemented")
@@ -200,6 +228,42 @@ func _DB_GetDevices_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DB_GetBattery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBatteryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBServer).GetBattery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.svc.db.DB/GetBattery",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBServer).GetBattery(ctx, req.(*GetBatteryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DB_GetAllBattery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllBatteryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBServer).GetAllBattery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.svc.db.DB/GetAllBattery",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBServer).GetAllBattery(ctx, req.(*GetAllBatteryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DB_UpdateBatteryLevel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateBatteryLevelReq)
 	if err := dec(in); err != nil {
@@ -240,6 +304,14 @@ var DB_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDevices",
 			Handler:    _DB_GetDevices_Handler,
+		},
+		{
+			MethodName: "GetBattery",
+			Handler:    _DB_GetBattery_Handler,
+		},
+		{
+			MethodName: "GetAllBattery",
+			Handler:    _DB_GetAllBattery_Handler,
 		},
 		{
 			MethodName: "UpdateBatteryLevel",

@@ -1,16 +1,14 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
-
+	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
-	"github.com/byeol-i/battery-level-checker/pkg/producer"
-	"github.com/gofrs/uuid"
 )
 
 type BatteryController struct {
@@ -37,6 +35,14 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	// if err != nil {
 	// 	panic(err)
 	// }
+
+	pattern := regexp.MustCompile(`/device/(\w+)`)
+    matches := pattern.FindStringSubmatch(req.URL.Path)
+	if len(matches) < 2 {
+        http.NotFound(resp, req)
+        return
+    }
+
 
 	newDevice := device.NewDevice()
 	
@@ -68,69 +74,24 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=[]models.Device{}}
 // @Router /battery/ [get]
-func (hdl *BatteryController) GetBatteryList(resp http.ResponseWriter, req *http.Request) {
-	t := time.Now()
-	uuid, err := uuid.NewV4()
+func (hdl *BatteryController) GetAllBattery(resp http.ResponseWriter, req *http.Request) {
+	
+	pattern := regexp.MustCompile(`/battery/(\w+)`)
+    matches := pattern.FindStringSubmatch(req.URL.Path)
+	if len(matches) < 2 {
+        http.NotFound(resp, req)
+        return
+    }
+
+	res, err := dbSvc.CallGetAllBattery(matches[1])
 	if err != nil {
-		log.Printf("%v", err)
+		respondError(resp, http.StatusBadRequest, err.Error())
 	}
 
-	mock1 := &device.DeviceImpl{
-		Id: uuid.String(),
-		BatteryLevel: device.BatteryLevel{
-			Time:          &t,
-			BatteryLevel:  20,
-			BatteryStatus: "charging",
-		},
-		Spec: device.DeviceSpec{
-			Name: "test1",
-			Type: "test",
-			OS: "test",
-			OSversion: "",
-			AppVersion: "",
-		},
-	}
 
-	mock2 := &device.DeviceImpl{
-		Id: uuid.String(),
-		BatteryLevel: device.BatteryLevel{
-			Time:          &t,
-			BatteryLevel:  20,
-			BatteryStatus: "charging",
-		},
-		Spec: device.DeviceSpec{
-			Name: "test2",
-			Type: "test",
-			OS: "test",
-			OSversion: "",
-			AppVersion: "",
-		},
-	}
-
-	mock3 := &device.DeviceImpl{
-		Id: uuid.String(),
-		BatteryLevel: device.BatteryLevel{
-			Time:          &t,
-			BatteryLevel:  20,
-			BatteryStatus: "charging",
-		},
-		Spec: device.DeviceSpec{
-			Name: "test3",
-			Type: "test",
-			OS: "test",
-			OSversion: "",
-			AppVersion: "",
-		},
-	}
-
-	data := []*device.DeviceImpl{
-		mock1,
-		mock2,
-		mock3,
-	}
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", data)
+	respondJSON(resp, http.StatusOK, "success", res)
 }
 
 // UpdateBatteryLevel godoc
@@ -170,7 +131,7 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 	// }
 	logger.Info("Update Battery")
 
-	producer.Write()
+	// producer.Write() 
 
 	respondJSON(resp, 200, "success", "")
 }

@@ -22,8 +22,11 @@ type DeviceInterface interface {
 	GetDeviceId() string
 	Validator() error
 	Clone() *Device
-	ToProto() (*pb_unit_device.Device, error)
+	ToProtoDevice() (*pb_unit_device.Device)
+	ToProtoBatteryLevel() (*pb_unit_device.BatteryLevel)
 }
+
+const timeFormat = "2006-01-02 15:04:05"
 
 type DeviceImpl struct {
 	Id string `validate:"required" json:"id" example:"1"`
@@ -127,12 +130,12 @@ func (d *Device) SetDeviceSpec(spec *DeviceSpec) error {
 	return nil
 }
 
-func (d *Device) ToProto() (*pb_unit_device.Device ,error) {
+func (d *Device) ToProtoDevice() (*pb_unit_device.Device) {
 	
 	pbUnit := &pb_unit_device.Device{}
 
 	id := &pb_unit_device.ID{
-		Uuid: d.Id,
+		Id: d.Id,
 	}
 
 	spec := &pb_unit_device.Spec{
@@ -146,5 +149,31 @@ func (d *Device) ToProto() (*pb_unit_device.Device ,error) {
 	pbUnit.Id = id
 	pbUnit.Spec = spec
 
-	return pbUnit, nil
+	return pbUnit
+}
+
+func (d *Device) ToProtoBatteryLevel() (*pb_unit_device.BatteryLevel) {
+	pbUnit := &pb_unit_device.BatteryLevel{}
+
+	pbUnit.BatteryLevel = int64(d.BatteryLevel.BatteryLevel)
+	pbUnit.BatteryStatus = d.BatteryLevel.BatteryStatus
+	pbUnit.Time = d.BatteryLevel.Time.GoString()
+
+	return pbUnit
+}
+
+func ProtoToBatteryLevel(pbBatteryLevel *pb_unit_device.BatteryLevel) (*BatteryLevel, error) {
+	const timeFormat = "2006-01-02 15:04:05"
+
+	batteryLevel := &BatteryLevel{}
+	batteryLevel.BatteryLevel = int(pbBatteryLevel.BatteryLevel)
+	batteryLevel.BatteryStatus = pbBatteryLevel.BatteryStatus
+
+	parseTime, err := time.Parse(time.RFC3339, pbBatteryLevel.Time)
+    if err != nil {
+        return nil, err
+    }
+	batteryLevel.Time = &parseTime 
+
+	return  batteryLevel, nil
 }

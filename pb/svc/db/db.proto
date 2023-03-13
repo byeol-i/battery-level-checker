@@ -12,8 +12,28 @@ service DB {
     rpc AddDevice(AddDeviceReq) returns (AddDeviceRes);
     rpc RemoveDevice(RemoveDeviceReq) returns (RemoveDeviceRes);
     rpc GetDevices(GetDevicesReq) returns (GetDevicesRes);
+    rpc GetBattery(GetBatteryReq) returns (GetBatteryRes);
+    rpc GetAllBattery(GetAllBatteryReq) returns (GetAllBatteryRes);
     // rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
     rpc UpdateBatteryLevel(UpdateBatteryLevelReq) returns (UpdateBatteryLevelRes);
+}
+
+message GetBatteryReq {
+    unit.device.ID id = 1;
+}
+
+message GetBatteryRes {
+    unit.device.BatteryLevel batteryLevel = 1;
+    string error = 2;
+}
+
+message GetAllBatteryReq {
+    unit.device.ID id = 1;
+}
+
+message GetAllBatteryRes {
+    repeated unit.device.BatteryLevel allBatteryLevel = 1;
+    string error = 2;
 }
 
 message AddNewUserReq {
@@ -54,7 +74,7 @@ message RemoveDeviceRes {
 
 message UpdateBatteryLevelReq {
     string id = 1;
-    unit.device.Device BatteryLevel = 2;
+    unit.device.BatteryLevel BatteryLevel = 2;
 }
 
 message UpdateBatteryLevelRes {

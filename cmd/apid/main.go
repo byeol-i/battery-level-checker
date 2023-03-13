@@ -3,10 +3,13 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"strconv"
+	"sync/atomic"
 	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
@@ -21,6 +24,27 @@ var (
 	noAuth = flag.Bool("noAuth", false, "for testing")
 	cacheExpirationTime = 3 * time.Second
 )
+
+type ConnectionWatcher struct {
+    n int64
+}
+
+func (cw *ConnectionWatcher) OnStateChange(conn net.Conn, state http.ConnState) {
+    switch state {
+    case http.StateNew:
+        cw.Add(1)
+    case http.StateHijacked, http.StateClosed:
+        cw.Add(-1)
+    }
+}
+
+func (cw *ConnectionWatcher) Count() int {
+    return int(atomic.LoadInt64(&cw.n))
+}
+
+func (cw *ConnectionWatcher) Add(c int64) {
+    atomic.AddInt64(&cw.n, c)
+}
 
 // @title Battery level checker API
 // @version 0.0.1
@@ -54,6 +78,7 @@ func realMain() error {
 	userCtrl := controllers.NewUserController()
 	rtr := router.NewRouter(notFoundCtrl, "v1")
 
+	var cw ConnectionWatcher
 
 	if (!*noAuth) {
 		rtr.Use(authCtrl.VerifyToken)
@@ -61,15 +86,20 @@ func realMain() error {
 		logger.Info("Didn't using auth server")
 	}
 
-	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetBatteryList)
-	rtr.AddRule("Battery", "GET", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.GetBattery)
-	rtr.AddRule("Battery", "POST", `/battery/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`, batteryCtrl.UpdateBattery)
+	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery/`, batteryCtrl.GetBattery)
+	rtr.AddRule("Battery", "POST", `/battery/`, batteryCtrl.UpdateBattery)
 	
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
 	rtr.AddRule("Device", "DELETE", `/device/`, deviceCtrl.DeleteDevice)
 
 	rtr.AddRule("User", "POST", "/user$", userCtrl.AddNewUser)
 	rtr.AddRule("User", "DELETE", "/user/", userCtrl.DeleteUser)
+
+
+	rtr.AddRule("Server", "GET", "/stress", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, strconv.Itoa(cw.Count()))
+	})
 	// rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)
 
 	_ = ctx
@@ -84,8 +114,10 @@ func realMain() error {
 
 		defer ln.Close()
 
-		srv := http.Server{Handler: rtr}
-		
+		srv := http.Server{
+			Handler: rtr,
+			ConnState: cw.OnStateChange,
+		}
 		err = srv.Serve(ln)
 
 		return err
