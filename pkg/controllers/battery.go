@@ -3,9 +3,7 @@ package controllers
 import (
 	"net/http"
 	"regexp"
-	"time"
 
-	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
@@ -30,12 +28,6 @@ func NewBatteryController() *BatteryController {
 // @Success 200 {object} models.JSONsuccessResult{data=models.Device{}}
 // @Router /battery/{deviceID} [get]
 func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Request) {
-	t := time.Now()
-	// uuid, err := uuid.NewV4()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	pattern := regexp.MustCompile(`/device/(\w+)`)
     matches := pattern.FindStringSubmatch(req.URL.Path)
 	if len(matches) < 2 {
@@ -43,25 +35,15 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
         return
     }
 
+	uid := req.Header.Get("Uid")
 
-	newDevice := device.NewDevice()
-	
-	newDevice.SetBatteryLevel(&device.BatteryLevel{
-		Time:          &t,
-		BatteryLevel:  20,
-		BatteryStatus: "charging",
-	})
-
-	// mock := &models.Device{
-	// 	DeviceID:      uuid.String(),
-	// 	Name:          req.URL.Path,
-	// 	Time:          &t,
-	// 	BatteryLevel:  20,
-	// 	BatteryStatus: "charging",
-	// }
+	res, err := dbSvc.CallGetBattery(matches[1], uid)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, err.Error())
+	}
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", newDevice.GetBatteryLevel())
+	respondJSON(resp, http.StatusOK, "success", res)
 }
 
 // GetBatteryList godoc
@@ -83,12 +65,12 @@ func (hdl *BatteryController) GetAllBattery(resp http.ResponseWriter, req *http.
         return
     }
 
-	res, err := dbSvc.CallGetAllBattery(matches[1])
+	uid := req.Header.Get("Uid")
+
+	res, err := dbSvc.CallGetAllBattery(matches[1], uid)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
 	}
-
-
 
 	// consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "success", res)

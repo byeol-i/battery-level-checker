@@ -6,9 +6,7 @@ import (
 	"regexp"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
-	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
-	"go.uber.org/zap"
 )
 
 type DeviceControllers struct {
@@ -80,8 +78,9 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
         return
     }
 
-	logger.Info("matches", zap.Any("1", matches))
-	err := dbSvc.CallRemoveDevice(matches[1])
+	uid := req.Header.Get("Uid")
+	
+	err := dbSvc.CallRemoveDevice(matches[1], uid)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
 		return

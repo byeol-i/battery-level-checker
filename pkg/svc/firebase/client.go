@@ -15,12 +15,12 @@ var (
 	addr = flag.String("auth addr", "battery_auth:50010", "auth grpc addr")
 )
 
-func CallVerifyToken(token string) error {
+func CallVerifyToken(token string) (string, error) {
 	// logger.Info("make grpc call at auth server", zap.String("token", token))
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer conn.Close()
 
@@ -33,13 +33,13 @@ func CallVerifyToken(token string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 
-	_, err = client.VerifyIdToken(ctx, in)
+	res, err := client.VerifyIdToken(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
-		return err
+		return "", err
 	}
 
-	return nil
+	return res.Result.Result, nil
 }
 
 func CallGetUser(uid string) error {

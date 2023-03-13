@@ -69,7 +69,7 @@ func main() {
 }
 
 func realMain() error {
-	wg, ctx := errgroup.WithContext(context.Background())
+	wg, _ := errgroup.WithContext(context.Background())
 
 	notFoundCtrl := &controllers.NotFoundController{}
 	batteryCtrl := controllers.NewBatteryController()
@@ -86,7 +86,7 @@ func realMain() error {
 		logger.Info("Didn't using auth server")
 	}
 
-	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery/`, batteryCtrl.GetAllBattery)
 	rtr.AddRule("Battery", "GET", `/battery/`, batteryCtrl.GetBattery)
 	rtr.AddRule("Battery", "POST", `/battery/`, batteryCtrl.UpdateBattery)
 	
@@ -100,9 +100,6 @@ func realMain() error {
 	rtr.AddRule("Server", "GET", "/stress", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, strconv.Itoa(cw.Count()))
 	})
-	// rtr.AddRule("Auth", "POST", `/auth/login$`, authCtrl.CreateCustom)
-
-	_ = ctx
 
 	wg.Go(func() error {
 		var err error

@@ -22,13 +22,14 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 		return nil
 	}
 
-	err := firebaseSvc.CallVerifyToken(token)
+	uid, err := firebaseSvc.CallVerifyToken(token)
 	if err != nil {
 		logger.Error("get some error", zap.Error(err))
 		respondError(resp, 401, err.Error())
 		return nil
 	}
 
+	req.Header.Set("Uid", uid)
 	return next
 }
 

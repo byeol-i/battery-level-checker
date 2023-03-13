@@ -9,5 +9,5 @@ message User {
 }
 
 message ID {
-    string uuid = 1;
+    string id = 1;
 }

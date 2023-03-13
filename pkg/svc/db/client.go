@@ -34,7 +34,7 @@ func CallAddNewUser(userSpec *user.UserImpl) error {
 	in := &pb_svc_db.AddNewUserReq{
 		User: &pb_unit_user.User{
 			Id: &pb_unit_user.ID{
-				Uuid: userSpec.Id,
+				Id: userSpec.Id,
 			},
 			Name: userSpec.Name,
 		},
@@ -80,7 +80,7 @@ func CallAddNewDevice(newDevice *device.Device) error {
 	return nil
 }
 
-func CallRemoveDevice(deviceID string) error {
+func CallRemoveDevice(deviceID string, uid string) error {
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -91,7 +91,7 @@ func CallRemoveDevice(deviceID string) error {
 	client := pb_svc_db.NewDBClient(conn)
 
 	in := &pb_svc_db.RemoveDeviceReq{
-		Id: deviceID,
+		
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
@@ -106,7 +106,7 @@ func CallRemoveDevice(deviceID string) error {
 	return nil
 }
 
-func CallGetAllBattery(deviceID string) ([]*device.BatteryLevel, error) {
+func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, error) {
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -117,8 +117,11 @@ func CallGetAllBattery(deviceID string) ([]*device.BatteryLevel, error) {
 	client := pb_svc_db.NewDBClient(conn)
 
 	in := &pb_svc_db.GetAllBatteryReq{
-		Id: &pb_unit_device.ID{
+		DeviceId: &pb_unit_device.ID{
 			Id: deviceID,
+		},
+		Uid: &pb_unit_user.ID{
+			Id: uid,
 		},
 	}
 
@@ -144,7 +147,7 @@ func CallGetAllBattery(deviceID string) ([]*device.BatteryLevel, error) {
 	return allBatteryLevel, nil
 }
 
-func CallGetBattery(deviceID string) (*device.BatteryLevel, error) {
+func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -155,8 +158,11 @@ func CallGetBattery(deviceID string) (*device.BatteryLevel, error) {
 	client := pb_svc_db.NewDBClient(conn)
 
 	in := &pb_svc_db.GetBatteryReq{
-		Id: &pb_unit_device.ID{
+		DeviceId: &pb_unit_device.ID{
 			Id: deviceID,
+		},
+		Uid: &pb_unit_user.ID{
+			Id: uid,
 		},
 	}
 
@@ -178,7 +184,7 @@ func CallGetBattery(deviceID string) (*device.BatteryLevel, error) {
 	return newBatteryLevel, nil
 }
 
-func CallUpdateBatteryLevel(deviceID string, batteryLevel *device.BatteryLevel) error {
+func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.BatteryLevel) error {
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -196,7 +202,12 @@ func CallUpdateBatteryLevel(deviceID string, batteryLevel *device.BatteryLevel) 
 			BatteryLevel: int64(batteryLevel.BatteryLevel),
 			BatteryStatus: batteryLevel.BatteryStatus,
 		},
-		Id: deviceID,
+		DeviceId: &pb_unit_device.ID{
+			Id: deviceID,
+		},
+		Uid: &pb_unit_user.ID{
+			Id: uid,
+		},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)

@@ -36,8 +36,8 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 		log.Fatalf("error initializing app: %v\n", err)
 		return nil, err
 	}
-	idTokenCache := cache.New(cacheExpirationTime, 1*time.Minute)
 
+	idTokenCache := cache.New(cacheExpirationTime, 1*time.Minute)
 
 	return &FirebaseApp{
 		app: app,
@@ -100,13 +100,13 @@ func VerifyIDTokenFromFirebase(app *FirebaseApp, ctx context.Context, idToken st
 				Error:  err,
 			}
 		}
-		cache.Set(idToken, decodedToken, cacheExpirationTime)
+
+		cache.Set(idToken, decodedToken.UID, cacheExpirationTime)
 
 		return GetResult{
-			Result: decodedToken,
+			Result: decodedToken.UID,
 			Error:  nil,
 		}
-
 	}
 }
 
@@ -149,7 +149,7 @@ func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (stri
 
 }
 
-func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
+func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
 	result := make(chan GetResult)
 
 	go func() {
@@ -157,18 +157,18 @@ func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*aut
 	}()
 	select {
 	case <-time.After(5 * time.Second):
-		return nil, errors.New("timed out")
+		return "", errors.New("timed out")
 	case result := <-result:
 		if result.Error != nil {
-			return nil, result.Error
+			return "", result.Error
 		}
 
-		if _, ok := result.Result.(*auth.Token); ok {
+		if _, ok := result.Result.(string); ok {
 			if (!ok) {
-				return nil, errors.New("Type error")
+				return "", errors.New("Type error")
 			}
 		}
 
-		return result.Result.(*auth.Token), nil
+		return result.Result.(string), nil
 	}
 }

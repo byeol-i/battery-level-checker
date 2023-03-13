@@ -86,7 +86,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 	// }
 
 	err := s.db.RemoveDevice(device.Id{
-		DeviceID: in.Id,
+		DeviceID: in.Uid.Id,
 	})
 	if err != nil {
 		logger.Error("Can't remove device", zap.Error(err))
@@ -105,7 +105,7 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.db.GetDevices(in.Uid)
+	raws, err := s.db.GetDevices(in.Uid.Id)
 	if err != nil {
 		return &pb_svc_db.GetDevicesRes{
 			Error: err.Error(),
