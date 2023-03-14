@@ -11,12 +11,12 @@ import (
 func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error {
 	const selectQuery = `
 	SELECT COUNT(*) FROM "Device"
-	WHERE "name" = $1 AND "type" = $2 AND "osName" = $3 AND "osVersion" = $4 AND "appVersion" = $5 AND "userId" = $6;	
+	WHERE "name" = $1 AND "type" = $2 AND "os_name" = $3 AND "os_version" = $4 AND "app_version" = $5 AND "user_id" = $6;	
 	`
 	
 	const insertQuery = `
 	INSERT INTO "Device" 
-	("name", "type", "osName", "osVersion", "appVersion", "userId") 
+	("name", "type", "os_name", "os_version", "app_version", "user_id") 
 	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING "id";
 	`
@@ -60,29 +60,26 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 }
 
 
-func (db *Database) RemoveDevice(deviceId device.Id) error {
+func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 	const q = `
 	DELETE FROM "Device" 
-	WHERE "id" = $1
+	WHERE "device_id" = $1 AND
+	"user_id" = $2
 	`
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
+	ctx := context.Background()
+	tx, err := db.Conn.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
 
-	res, err := db.Conn.ExecContext(ctx, q, deviceId)
+	_, err = tx.QueryContext(ctx, q, deviceId.DeviceID, uid)
 	if err != nil {
 		return err
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected == 0 {
-		return errors.New("no rows affected while deleting device with ID")
-	}
-
-	return nil
+	return tx.Commit()
 }
 
 
@@ -90,7 +87,7 @@ func (db *Database) RemoveDevice(deviceId device.Id) error {
 func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	const q = `
 	SELECT * FROM "Device" 
-	WHERE "userId" = $1
+	WHERE "user_id" = $1
 	`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -145,17 +142,58 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	return devices, nil
 }
 
-func (db *Database) GetDevice(deviceId string) (*device.DeviceSpec, error) {
+func (db *Database) GetDevice(deviceId string, uid string) (*device.DeviceSpec, error) {
 	const q = `
 	SELECT * FROM "Device"
+	WHERE "user_id" = $1 AND
+	"device_id" = $2
 	`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	res := db.Conn.QueryRowContext(ctx, q, deviceId)
+	res := db.Conn.QueryRowContext(ctx, q, uid, deviceId)
 	if res != nil {
 		return nil, errors.New(res.Err().Error())
 	}
-	return nil, nil
+
+	newDevice := device.NewDevice()
+
+	var (
+		Name       string 
+		Type       string 
+		OS         string 
+		OSversion  string 
+		AppVersion string 
+	)
+
+	err := res.Scan(
+		&Name,
+		&Type,
+		&OS,
+		&OSversion,
+		&AppVersion,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	
+	newDevice.SetDeviceSpec(
+		&device.DeviceSpec{
+			Name: Name,
+			Type: Type,
+			OS: OS,
+			OSversion: OSversion,
+			AppVersion: AppVersion,
+		},
+	)
+
+	err = device.SpecValidator(newDevice.GetDeviceSpec())
+	if err != nil {
+		return nil, err
+	}
+
+	return newDevice.GetDeviceSpec(), nil
 }

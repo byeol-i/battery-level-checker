@@ -87,7 +87,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 
 	err := s.db.RemoveDevice(device.Id{
 		DeviceID: in.Uid.Id,
-	})
+	}, in.Uid.Id)
 	if err != nil {
 		logger.Error("Can't remove device", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{
