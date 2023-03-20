@@ -9,43 +9,40 @@ import (
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
 )
 
-type BatteryController struct {}
-
-func NewBatteryController() *BatteryController {
-	return &BatteryController{}
+type BatteryController struct {
+	basePattern string
 }
 
-// GetBatteryLevel godoc
-// @Summary Get Battery Level
+func NewBatteryController(basePattern string) *BatteryController {
+	return &BatteryController{
+		basePattern: basePattern,
+	}
+}
+
+// GetUsersAllBattery godoc
+// @Summary Get User's all Battery Level
 // @Description Get devices's battery
 // @Tags Battery
 // @Accept json
 // @Produce json
-// @Param id path string true "Device ID"
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=models.Device{}}
-// @Router /battery/{deviceID} [get]
-func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Request) {
-	pattern := regexp.MustCompile(`/device/(\w+)`)
-    matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches) < 2 {
-        http.NotFound(resp, req)
-        return
-    }
-
+// @Router /battery/ [get]
+func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 
-	res, err := dbSvc.CallGetBattery(matches[1], uid)
+	res, err := dbSvc.CallGetUsersAllBattery(uid)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	// consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "success", res)
 }
 
-// GetBatteryList godoc
+// GetHistoryAllBattery godoc
 // @Summary Get All Device's Battery Level
 // @Description Get devices's battery
 // @Tags Battery
@@ -55,12 +52,11 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=[]models.Device{}}
 // @Router /battery/history/{deviceId}} [get]
-func (hdl *BatteryController) GetAllBattery(resp http.ResponseWriter, req *http.Request) {
-	
+func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
     matches := pattern.FindStringSubmatch(req.URL.Path)
 	if len(matches) < 2 {
-        http.NotFound(resp, req)
+        respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
 
@@ -69,6 +65,7 @@ func (hdl *BatteryController) GetAllBattery(resp http.ResponseWriter, req *http.
 	res, err := dbSvc.CallGetAllBattery(matches[1], uid)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	// consumer.GetTopics()
@@ -87,6 +84,13 @@ func (hdl *BatteryController) GetAllBattery(resp http.ResponseWriter, req *http.
 // @Failure 400 {object} models.JSONfailResult{}
 // @Router /battery/{deviceID} [put]
 func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
+	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
+    matches := pattern.FindStringSubmatch(req.URL.Path)
+	if len(matches) < 2 {
+        respondError(resp, http.StatusBadRequest, "Not valid")
+        return
+    }
+
 	// t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
 	// if err != nil {
 	// 	respondError(resp, 405, "time error")

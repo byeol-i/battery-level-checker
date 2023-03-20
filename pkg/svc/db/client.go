@@ -106,6 +106,44 @@ func CallRemoveDevice(deviceID string, uid string) error {
 	return nil
 }
 
+func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {
+	dialTimeout := 5 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	client := pb_svc_db.NewDBClient(conn)
+
+	in := &pb_svc_db.GetUsersAllBatteryLevelReq{
+		Uid: &pb_unit_user.ID{
+			Id: uid,
+		},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
+
+	res, err := client.GetUsersAllBatteryLevel(ctx, in)
+	if err != nil {
+		logger.Error("Can't call grpc call")
+		return nil, err
+	}
+	
+	allBatteryLevel := []*device.BatteryLevel{}
+	for _, v := range res.AllBatteryLevel {
+		newBatteryLevel, err := device.ProtoToBatteryLevel(v)
+		if err != nil {
+			logger.Error("Can't make pb to batteryLevel struct", zap.Error(err))
+		}
+
+		allBatteryLevel = append(allBatteryLevel, newBatteryLevel)
+	}
+
+	return allBatteryLevel, nil
+}
+
 func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, error) {
 	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))

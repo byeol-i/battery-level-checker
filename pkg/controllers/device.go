@@ -2,19 +2,23 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"regexp"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 )
 
 type DeviceControllers struct {
-
+	basePattern string
 }
 
-func NewDeviceController() *DeviceControllers {
-	return &DeviceControllers{}
+func NewDeviceController(basePattern string) *DeviceControllers {
+	return &DeviceControllers{
+		basePattern: basePattern,
+	}
 }
 
 // AddDevice godoc
@@ -34,11 +38,13 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	err := json.NewDecoder(req.Body).Decode(&deviceSpec)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, "invalid format")
+		return
 	}
 
 	err = device.SpecValidator(&deviceSpec)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())	
+		return
 	}
 
 	newDevice := device.NewDevice()
@@ -71,12 +77,15 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.Request) {
 	// deviceID := req.URL.Path
 	// var matches []string
-	pattern := regexp.MustCompile(`/device/(\w+)`)
+	pattern := regexp.MustCompile(hdl.basePattern + `/device/(\\w+)`)
+	log.Println(req.URL.Path)
     matches := pattern.FindStringSubmatch(req.URL.Path)
 	if len(matches) < 2 {
-        http.NotFound(resp, req)
+        respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
+
+	logger.Info("!!!")
 
 	uid := req.Header.Get("Uid")
 	

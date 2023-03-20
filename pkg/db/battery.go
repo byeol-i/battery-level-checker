@@ -24,6 +24,37 @@ func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLeve
 	return batteryLevel, nil
 }
 
+func (db *Database) GetUsersAllBatteryLevels(uid string) ([]*device.BatteryLevel, error) {
+	var batteryLevels []*device.BatteryLevel
+
+	q := `
+	SELECT * FROM "BatteryLevel"
+	WHERE "user_id" = $1`
+
+	rows, err := db.Conn.Query(q, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		batteryLevel := &device.BatteryLevel{}
+		err := rows.Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
+		if err != nil {
+			log.Printf("failed to scan row: %v", err)
+			continue
+		}
+		batteryLevels = append(batteryLevels, batteryLevel)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate rows: %v", err) 
+	}
+
+	return batteryLevels, nil
+}
+
 func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.BatteryLevel, error) {
 	var batteryLevels []*device.BatteryLevel
 

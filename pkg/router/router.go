@@ -44,7 +44,7 @@ func (rtr *Router) AddRule(name string, method, pattern string, handler http.Han
 		handler: handler,
 	}
 	rtr.rules = append(rtr.rules, newRule)
-	logger.Info("add router rule :", zap.String("name", name), zap.String("pattern", pattern))
+	logger.Info("add router rule :", zap.String("name", name), zap.String("pattern", "^/api/" + rtr.version + pattern))
 }
 
 func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

@@ -14,8 +14,18 @@ service DB {
     rpc GetDevices(GetDevicesReq) returns (GetDevicesRes);
     rpc GetBattery(GetBatteryReq) returns (GetBatteryRes);
     rpc GetAllBattery(GetAllBatteryReq) returns (GetAllBatteryRes);
+    rpc GetUsersAllBatteryLevel(GetUsersAllBatteryLevelReq) returns (GetUsersAllBatteryLevelRes);
     // rpc GetDeviceDetails(GetDeviceDetailsReq) returns (GetDeviceDetailsRes);
     rpc UpdateBatteryLevel(UpdateBatteryLevelReq) returns (UpdateBatteryLevelRes);
+}
+
+message GetUsersAllBatteryLevelReq {
+    unit.user.ID uid = 1;
+}
+
+message GetUsersAllBatteryLevelRes {
+    repeated unit.device.BatteryLevel allBatteryLevel = 1;
+    string error = 2;
 }
 
 message GetBatteryReq {

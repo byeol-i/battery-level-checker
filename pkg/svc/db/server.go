@@ -179,6 +179,36 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	}, nil
 }
 
+
+func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUsersAllBatteryLevelReq) (*pb_svc_db.GetUsersAllBatteryLevelRes, error) {
+	// if in != nil {
+	// 	logger.Error("in is not nil")
+	// }
+
+	raws, err := s.db.GetUsersAllBatteryLevels(in.Uid.Id)
+	if err != nil {
+		return &pb_svc_db.GetUsersAllBatteryLevelRes{
+			Error: err.Error(),
+		}, err
+	}
+	
+	var batteryLevels []*pb_unit_device.BatteryLevel
+	for _, v := range raws {
+		newBatteryLevel := &pb_unit_device.BatteryLevel{
+			Time: v.Time.GoString(),
+			BatteryLevel: int64(v.BatteryLevel),
+			BatteryStatus: v.BatteryStatus,
+		}
+
+
+		batteryLevels = append(batteryLevels, newBatteryLevel)
+	}
+
+	return &pb_svc_db.GetUsersAllBatteryLevelRes{
+		AllBatteryLevel: batteryLevels,
+	}, nil
+}
+
 func (s DBSrv) UpdateBatteryLevel(ctx context.Context, in *pb_svc_db.UpdateBatteryLevelReq) (*pb_svc_db.UpdateBatteryLevelRes, error) {
 	// if in != nil {
 	// 	logger.Error("in is not nil")

@@ -21,8 +21,9 @@ import (
 )
 
 var (
-	noAuth = flag.Bool("noAuth", false, "for testing")
+	noAuth = flag.Bool("noAuth", true, "for testing")
 	cacheExpirationTime = 3 * time.Second
+	apiVersion = "v1"
 )
 
 type ConnectionWatcher struct {
@@ -72,11 +73,13 @@ func realMain() error {
 	wg, _ := errgroup.WithContext(context.Background())
 
 	notFoundCtrl := &controllers.NotFoundController{}
-	batteryCtrl := controllers.NewBatteryController()
-	deviceCtrl := controllers.NewDeviceController()
+	batteryCtrl := controllers.NewBatteryController("^/api/"+apiVersion)
+	deviceCtrl := controllers.NewDeviceController("^/api/"+apiVersion)
 	authCtrl := controllers.NewAuthController()
-	userCtrl := controllers.NewUserController()
-	rtr := router.NewRouter(notFoundCtrl, "v1")
+	userCtrl := controllers.NewUserController("^/api/"+apiVersion)
+
+
+	rtr := router.NewRouter(notFoundCtrl, apiVersion)
 
 	var cw ConnectionWatcher
 
@@ -86,16 +89,17 @@ func realMain() error {
 		logger.Info("Didn't using auth server")
 	}
 
-	rtr.AddRule("Battery", "GET", `/battery/history/`, batteryCtrl.GetAllBattery)
-	rtr.AddRule("Battery", "GET", `/battery/`, batteryCtrl.GetBattery)
-	rtr.AddRule("Battery", "POST", `/battery/`, batteryCtrl.UpdateBattery)
+	rtr.AddRule("Battery", "GET", `/battery/history/([0-9]+)*$`, batteryCtrl.GetHistoryAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetUsersAllBattery)
+	rtr.AddRule("Battery", "POST", `/battery/([0-9]+)*$`, batteryCtrl.UpdateBattery)
 	
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
-	rtr.AddRule("Device", "DELETE", `/device/`, deviceCtrl.DeleteDevice)
+	rtr.AddRule("Device", "DELETE", `/device/([0-9]+)*$`, deviceCtrl.DeleteDevice)
 
 	rtr.AddRule("User", "POST", "/user$", userCtrl.AddNewUser)
-	rtr.AddRule("User", "DELETE", "/user/", userCtrl.DeleteUser)
 
+	// is it need for User...?
+	// rtr.AddRule("User", "GET", "/user/$", userCtrl.DeleteUser)
 
 	rtr.AddRule("Server", "GET", "/stress", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, strconv.Itoa(cw.Count()))
