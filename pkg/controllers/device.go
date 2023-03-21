@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"regexp"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
+	"go.uber.org/zap"
 )
 
 type DeviceControllers struct {
@@ -54,7 +54,11 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 		return
 	}
 
-	err = dbSvc.CallAddNewDevice(newDevice)
+	uid := req.Header.Get("Uid")
+	logger.Info("Add New device", zap.String("uid", uid))
+	
+
+	err = dbSvc.CallAddNewDevice(newDevice, uid)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
 		return
@@ -75,19 +79,16 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Router /device/{deviceID} [delete]
 func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.Request) {
-	// deviceID := req.URL.Path
-	// var matches []string
 	pattern := regexp.MustCompile(hdl.basePattern + `/device/(\\w+)`)
-	log.Println(req.URL.Path)
+	
     matches := pattern.FindStringSubmatch(req.URL.Path)
 	if len(matches) < 2 {
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
 
-	logger.Info("!!!")
-
 	uid := req.Header.Get("Uid")
+	logger.Info("Delete device", zap.String("uid", uid), zap.String("device", matches[1]))
 	
 	err := dbSvc.CallRemoveDevice(matches[1], uid)
 	if err != nil {

@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	noAuth = flag.Bool("noAuth", true, "for testing")
+	noAuth = flag.Bool("noAuth", false, "for testing")
 	cacheExpirationTime = 3 * time.Second
 	apiVersion = "v1"
 )

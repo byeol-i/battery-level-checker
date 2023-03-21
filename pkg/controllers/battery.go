@@ -6,6 +6,7 @@ import (
 
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
+	"go.uber.org/zap"
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
 )
 
@@ -32,6 +33,7 @@ func NewBatteryController(basePattern string) *BatteryController {
 func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 
+	
 	res, err := dbSvc.CallGetUsersAllBattery(uid)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())
@@ -61,6 +63,8 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
     }
 
 	uid := req.Header.Get("Uid")
+	logger.Info("GetHistoryAllBattery", zap.String("uid", uid), zap.String("device", matches[1]))
+	
 
 	res, err := dbSvc.CallGetAllBattery(matches[1], uid)
 	if err != nil {

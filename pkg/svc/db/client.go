@@ -52,7 +52,7 @@ func CallAddNewUser(userSpec *user.UserImpl) error {
 	return nil
 }
 
-func CallAddNewDevice(newDevice *device.Device) error {
+func CallAddNewDevice(newDevice *device.Device, uid string) error {
 	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -66,6 +66,7 @@ func CallAddNewDevice(newDevice *device.Device) error {
 
 	in := &pb_svc_db.AddDeviceReq{
 		Device: pbUnit,
+		Uid: uid,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
