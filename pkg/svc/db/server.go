@@ -16,12 +16,14 @@ import (
 
 type DBSrv struct {
 	pb_svc_db.DBServer
-	db db.Database
+	primaryDB db.Database
+	slaveDB db.Database
 }
 
-func NewDBServiceServer(database *db.Database) *DBSrv {
+func NewDBServiceServer(primaryDB *db.Database, slaveDB *db.Database) *DBSrv {
 	return &DBSrv{
-		db: *database,
+		primaryDB: *primaryDB,
+		slaveDB: *slaveDB,
 	}
 }
 
@@ -38,7 +40,7 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	err = s.db.AddNewUser(newUser.UserImpl)
+	err = s.primaryDB.AddNewUser(newUser.UserImpl)
 	if err != nil {
 		return &pb_svc_db.AddNewUserRes{Result: &common.ReturnMsg{
 				Error: err.Error(),
@@ -67,7 +69,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.db.AddNewDevice(*newDevice.GetDeviceSpec(), in.Uid)
+	err = s.primaryDB.AddNewDevice(*newDevice.GetDeviceSpec(), in.Uid)
 	if err != nil {
 		logger.Error("Can't add new device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -85,7 +87,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 	// 	logger.Error("in is not nil")
 	// }
 
-	err := s.db.RemoveDevice(device.Id{
+	err := s.primaryDB.RemoveDevice(device.Id{
 		DeviceID: in.Uid.Id,
 	}, in.Uid.Id)
 	if err != nil {
@@ -105,7 +107,7 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.db.GetDevices(in.Uid.Id)
+	raws, err := s.slaveDB.GetDevices(in.Uid.Id)
 	if err != nil {
 		return &pb_svc_db.GetDevicesRes{
 			Error: err.Error(),
@@ -132,7 +134,7 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	raw, err := s.db.GetBattery(in.DeviceId.Id, in.Uid.Id)
+	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Id)
 	if err != nil {
 		return &pb_svc_db.GetBatteryRes{
 			Error: err.Error(),
@@ -155,7 +157,7 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.db.GetAllBatteryLevels(in.DeviceId.Id, in.Uid.Id)
+	raws, err := s.slaveDB.GetAllBatteryLevels(in.DeviceId.Id, in.Uid.Id)
 	if err != nil {
 		return &pb_svc_db.GetAllBatteryRes{
 			Error: err.Error(),
@@ -185,7 +187,7 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.db.GetUsersAllBatteryLevels(in.Uid.Id)
+	raws, err := s.slaveDB.GetUsersAllBatteryLevels(in.Uid.Id)
 	if err != nil {
 		return &pb_svc_db.GetUsersAllBatteryLevelRes{
 			Error: err.Error(),

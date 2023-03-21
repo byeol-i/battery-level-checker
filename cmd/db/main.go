@@ -36,29 +36,41 @@ func realMain() error {
 	flag.Parse()
 
 	// get env from docker, not a config pkg
-	dbAddr := os.Getenv("DB_ADDR")
-	dbPort := os.Getenv("DB_PORT")
+	primaryDBAddr := os.Getenv("DB_PRIMARY_ADDR")
+	primaryDBPort := os.Getenv("DB_PRIMARY_PORT")
 	dbUser := os.Getenv("DB_USER")
 	dbPasswd := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
 
-	dbport, err := strconv.Atoi(dbPort)
+
+	replicaDBAddr := os.Getenv("DB_REPLICA_ADDR")
+	replicaDBPort := os.Getenv("DB_REPLICA_PORT")
+
+	primaryDBport, err := strconv.Atoi(primaryDBPort)
 	if err != nil {
-		fmt.Errorf("Can't read dbPort!: %v %v", dbPort, err)
-		dbport = 8432
+		fmt.Errorf("Can't read dbPort!: %v %v", primaryDBPort, err)
+		primaryDBport = 8432
 	}
 
+	replicaDBport, err := strconv.Atoi(replicaDBPort)
+	if err != nil {
+		fmt.Errorf("Can't read dbPort!: %v %v", replicaDBPort, err)
+		primaryDBport = 8432
+	}
+
+
 	if *test {
-		dbAddr = "localhost"
-		dbport = 5432
+		primaryDBAddr = "localhost"
+		primaryDBport = 5432
 		dbUser = "table_admin"
 		dbPasswd = "HelloWorld"
 		dbName = "battery"
 	}
+	
 
-	myDB, err := db.ConnectDB(&db.DBConfig{
-		Host:     dbAddr,
-		Port:     dbport,
+	primaryDB, err := db.ConnectDB(&db.DBConfig{
+		Host:     primaryDBAddr,
+		Port:     primaryDBport,
 		User:     dbUser,
 		Password: dbPasswd,
 		DBname:   dbName,
@@ -71,6 +83,25 @@ func realMain() error {
 	if err != nil {
 		return err
 	}
+
+	slaveDB, err := db.ConnectDB(&db.DBConfig{
+		Host:     replicaDBAddr,
+		Port:     replicaDBport,
+		User:     dbUser,
+		Password: dbPasswd,
+		DBname:   dbName,
+		SSLmode:  "disable",
+		// Sslmode : "verify-full",
+		// Sslrootcert : "keys/ca.crt",
+		// Sslkey : "keys/client.key",
+		// Sslsert : "keys/client.crt",
+	})
+	if err != nil {
+		return err
+	}
+
+
+
 	gRPCL, err := net.Listen("tcp", *grpcAddr)
 	if err != nil {
 		return err
@@ -80,7 +111,7 @@ func realMain() error {
 
 	grpcServer := grpc.NewServer(opts...)
 
-	dbSrv := server.NewDBServiceServer(myDB)
+	dbSrv := server.NewDBServiceServer(primaryDB, slaveDB)
 	pb_svc_db.RegisterDBServer(grpcServer, dbSrv)
 
 	wg, _ := errgroup.WithContext(context.Background())

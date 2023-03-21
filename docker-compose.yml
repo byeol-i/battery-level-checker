@@ -30,9 +30,11 @@ services:
         networks:
             - kafka-network
         environment:
-            - DB_ADDR=pgmaster
+            - DB_PRIMARY_ADDR=pgmaster
+            - DB_REPLICA_ADDR=pgslave
             - DB_USER=table_admin
-            - DB_PORT=5432
+            - DB_PRIMARY_PORT=5432
+            - DB_REPLICA_PORT=8432
             - DB_PASSWORD=HelloWorld
             - DB_NAME=battery
         depends_on:
