@@ -40,7 +40,7 @@ services:
             - DB_PRIMARY_ADDR=pgmaster
             - DB_PRIMARY_PORT=5432
             - DB_REPLICA_ADDR=pgslave
-            - DB_REPLICA_PORT=8432
+            - DB_REPLICA_PORT=5432
             - DB_USER=table_admin
             - DB_PASSWORD=HelloWorld
             - DB_NAME=battery

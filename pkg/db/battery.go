@@ -18,7 +18,8 @@ func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLeve
 	batteryLevel := &device.BatteryLevel{}
 	err := db.Conn.QueryRow(q, deviceId, uid).Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
 	if err != nil {
-		return nil, err
+		
+		return nil, ErrorHandlingMsg(err)
 	}
 
 	return batteryLevel, nil
@@ -33,7 +34,7 @@ func (db *Database) GetUsersAllBatteryLevels(uid string) ([]*device.BatteryLevel
 
 	rows, err := db.Conn.Query(q, uid)
 	if err != nil {
-		return nil, err
+		return nil, ErrorHandlingMsg(err)
 	}
 
 	defer rows.Close()
@@ -65,7 +66,7 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 
 	rows, err := db.Conn.Query(q, deviceId, uid)
 	if err != nil {
-		return nil, err
+		return nil, ErrorHandlingMsg(err)
 	}
 
 	defer rows.Close()
@@ -95,12 +96,12 @@ func (db *Database) UpdateBattery(deviceId string, uid string, batteryLevel *dev
 
 	err := device.BatteryLevelValidator(batteryLevel)
 	if err != nil {
-		return err
+		return ErrorHandlingMsg(err)
 	}
 
 	_, err = db.Conn.Exec(q, deviceId, uid, batteryLevel.Time, batteryLevel.BatteryLevel, batteryLevel.BatteryStatus)
 	if err != nil {
-		return err
+		return ErrorHandlingMsg(err)
 	}
 
 	return nil

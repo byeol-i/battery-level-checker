@@ -4,7 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
+	"go.uber.org/zap"
 )
 
 type Database struct {
@@ -39,4 +42,17 @@ func ConnectDB(config *DBConfig) (*Database, error) {
 	// defer db.Close()
 
 	return &Database{Conn: db}, nil
+}
+
+func ErrorHandlingMsg(err error) (error) {
+	if err, ok := err.(*pq.Error); ok {
+		logger.Error("pq Error!", zap.Error(err), zap.Any("pq code",err.Code))
+		switch {
+		// case errors.As(err, *pq.Error.)
+		default:
+			return err
+		}
+	}
+
+	return err
 }
