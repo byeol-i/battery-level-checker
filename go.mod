@@ -10,7 +10,7 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/swaggo/echo-swagger v1.3.5
-	github.com/swaggo/swag v1.8.10
+	github.com/swaggo/swag v1.16.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/api v0.109.0
@@ -71,12 +71,12 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
