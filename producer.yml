@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+    producer:
+        build:
+            context: .
+            dockerfile: testing/Dockerfile
+        networks:
+            - kafka-network
+
+networks:
+    kafka-network:
+        external: true

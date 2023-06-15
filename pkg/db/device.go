@@ -94,8 +94,6 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	defer cancel()
 
 	var devices []*device.Device
-
-
 	
 	rows, err := db.Conn.QueryContext(ctx, q, uid)
 	if err != nil {
@@ -179,7 +177,6 @@ func (db *Database) GetDevice(deviceId string, uid string) (*device.DeviceSpec, 
 		return nil, err
 	}
 
-	
 	newDevice.SetDeviceSpec(
 		&device.DeviceSpec{
 			Name: Name,

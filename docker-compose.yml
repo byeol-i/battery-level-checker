@@ -1,101 +1,23 @@
 version: "3"
 
 services:
-    pgmaster:
-        image: db-primary
-        # image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
-        hostname: pgmaster
-        networks:
-            - kafka-network
-        ports:
-            - "5432:5432"
-        environment:
-            POSTGRES_DB: battery
-            POSTGRES_USER: table_admin
-            POSTGRES_PASSWORD: HelloWorld
-            POSTGRES_INITDB_ARGS: --encoding=UTF-8
-            # PGDATA: /var/lib/postgresql
-    apid:
-        container_name: apid
-        image: apid
-        ports:
-            - "80:80"
-        networks:
-            - kafka-network
-    db:
-        container_name: db
-        image: db
-        ports:
-            - "50012:50012"
+    consumer:
+        build:
+            context: .
+            dockerfile: cmd/consumer/Dockerfile
         networks:
             - kafka-network
         environment:
-            - DB_PRIMARY_ADDR=pgmaster
-            - DB_REPLICA_ADDR=pgslave
-            - DB_USER=table_admin
-            - DB_PRIMARY_PORT=5432
-            - DB_REPLICA_PORT=8432
-            - DB_PASSWORD=HelloWorld
-            - DB_NAME=battery
-        depends_on:
-            - pgmaster
-    auth:
-        image: auth
-        ports:
-            - "50010:50010"
+            - TZ=Asia/Seoul
+    producer:
+        build:
+            context: .
+            dockerfile: testing/Dockerfile
         networks:
             - kafka-network
-        secrets:
-            - firebase-key
         environment:
-            - SWARM=true
-    # producer:
-    #     # container_name: producer
-    #     image: producer
-    #     networks:
-    #         - kafka-network
-    # consumer:
-    #     # container_name: consumer
-    #     image: consumer
-    #     networks:
-    #         - kafka-network
+            - TZ=Asia/Seoul
 
 networks:
     kafka-network:
         external: true
-
-secrets:
-    firebase-key:
-        file: ./conf/firebase/key.json
-# zoo1:
-#     image: wurstmeister/zookeeper:3.4.6
-#     networks:
-#         - kafka-network
-#     ports:
-#         - "2181:2181"
-# kafka-1:
-#     image: wurstmeister/kafka:2.12-2.3.0
-#     networks:
-#         - kafka-network
-#     depends_on:
-#         - zoo1
-#     ports:
-#         - "9094:9094"
-#     environment:
-#         HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
-#         KAFKA_BROKER_ID: 1
-#         DOCKER_API_VERSION: 1.41
-#         KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
-#         KAFKA_DEFAULT_REPLICATION_FACTOR: 1
-#         KAFKA_MIN_INSYNC_REPLICAS: 1
-#         KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
-#         KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: "true"
-#         KAFKA_CONTROLLER_SHUTDOWN_ENABLE: "true"
-#         KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
-#         KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
-#         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-#         KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-#         KAFKA_LOG_RETENTION_BYTES: -1
-#         KAFKA_LOG_RETENTION_DAYS: 2
-#     volumes:
-#         - /var/run/docker.sock:/var/run/docker.sock

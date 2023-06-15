@@ -39,7 +39,7 @@ func ConnectDB(config *DBConfig) (*Database, error) {
 		return nil, err
 	}
 
-	// defer db.Close()
+	defer db.Close() 
 
 	return &Database{Conn: db}, nil
 }

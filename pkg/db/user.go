@@ -11,7 +11,7 @@ import (
 
 func (db *Database) AddNewUser(userSpec user.UserImpl) error {
 	const q = `
-	INSERT INTO "User" ("id", "name") 
+	INSERT INTO "User" ("user_id", "name") 
 	VALUES ($1, $2)
 	`
 

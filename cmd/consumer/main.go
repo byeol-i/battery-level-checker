@@ -11,11 +11,11 @@ import (
 
 var (
 	brokerList = flag.String("brokerList", "kafka-1:9092", "List of brokers to connect")
-	topic = flag.String("topic", "important", "Topic name")
+	topic = flag.String("topic", "device_event", "Topic name")
 	partition = flag.Int("partition", 0, "Partition number")
 	offsetType = flag.Int("offsetType", -1, "Offset Type (OffsetNewest | OffsetOldest)")
 	messageCountStart = flag.Int("messageCountStart", 0, "Message counter start from:")
-	)
+)
 
 func main() {
 	flag.Parse()
@@ -46,6 +46,9 @@ func main() {
 				log.Println(err)
 			case msg := <-consumer.Messages():
 				*messageCountStart++
+				for i, val := range msg.Headers {
+					log.Printf("i: %v, key: %v, value: %v", i, string(val.Key), string(val.Value))
+				}
 				log.Println("Received messages", string(msg.Key), string(msg.Value))
 			case <-signals:
 				log.Println("Interrupt is detected")
