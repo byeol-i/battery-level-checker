@@ -139,14 +139,16 @@ func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (stri
 		return "", err
 	}
 
-	token, err := client.CustomToken(ctx, uid)
+	// token, err := client.CustomToken(ctx, uid)
+	token, err := client.CustomTokenWithClaims(context.Background(), uid, map[string]interface{}{
+		"exp": time.Now().Add(365 * 24 * time.Hour).Unix(), 
+	})
 	if err != nil {
 		logger.Error("Can't create custom token!", zap.Error(err))
 		return "", err
 	}
 
 	return token, nil
-
 }
 
 func (hdl *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
