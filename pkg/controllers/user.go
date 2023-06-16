@@ -72,25 +72,28 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 // @Router /user/token [post]
 func (hdl *UserControllers) CreateCustomToken(resp http.ResponseWriter, req *http.Request) {
 	var tokenSpec user.Token
-	err := json.NewDecoder(req.Body).Decode(&tokenSpec)
-	if err != nil {
-		respondError(resp, http.StatusBadRequest, "invalid format")
-		return
-	}
 
-	err = user.TokenValidator(&tokenSpec)
+	tokenSpec.Token = req.Header.Get("Authorization")
+	tokenSpec.Uid = req.Header.Get("Uid")
+	// err := json.NewDecoder(req.Body).Decode(&tokenSpec)
+	// if err != nil {
+	// 	respondError(resp, http.StatusBadRequest, "invalid format")
+	// 	return
+	// }
+
+	err := user.TokenValidator(&tokenSpec)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())	
 		return
 	}
 
-	err = firebaseSvc.CallCreateCustomToken(tokenSpec)
+	customToken, err := firebaseSvc.CallCreateCustomToken(tokenSpec)
 	if err != nil {
         respondError(resp, http.StatusBadRequest, "input is not valid")
 		return
 	}
 
-	respondJSON(resp, http.StatusOK, "success", nil)
+	respondJSON(resp, http.StatusOK, "success", customToken)
 }
 
 // DeleteUser godoc

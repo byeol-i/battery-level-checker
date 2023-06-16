@@ -71,13 +71,13 @@ func CallGetUser(uid string) error {
 	return nil
 }
 
-func CallCreateCustomToken(token user.Token) error {
+func CallCreateCustomToken(token user.Token) (string, error) {
 	// logger.Info("make grpc call at auth server", zap.String("uid", uid))
 
 	dialTimeout := 3 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer conn.Close()
 
@@ -91,11 +91,11 @@ func CallCreateCustomToken(token user.Token) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 
-	_, err = client.CreateCustomToken(ctx, in)
+	res, err := client.CreateCustomToken(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
-		return err
+		return "", err
 	}
 
-	return nil
+	return res.Token, nil
 }
