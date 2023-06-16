@@ -7,6 +7,7 @@ import (
 
 	pb_svc_firebase "github.com/byeol-i/battery-level-checker/pb/svc/firebase"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -62,6 +63,35 @@ func CallGetUser(uid string) error {
 	defer cancel()
 
 	_, err = client.GetUser(ctx, in)
+	if err != nil {
+		logger.Error("Can't call grpc call")
+		return err
+	}
+
+	return nil
+}
+
+func CallCreateCustomToken(token user.Token) error {
+	// logger.Info("make grpc call at auth server", zap.String("uid", uid))
+
+	dialTimeout := 3 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	client := pb_svc_firebase.NewFirebaseClient(conn)
+
+	in := &pb_svc_firebase.CreateCustomTokenReq{
+		Uid: token.Uid,
+		AccessToken: token.Token,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
+
+	_, err = client.CreateCustomToken(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
 		return err

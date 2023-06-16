@@ -23,6 +23,7 @@ message VerifyIdTokenRes {
 
 message CreateCustomTokenReq {
     string uid = 1;
+    string accessToken = 2;
 }
 
 message CreateCustomTokenRes {

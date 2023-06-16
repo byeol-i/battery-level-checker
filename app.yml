@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.5"
 
 services:
     apid:
@@ -8,6 +8,16 @@ services:
             - kafka-network
             - traefik-network
         deploy:
+            update_config:
+                parallelism: 2
+                order: start-first
+                failure_action: rollback
+                delay: 10s
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 3
+                window: 120s
             labels:
                 - traefik.enable=true
                 - traefik.docker.network=traefik-network
@@ -30,6 +40,16 @@ services:
         environment:
             - SWARM="true"
         deploy:
+            update_config:
+                parallelism: 2
+                order: start-first
+                failure_action: rollback
+                delay: 10s
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 3
+                window: 120s
             placement:
                 constraints: [node.role==worker]
     db:

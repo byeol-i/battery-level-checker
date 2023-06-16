@@ -9,6 +9,11 @@ type User struct {
 	UserImpl 
 }
 
+type Token struct {
+	Uid string 
+	Token string
+}
+
 type UserImpl struct {
 	Id string `validate:"required" json:"id" example:"123"`
 	Name string `validate:"required" json:"name" example:"gil dong"`

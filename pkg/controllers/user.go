@@ -6,6 +6,8 @@ import (
 	"regexp"
 
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
+	firebaseSvc "github.com/byeol-i/battery-level-checker/pkg/svc/firebase"
+
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
 
@@ -51,6 +53,40 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 	err = dbSvc.CallAddNewUser(&newUser.UserImpl)
 	if err != nil {
         respondError(resp, http.StatusBadRequest, "User's form is not valid")
+		return
+	}
+
+	respondJSON(resp, http.StatusOK, "success", nil)
+}
+
+// CreateCustomToken godoc
+// @Summary Create custom token
+// @Description Create custom token
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param userInfo body models.Spec true "add user"
+// @Param Authorization header string true "With the bearer started"
+// @Failure 400 {object} models.JSONfailResult{}
+// @Success 200 {object} models.JSONsuccessResult{}
+// @Router /user/token [post]
+func (hdl *UserControllers) CreateCustomToken(resp http.ResponseWriter, req *http.Request) {
+	var tokenSpec user.Token
+	err := json.NewDecoder(req.Body).Decode(&tokenSpec)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, "invalid format")
+		return
+	}
+
+	err = user.TokenValidator(&tokenSpec)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, err.Error())	
+		return
+	}
+
+	err = firebaseSvc.CallCreateCustomToken(tokenSpec)
+	if err != nil {
+        respondError(resp, http.StatusBadRequest, "input is not valid")
 		return
 	}
 
