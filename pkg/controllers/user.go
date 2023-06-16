@@ -89,7 +89,7 @@ func (hdl *UserControllers) CreateCustomToken(resp http.ResponseWriter, req *htt
 
 	customToken, err := firebaseSvc.CallCreateCustomToken(tokenSpec)
 	if err != nil {
-        respondError(resp, http.StatusBadRequest, "input is not valid")
+        respondError(resp, http.StatusBadRequest, err.Error())
 		return
 	}
 

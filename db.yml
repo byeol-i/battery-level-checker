@@ -15,6 +15,7 @@ services:
             POSTGRES_USER: table_admin
             POSTGRES_PASSWORD: HelloWorld
             POSTGRES_INITDB_ARGS: --encoding=UTF-8
+            TZ: Asia/Seoul
             # PGDATA: /var/lib/postgresql
         deploy:
             placement:
@@ -35,6 +36,7 @@ services:
             POSTGRES_PASSWORD: HelloWorld
             POSTGRES_INITDB_ARGS: --encoding=UTF-8
             PGDATA: /var/lib/postgresql/data
+            TZ: Asia/Seoul
 volumes:
     postgres-vol:
 

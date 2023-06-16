@@ -7,6 +7,8 @@ services:
         networks:
             - kafka-network
             - traefik-network
+        environment:
+            - TZ=Asia/Seoul
         deploy:
             update_config:
                 parallelism: 2
@@ -39,6 +41,7 @@ services:
             - firebase-key
         environment:
             - SWARM="true"
+            - TZ=Asia/Seoul
         deploy:
             update_config:
                 parallelism: 2
@@ -64,6 +67,7 @@ services:
             - DB_USER=table_admin
             - DB_PASSWORD=HelloWorld
             - DB_NAME=battery
+            - TZ=Asia/Seoul
         deploy:
             placement:
                 constraints: [node.role==worker]
