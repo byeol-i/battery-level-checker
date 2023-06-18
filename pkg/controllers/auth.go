@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	firebaseSvc "github.com/byeol-i/battery-level-checker/pkg/svc/firebase"
@@ -22,19 +23,31 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 		return nil
 	}
 
-	uid, err := firebaseSvc.CallVerifyToken(token)
-	if err != nil {
-		logger.Error("get some error", zap.Error(err))
-		respondError(resp, 401, err.Error())
-		return nil
+	const bearerPrefix = "Bearer "
+	if strings.HasPrefix(token, bearerPrefix) {
+		token = token[len(bearerPrefix):]
+
+		uid, err := firebaseSvc.CallVerifyToken(token)
+		if err != nil {
+			logger.Error("get some error", zap.Error(err))
+			respondError(resp, 401, err.Error())
+			return nil
+		}
+
+		req.Header.Set("Uid", uid)
+		return next
 	}
 
-	req.Header.Set("Uid", uid)
+	// const customTokenPrefix = "Secret "
+	// if strings.HasPrefix(token, customTokenPrefix) {
+	// 	token = token[len(customTokenPrefix):]
+
+	// 	respondError(resp, 401, "Secret token not supported")
+	// 	return nil
+	// }
+
+	respondError(resp, 401, "Invalid token format")
 	return next
-}
-
-func (hdl *AuthControllers) SignUpByToken(resp http.ResponseWriter, req *http.Request) {
-
 }
 
 func (hdl *AuthControllers) ReturnServeHttp(code int, msg string) (ServeHTTP func(resp http.ResponseWriter, req *http.Request)) {

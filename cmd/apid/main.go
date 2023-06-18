@@ -96,7 +96,7 @@ func realMain() error {
 	rtr.AddRule("Device", "DELETE", `/device/([0-9]+)*$`, deviceCtrl.DeleteDevice)
 
 	rtr.AddRule("User", "POST", "/user$", userCtrl.AddNewUser)
-	rtr.AddRule("User", "POST", "/user/token$", userCtrl.CreateCustomToken)
+	rtr.AddRule("User", "POST", "/user/custom-token$", userCtrl.CreateCustomToken)
 
 	// is it need for User...?
 	// rtr.AddRule("User", "GET", "/user/$", userCtrl.DeleteUser)

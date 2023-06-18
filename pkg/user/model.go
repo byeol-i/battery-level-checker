@@ -32,7 +32,6 @@ func NewUser() *User {
 	return newUser
 }
 
-
 func NewUserFromProto(pbUser *pb_unit_user.User) (*User, error) {
 	newUser := &User{
 		UserImpl: UserImpl{
@@ -57,7 +56,6 @@ func (u *User) SetId(uid string) {
 	u.Id = uid
 }
 
-
 func (u *User) GetName() string {
 	return u.Name
 }
@@ -67,7 +65,6 @@ func (u *User) SetName(uName string) {
 }
 
 func (u *User) ToProto() (*pb_unit_user.User, error) {
-	
 	pbUnit := &pb_unit_user.User{}
 
 	id := &pb_unit_user.ID{
