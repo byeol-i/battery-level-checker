@@ -9,8 +9,8 @@ require (
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/lib/pq v1.10.7
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/swaggo/echo-swagger v1.3.5
-	github.com/swaggo/swag v1.8.10
+	github.com/swaggo/echo-swagger v1.4.0
+	github.com/swaggo/swag v1.8.12
 	go.uber.org/zap v1.24.0
 	golang.org/x/sync v0.2.0
 	google.golang.org/api v0.127.0
@@ -65,7 +65,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
+	github.com/swaggo/files/v2 v2.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
@@ -77,7 +77,7 @@ require (
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
