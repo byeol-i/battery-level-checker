@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package pb.svc.consumer;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/consumer";
+
+service Consumer {
+    rpc CreateNewMsg(CreateNewMsgReq) returns (CreateNewMsgRes);
+}
+
+message CreateNewMsgReq {
+    string uid = 1;
+}
+
+message CreateNewMsgRes {
+
+}

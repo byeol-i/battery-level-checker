@@ -9,14 +9,14 @@ services:
             - kafka-network
         environment:
             - TZ=Asia/Seoul
-    producer:
-        build:
-            context: .
-            dockerfile: testing/Dockerfile
-        networks:
-            - kafka-network
-        environment:
-            - TZ=Asia/Seoul
+    # producer:
+    #     build:
+    #         context: .
+    #         dockerfile: cmd/producer/Dockerfile
+    #     networks:
+    #         - kafka-network
+    #     environment:
+    #         - TZ=Asia/Seoul
 
 networks:
     kafka-network:

@@ -1,15 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
-	"os"
-	"os/signal"
+	"sync"
 
 	"github.com/Shopify/sarama"
+	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 )
 
 var (
+	group = flag.String("group", "my-consumer-group", "using for consumer group")
 	brokerList = flag.String("brokerList", "kafka-1:9092", "List of brokers to connect")
 	topic = flag.String("topic", "device_event", "Topic name")
 	partition = flag.Int("partition", 0, "Partition number")
@@ -31,31 +33,41 @@ func main() {
 			log.Panic(err)
 		}
 	}()
-	consumer, err := master.ConsumePartition(*topic, 0, sarama.OffsetOldest)
+	
+	newClient, err := sarama.NewClient(brokers, config)
 	if err != nil {
 		log.Panic(err)
 	}
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-	
-	doneCh := make(chan struct{})
+
+	client, err := sarama.NewConsumerGroupFromClient(*group, newClient)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	handler := &consumer.MessageHandler{}
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		for {
-			select {
-			case err := <-consumer.Errors():
-				log.Println(err)
-			case msg := <-consumer.Messages():
-				*messageCountStart++
-				for i, val := range msg.Headers {
-					log.Printf("i: %v, key: %v, value: %v", i, string(val.Key), string(val.Value))
-				}
-				log.Println("Received messages", string(msg.Key), string(msg.Value))
-			case <-signals:
-				log.Println("Interrupt is detected")
-				doneCh <- struct{}{}
+			if err := client.Consume(ctx, []string{*topic}, handler); err != nil {
+				log.Printf("Error from consumer: %v", err)
+				cancel()
+				return
+			}
+			
+			if ctx.Err() != nil {
+				log.Println(ctx.Err())
+				return
 			}
 		}
 	}()
-	<-doneCh
-	log.Println("Processed", *messageCountStart, "messages")
+	log.Printf("Keep running!...")
+	select {}
 }
+
+
+// func createTopic()

@@ -27,8 +27,8 @@ func main() {
 			log.Panic(err)
 		}
 	}()
-	for i:=0; i<10; i++ {
-		time.Sleep(5*time.Second)
+	for i:=0; i<50; i++ {
+		time.Sleep(1*time.Second)
 		msg := &sarama.ProducerMessage{
 			Topic: config.GetTopic(),
 			Headers: []sarama.RecordHeader{

@@ -1,5 +1,6 @@
 version: "3"
 
+# For test in local!!
 services:
     pgmaster:
         image: db-primary

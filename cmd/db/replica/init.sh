@@ -3,7 +3,6 @@
 # TODO: Lame attempt to make this idempotent
 
 if [ ! -f ${PGDATA}/recovery.conf ]; then
-  #Danger Will Robinson, Danger!
   gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
   sleep 1
   rm -rf ${PGDATA}/*
