@@ -25,4 +25,4 @@ func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 	}
 
 	return nil
-}2
+}

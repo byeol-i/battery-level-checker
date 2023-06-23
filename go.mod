@@ -9,7 +9,6 @@ require (
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/lib/pq v1.10.7
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/segmentio/kafka-go v0.4.40
 	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.10
 	go.uber.org/zap v1.24.0
@@ -79,7 +78,7 @@ require (
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
