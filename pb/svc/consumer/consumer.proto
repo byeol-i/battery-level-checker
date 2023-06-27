@@ -3,8 +3,11 @@ syntax = "proto3";
 package pb.svc.consumer;
 option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/consumer";
 
+import "pb/unit/common/msg.proto";
+
 service Consumer {
     rpc CreateNewMsg(CreateNewMsgReq) returns (CreateNewMsgRes);
+    rpc CreateNewTopic(CreateNewTopicReq) returns (CreateNewTopicRes);
 }
 
 message CreateNewMsgReq {
@@ -13,4 +16,12 @@ message CreateNewMsgReq {
 
 message CreateNewMsgRes {
 
+}
+
+message CreateNewTopicReq {
+    string topic = 1;
+}
+
+message CreateNewTopicRes {
+    unit.common.ReturnMsg result = 1;
 }

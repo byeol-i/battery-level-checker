@@ -7,24 +7,36 @@ import (
 	"sync"
 
 	"github.com/Shopify/sarama"
+	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 )
 
 var (
 	group = flag.String("group", "my-consumer-group", "using for consumer group")
-	brokerList = flag.String("brokerList", "kafka-1:9092", "List of brokers to connect")
-	topic = flag.String("topic", "device_event", "Topic name")
-	partition = flag.Int("partition", 0, "Partition number")
-	offsetType = flag.Int("offsetType", -1, "Offset Type (OffsetNewest | OffsetOldest)")
-	messageCountStart = flag.Int("messageCountStart", 0, "Message counter start from:")
+// 	// brokerList = flag.String("brokerList", "kafka-1:9092", "List of brokers to connect")
+	// topic = flag.String("topic", "device_event", "Topic name")
+// 	partition = flag.Int("partition", 0, "Partition number")
+// 	offsetType = flag.Int("offsetType", -1, "Offset Type (OffsetNewest | OffsetOldest)")
+// 	messageCountStart = flag.Int("messageCountStart", 0, "Message counter start from:")
 )
 
+
+// Not a production
+// Testing
 func main() {
 	flag.Parse()
-	config := sarama.NewConfig()
-	config.Consumer.Return.Errors = true
-	brokers := []string{*brokerList}
-	master, err := sarama.NewConsumer(brokers, config)
+
+	saramaConfig := config.GetKafkaSarama()
+	brokers := config.GetBrokerList()
+	topic := config.GetTopic()
+
+	saramaConfig.Consumer.Return.Errors = true
+
+	// config := sarama.NewConfig()
+	// config.Consumer.Return.Errors = true
+	// brokers := []string{*brokerList}
+	
+	master, err := sarama.NewConsumer(brokers, saramaConfig)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -34,7 +46,7 @@ func main() {
 		}
 	}()
 	
-	newClient, err := sarama.NewClient(brokers, config)
+	newClient, err := sarama.NewClient(brokers, saramaConfig)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -53,7 +65,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 		for {
-			if err := client.Consume(ctx, []string{*topic}, handler); err != nil {
+			if err := client.Consume(ctx, []string{topic}, handler); err != nil {
 				log.Printf("Error from consumer: %v", err)
 				cancel()
 				return
@@ -68,6 +80,3 @@ func main() {
 	log.Printf("Keep running!...")
 	select {}
 }
-
-
-// func createTopic()
