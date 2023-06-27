@@ -7,14 +7,14 @@ require (
 	github.com/Shopify/sarama v1.37.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/labstack/echo/v4 v4.9.0
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.10
 	go.uber.org/zap v1.24.0
 	golang.org/x/sync v0.2.0
 	google.golang.org/api v0.127.0
-	google.golang.org/grpc v1.56.0
+	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.30.0
 )
 
