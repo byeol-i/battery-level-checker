@@ -1,6 +1,7 @@
 package device
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -24,9 +25,8 @@ type DeviceInterface interface {
 	Clone() *Device
 	ToProtoDevice() (*pb_unit_device.Device)
 	ToProtoBatteryLevel() (*pb_unit_device.BatteryLevel)
+	ToJson() (string)
 }
-
-const timeFormat = "2006-01-02 15:04:05"
 
 type DeviceImpl struct {
 	Id string `validate:"required" json:"id" example:"1"`
@@ -107,7 +107,6 @@ func (d *Device) GetProtoDeviceSpec() *pb_unit_device.Spec {
 	}
 }
 
-
 func (d *Device) GetBatteryLevel() BatteryLevel {
 	return d.BatteryLevel
 }
@@ -128,6 +127,15 @@ func (d *Device) SetDeviceSpec(spec *DeviceSpec) error {
 	d.Spec = *spec
 
 	return nil
+}
+
+func (d *Device) ToJson() (string, error) {
+	jsonData, err := json.Marshal(d.Spec)
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonData), nil
 }
 
 func (d *Device) ToProtoDevice() (*pb_unit_device.Device) {

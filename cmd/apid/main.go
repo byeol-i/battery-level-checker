@@ -95,7 +95,7 @@ func realMain() error {
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
 	rtr.AddRule("Device", "DELETE", `/device/([0-9]+)*$`, deviceCtrl.DeleteDevice)
 
-	rtr.AddRule("User", "POST", "/user$", userCtrl.AddNewUser)
+	rtr.AddRule("User", "POST", "/user/register$", userCtrl.AddNewUser)
 	rtr.AddRule("User", "POST", "/user/custom-token$", userCtrl.CreateCustomToken)
 
 	rtr.AddRule("Server", "GET", "/stress", func(w http.ResponseWriter, r *http.Request) {

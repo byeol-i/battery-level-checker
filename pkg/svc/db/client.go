@@ -21,7 +21,7 @@ var (
 	addr = flag.String("dbsvc-addr", "battery_db:50012", "db grpc addr")
 )
 
-func CallAddNewUser(userSpec *user.UserImpl) error {
+func CallAddNewUser(userSpec *user.UserImpl, userCredential *user.UserCredential) error {
 	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
 	if err != nil {
@@ -33,10 +33,11 @@ func CallAddNewUser(userSpec *user.UserImpl) error {
 
 	in := &pb_svc_db.AddNewUserReq{
 		User: &pb_unit_user.User{
-			Id: &pb_unit_user.ID{
-				Id: userSpec.Id,
+			UserCredential: &pb_unit_user.UserCredential{
+				Uid: userCredential.Uid,
 			},
 			Name: userSpec.Name,
+			Email: userSpec.Email,
 		},
 	}
 
@@ -118,8 +119,8 @@ func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {
 	client := pb_svc_db.NewDBClient(conn)
 
 	in := &pb_svc_db.GetUsersAllBatteryLevelReq{
-		Uid: &pb_unit_user.ID{
-			Id: uid,
+		Uid: &pb_unit_user.UserCredential{
+			Uid: uid,
 		},
 	}
 
@@ -159,8 +160,8 @@ func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, err
 		DeviceId: &pb_unit_device.ID{
 			Id: deviceID,
 		},
-		Uid: &pb_unit_user.ID{
-			Id: uid,
+		Uid: &pb_unit_user.UserCredential{
+			Uid: uid,
 		},
 	}
 
@@ -200,8 +201,8 @@ func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 		DeviceId: &pb_unit_device.ID{
 			Id: deviceID,
 		},
-		Uid: &pb_unit_user.ID{
-			Id: uid,
+		Uid: &pb_unit_user.UserCredential{
+			Uid: uid,
 		},
 	}
 
@@ -244,8 +245,8 @@ func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.Ba
 		DeviceId: &pb_unit_device.ID{
 			Id: deviceID,
 		},
-		Uid: &pb_unit_user.ID{
-			Id: uid,
+		Uid: &pb_unit_user.UserCredential{
+			Uid: uid,
 		},
 	}
 

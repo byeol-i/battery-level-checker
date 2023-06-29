@@ -6,7 +6,8 @@ import (
 
 type User struct {
 	UserInterface
-	UserImpl 
+	UserImpl
+	UserCredential
 }
 
 type Token struct {
@@ -15,15 +16,21 @@ type Token struct {
 }
 
 type UserImpl struct {
-	Id string `validate:"required" json:"id" example:"123"`
+	// Id string `validate:"required" json:"id" example:"123"`
 	Name string `validate:"required" json:"name" example:"gil dong"`
+	Email string `validate:"required" json:"email" example:"example@example.com"`
+}
+
+type UserCredential struct {
+	Uid string `validate:"required" json:"id" example:"123"`
 }
 
 type UserInterface interface {
-	GetId() string
-	SetId(string) 
+	GetCredential() string
+	SetEmail(string) 
 	SetName(string)
 	GetName(string)
+	GetEmail(string)
 	ToProto() (*pb_unit_user.User, error)
 }
 
@@ -35,8 +42,11 @@ func NewUser() *User {
 func NewUserFromProto(pbUser *pb_unit_user.User) (*User, error) {
 	newUser := &User{
 		UserImpl: UserImpl{
-			Id: pbUser.Id.Id,
+			Email: pbUser.Email,
 			Name: pbUser.Name,
+		},
+		UserCredential: UserCredential{
+			Uid: pbUser.UserCredential.Uid,
 		},	
 	}
 
@@ -48,12 +58,12 @@ func NewUserFromProto(pbUser *pb_unit_user.User) (*User, error) {
 	return newUser, nil
 }
 
-func (u *User) GetId() string {
-	return u.Id
+func (u *User) GetUserCredential() string {
+	return u.Uid
 }
 
-func (u *User) SetId(uid string) {
-	u.Id = uid
+func (u *User) SetUserCredential(userCredential UserCredential) {
+	u.UserCredential = userCredential
 }
 
 func (u *User) GetName() string {
@@ -67,11 +77,11 @@ func (u *User) SetName(uName string) {
 func (u *User) ToProto() (*pb_unit_user.User, error) {
 	pbUnit := &pb_unit_user.User{}
 
-	id := &pb_unit_user.ID{
-		Id: u.Id,
+	id := &pb_unit_user.UserCredential{
+		Uid: u.Uid,
 	}
 
-	pbUnit.Id = id
+	pbUnit.UserCredential = id
 	pbUnit.Name = u.Name
 
 	return pbUnit, nil

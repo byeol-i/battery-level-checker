@@ -2,7 +2,8 @@ create table if not exists "User"
 (
     user_id varchar not null
         primary key,
-    name    varchar
+    name    varchar,
+    email   varchar
 );
 
 alter table "User"

@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Consumer_CreateNewMsg_FullMethodName   = "/pb.svc.consumer.Consumer/CreateNewMsg"
 	Consumer_CreateNewTopic_FullMethodName = "/pb.svc.consumer.Consumer/CreateNewTopic"
+	Consumer_GetUserDevices_FullMethodName = "/pb.svc.consumer.Consumer/GetUserDevices"
 )
 
 // ConsumerClient is the client API for Consumer service.
@@ -29,6 +30,7 @@ const (
 type ConsumerClient interface {
 	CreateNewMsg(ctx context.Context, in *CreateNewMsgReq, opts ...grpc.CallOption) (*CreateNewMsgRes, error)
 	CreateNewTopic(ctx context.Context, in *CreateNewTopicReq, opts ...grpc.CallOption) (*CreateNewTopicRes, error)
+	GetUserDevices(ctx context.Context, in *GetUserDevicesReq, opts ...grpc.CallOption) (*GetUserDevicesRes, error)
 }
 
 type consumerClient struct {
@@ -57,12 +59,22 @@ func (c *consumerClient) CreateNewTopic(ctx context.Context, in *CreateNewTopicR
 	return out, nil
 }
 
+func (c *consumerClient) GetUserDevices(ctx context.Context, in *GetUserDevicesReq, opts ...grpc.CallOption) (*GetUserDevicesRes, error) {
+	out := new(GetUserDevicesRes)
+	err := c.cc.Invoke(ctx, Consumer_GetUserDevices_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConsumerServer is the server API for Consumer service.
 // All implementations must embed UnimplementedConsumerServer
 // for forward compatibility
 type ConsumerServer interface {
 	CreateNewMsg(context.Context, *CreateNewMsgReq) (*CreateNewMsgRes, error)
 	CreateNewTopic(context.Context, *CreateNewTopicReq) (*CreateNewTopicRes, error)
+	GetUserDevices(context.Context, *GetUserDevicesReq) (*GetUserDevicesRes, error)
 	mustEmbedUnimplementedConsumerServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedConsumerServer) CreateNewMsg(context.Context, *CreateNewMsgRe
 }
 func (UnimplementedConsumerServer) CreateNewTopic(context.Context, *CreateNewTopicReq) (*CreateNewTopicRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNewTopic not implemented")
+}
+func (UnimplementedConsumerServer) GetUserDevices(context.Context, *GetUserDevicesReq) (*GetUserDevicesRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserDevices not implemented")
 }
 func (UnimplementedConsumerServer) mustEmbedUnimplementedConsumerServer() {}
 
@@ -125,6 +140,24 @@ func _Consumer_CreateNewTopic_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Consumer_GetUserDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserDevicesReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerServer).GetUserDevices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Consumer_GetUserDevices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerServer).GetUserDevices(ctx, req.(*GetUserDevicesReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Consumer_ServiceDesc is the grpc.ServiceDesc for Consumer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Consumer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateNewTopic",
 			Handler:    _Consumer_CreateNewTopic_Handler,
+		},
+		{
+			MethodName: "GetUserDevices",
+			Handler:    _Consumer_GetUserDevices_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

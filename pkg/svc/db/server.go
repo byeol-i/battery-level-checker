@@ -40,7 +40,7 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	err = s.primaryDB.AddNewUser(newUser.UserImpl)
+	err = s.primaryDB.AddNewUser(newUser.UserImpl, newUser.UserCredential)
 	if err != nil {
 		return &pb_svc_db.AddNewUserRes{Result: &common.ReturnMsg{
 				Error: err.Error(),
@@ -88,8 +88,8 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 	// }
 
 	err := s.primaryDB.RemoveDevice(device.Id{
-		DeviceID: in.Uid.Id,
-	}, in.Uid.Id)
+		DeviceID: in.Uid.Uid,
+	}, in.Uid.Uid)
 	if err != nil {
 		logger.Error("Can't remove device", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{
@@ -107,7 +107,7 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.slaveDB.GetDevices(in.Uid.Id)
+	raws, err := s.slaveDB.GetDevices(in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetDevicesRes{
 			Error: err.Error(),
@@ -134,7 +134,7 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	// 	logger.Error("in is not nil")
 	// }
 
-	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Id)
+	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetBatteryRes{
 			Error: err.Error(),
@@ -157,7 +157,7 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.slaveDB.GetAllBatteryLevels(in.DeviceId.Id, in.Uid.Id)
+	raws, err := s.slaveDB.GetAllBatteryLevels(in.DeviceId.Id, in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetAllBatteryRes{
 			Error: err.Error(),
@@ -187,7 +187,7 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	// 	logger.Error("in is not nil")
 	// }
 
-	raws, err := s.slaveDB.GetUsersAllBatteryLevels(in.Uid.Id)
+	raws, err := s.slaveDB.GetUsersAllBatteryLevels(in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetUsersAllBatteryLevelRes{
 			Error: err.Error(),

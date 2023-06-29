@@ -8,6 +8,15 @@ import "pb/unit/common/msg.proto";
 service Consumer {
     rpc CreateNewMsg(CreateNewMsgReq) returns (CreateNewMsgRes);
     rpc CreateNewTopic(CreateNewTopicReq) returns (CreateNewTopicRes);
+    rpc GetUserDevices(GetUserDevicesReq) returns (GetUserDevicesRes);
+}
+
+message GetUserDevicesReq {
+    string uid = 1;
+}
+
+message GetUserDevicesRes {
+    unit.common.ReturnMsg result = 1;
 }
 
 message CreateNewMsgReq {

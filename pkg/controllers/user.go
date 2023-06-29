@@ -1,12 +1,14 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"regexp"
+	"strings"
 
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	firebaseSvc "github.com/byeol-i/battery-level-checker/pkg/svc/firebase"
+	"go.uber.org/zap"
 
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
@@ -31,26 +33,46 @@ func NewUserController(basePattern string) *UserControllers {
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{}
-// @Router /user [post]
+// @Router /user/register [post]
 func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Request) {
 	var userSpec user.UserImpl
-	err := json.NewDecoder(req.Body).Decode(&userSpec)
-	if err != nil {
-		respondError(resp, http.StatusBadRequest, "invalid format")
-		return
+
+	token := req.Header.Get("Authorization")
+
+	if len(token) < 5 {
+		respondError(resp, 401, "Can't find token")
+	}
+	var userCredential user.UserCredential
+
+	const bearerPrefix = "Bearer "
+	if strings.HasPrefix(token, bearerPrefix) {
+		token = token[len(bearerPrefix):]
+
+		uid, err := firebaseSvc.CallVerifyToken(token)
+		if err != nil {
+			logger.Error("get some error", zap.Error(err))
+			respondError(resp, 401, err.Error())
+		}
+		userCredential.Uid = uid
 	}
 
-	err = user.UserValidator(&userSpec)
+	// err := json.NewDecoder(req.Body).Decode(&userSpec)
+	// if err != nil {
+	// 	respondError(resp, http.StatusBadRequest, "invalid format")
+	// 	return
+	// }
+
+	err := user.UserValidator(&userSpec)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())	
 		return
 	}
 
 	newUser := user.NewUser()
-	newUser.SetId(userSpec.Id)
+	newUser.SetUserCredential(userCredential)
 	newUser.SetName(userSpec.Name)
 
-	err = dbSvc.CallAddNewUser(&newUser.UserImpl)
+	err = dbSvc.CallAddNewUser(&newUser.UserImpl, &userCredential)
 	if err != nil {
         respondError(resp, http.StatusBadRequest, "User's form is not valid")
 		return

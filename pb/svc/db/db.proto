@@ -20,7 +20,7 @@ service DB {
 }
 
 message GetUsersAllBatteryLevelReq {
-    unit.user.ID uid = 1;
+    unit.user.UserCredential uid = 1;
 }
 
 message GetUsersAllBatteryLevelRes {
@@ -30,7 +30,7 @@ message GetUsersAllBatteryLevelRes {
 
 message GetBatteryReq {
     unit.device.ID deviceId = 1;
-    unit.user.ID uid = 2;
+    unit.user.UserCredential uid = 2;
 }
 
 message GetBatteryRes {
@@ -40,7 +40,7 @@ message GetBatteryRes {
 
 message GetAllBatteryReq {
     unit.device.ID deviceId = 1;
-    unit.user.ID uid = 2;
+    unit.user.UserCredential uid = 2;
 }
 
 message GetAllBatteryRes {
@@ -66,7 +66,7 @@ message AddDeviceRes {
 }
 
 message GetDevicesReq {
-    unit.user.ID uid = 1;
+    unit.user.UserCredential uid = 1;
     // decided send include Spec
     bool detailed = 2;
 }
@@ -78,7 +78,7 @@ message GetDevicesRes {
 
 message RemoveDeviceReq {
     unit.device.ID deviceId = 1;
-    unit.user.ID uid = 2;
+    unit.user.UserCredential uid = 2;
 }
 
 message RemoveDeviceRes {
@@ -87,7 +87,7 @@ message RemoveDeviceRes {
 
 message UpdateBatteryLevelReq {
     unit.device.ID deviceId = 1;
-    unit.user.ID uid = 2;
+    unit.user.UserCredential uid = 2;
     unit.device.BatteryLevel batteryLevel = 3;
 }
 

@@ -16,6 +16,12 @@ detailed diagram
 
 <img width="1331" alt="Screen Shot 2022-09-20 at 10 02 58 AM" src="https://user-images.githubusercontent.com/35767154/191145000-cf4901ca-224b-4450-b189-b00ffeb19af7.png">
 
+# Simple scenario
+
+Register user
+
+> Firebase login -> Get custom token -> Post to Auth server -> Get credential
+
 # rest API
 
 > https://aglide100.github.io/battery-level-checker/
