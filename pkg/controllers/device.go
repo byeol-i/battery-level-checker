@@ -27,7 +27,7 @@ func NewDeviceController(basePattern string) *DeviceControllers {
 // @Tags Device
 // @Accept json
 // @Produce json
-// @Param deviceInfo body models.Spec true "add device"
+// @Param deviceInfo body device.DeviceImpl true "add device"
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{}

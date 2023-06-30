@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"regexp"
 	"strings"
@@ -29,7 +30,7 @@ func NewUserController(basePattern string) *UserControllers {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Param userInfo body models.Spec true "add user"
+// @Param userInfo body user.UserImpl true "add user"
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{}
@@ -56,13 +57,13 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 		userCredential.Uid = uid
 	}
 
-	// err := json.NewDecoder(req.Body).Decode(&userSpec)
-	// if err != nil {
-	// 	respondError(resp, http.StatusBadRequest, "invalid format")
-	// 	return
-	// }
+	err := json.NewDecoder(req.Body).Decode(&userSpec)
+	if err != nil {
+		respondError(resp, http.StatusBadRequest, "invalid format")
+		return
+	}
 
-	err := user.UserValidator(&userSpec)
+	err = user.UserValidator(&userSpec)
 	if err != nil {
 		respondError(resp, http.StatusBadRequest, err.Error())	
 		return
@@ -87,7 +88,6 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 // @Tags user
 // @Accept json
 // @Produce json
-// @Param userInfo body models.Spec true "add user"
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{}

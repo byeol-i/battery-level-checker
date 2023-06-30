@@ -28,7 +28,7 @@ func NewBatteryController(basePattern string) *BatteryController {
 // @Produce json
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
-// @Success 200 {object} models.JSONsuccessResult{data=models.Device{}}
+// @Success 200 {object} models.JSONsuccessResult{data=device.DeviceImpl{}}
 // @Router /battery/ [get]
 func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
@@ -52,7 +52,7 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 // @Produce json
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
-// @Success 200 {object} models.JSONsuccessResult{data=[]models.Device{}}
+// @Success 200 {object} models.JSONsuccessResult{data=[]device.DeviceImpl{}}
 // @Router /battery/history/{deviceId}} [get]
 func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
@@ -82,7 +82,7 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 // @Tags Battery
 // @Accept json
 // @Produce json
-// @Param device body models.Device true "Battery input form"
+// @Param device body device.DeviceImpl true "Battery input form"
 // @Param Authorization header string true "With the bearer started"
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Failure 400 {object} models.JSONfailResult{}
@@ -105,7 +105,7 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 	// 	respondError(resp, 405, "can't convert batteryLevel")
 	// }
 
-	// validDevice := models.Device{
+	// validDevice := device.DeviceImpl{
 	// 	Name : req.PostFormValue("Name"),
 	// 	Time : &t,
 	// 	BatteryLevel: bt,

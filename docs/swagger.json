@@ -30,6 +30,56 @@
                 "tags": [
                     "Battery"
                 ],
+                "summary": "Get User's all Battery Level",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.JSONsuccessResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/device.DeviceImpl"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/battery/history/{deviceId}}": {
+            "get": {
+                "description": "Get devices's battery",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Battery"
+                ],
                 "summary": "Get All Device's Battery Level",
                 "parameters": [
                     {
@@ -54,7 +104,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Device"
+                                                "$ref": "#/definitions/device.DeviceImpl"
                                             }
                                         }
                                     }
@@ -72,61 +122,6 @@
             }
         },
         "/battery/{deviceID}": {
-            "get": {
-                "description": "Get devices's battery",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Battery"
-                ],
-                "summary": "Get Battery Level",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Device ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "With the bearer started",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/models.JSONsuccessResult"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.Device"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.JSONfailResult"
-                        }
-                    }
-                }
-            },
             "put": {
                 "description": "Update devices's battery",
                 "consumes": [
@@ -146,7 +141,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Device"
+                            "$ref": "#/definitions/device.DeviceImpl"
                         }
                     },
                     {
@@ -193,7 +188,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Spec"
+                            "$ref": "#/definitions/device.DeviceImpl"
                         }
                     },
                     {
@@ -264,13 +259,187 @@
                     }
                 }
             }
+        },
+        "/user/register": {
+            "post": {
+                "description": "Register New user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Register New user",
+                "parameters": [
+                    {
+                        "description": "add user",
+                        "name": "userInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UserImpl"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/token": {
+            "post": {
+                "description": "Create custom token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create custom token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{userID}": {
+            "delete": {
+                "description": "Delete user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "models.Device": {
+        "device.DeviceImpl": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
-                "DeviceInfo": {}
+                "batteryLevel": {
+                    "$ref": "#/definitions/pkg_device.BatteryLevel"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "spec": {
+                    "$ref": "#/definitions/device.DeviceSpec"
+                }
+            }
+        },
+        "device.DeviceSpec": {
+            "type": "object",
+            "required": [
+                "OS",
+                "OSversion",
+                "appVersion",
+                "name",
+                "type"
+            ],
+            "properties": {
+                "OS": {
+                    "type": "string",
+                    "example": "IOS"
+                },
+                "OSversion": {
+                    "type": "string",
+                    "example": "99.192"
+                },
+                "appVersion": {
+                    "type": "string",
+                    "example": "0.0.1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "iphone 99xs"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "phone"
+                }
             }
         },
         "models.JSONfailResult": {
@@ -301,35 +470,43 @@
                 }
             }
         },
-        "models.Spec": {
+        "pkg_device.BatteryLevel": {
             "type": "object",
             "required": [
-                "OS",
-                "OSversion",
-                "appVersion",
-                "name",
-                "type"
+                "batteryLevel",
+                "batteryStatus",
+                "time"
             ],
             "properties": {
-                "OS": {
-                    "type": "string",
-                    "example": "IOS"
+                "batteryLevel": {
+                    "type": "integer",
+                    "example": 50
                 },
-                "OSversion": {
+                "batteryStatus": {
                     "type": "string",
-                    "example": "99.192"
+                    "example": "charging"
                 },
-                "appVersion": {
+                "time": {
                     "type": "string",
-                    "example": "0.0.1"
+                    "example": "2006-01-02 15:04:05"
+                }
+            }
+        },
+        "user.UserImpl": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@example.com"
                 },
                 "name": {
+                    "description": "Id string `validate:\"required\" json:\"id\" example:\"123\"`",
                     "type": "string",
-                    "example": "iphone 99xs"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "phone"
+                    "example": "gil dong"
                 }
             }
         }

@@ -24,7 +24,7 @@ Register user
 
 # rest API
 
-> https://aglide100.github.io/battery-level-checker/
+> https://byeol-i.github.io/battery-level-checker/
 
 # golang dependency
 

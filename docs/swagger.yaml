@@ -1,30 +1,18 @@
 basePath: /api/v1
 definitions:
-  models.Device:
+  device.DeviceImpl:
     properties:
-      DeviceInfo: {}
-    type: object
-  models.JSONfailResult:
-    properties:
-      code:
-        example: 400
-        type: integer
-      data: {}
-      message:
-        example: error
+      batteryLevel:
+        $ref: '#/definitions/pkg_device.BatteryLevel'
+      id:
+        example: "1"
         type: string
+      spec:
+        $ref: '#/definitions/device.DeviceSpec'
+    required:
+    - id
     type: object
-  models.JSONsuccessResult:
-    properties:
-      code:
-        example: 200
-        type: integer
-      data: {}
-      message:
-        example: success
-        type: string
-    type: object
-  models.Spec:
+  device.DeviceSpec:
     properties:
       OS:
         example: IOS
@@ -47,6 +35,55 @@ definitions:
     - appVersion
     - name
     - type
+    type: object
+  models.JSONfailResult:
+    properties:
+      code:
+        example: 400
+        type: integer
+      data: {}
+      message:
+        example: error
+        type: string
+    type: object
+  models.JSONsuccessResult:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: success
+        type: string
+    type: object
+  pkg_device.BatteryLevel:
+    properties:
+      batteryLevel:
+        example: 50
+        type: integer
+      batteryStatus:
+        example: charging
+        type: string
+      time:
+        example: "2006-01-02 15:04:05"
+        type: string
+    required:
+    - batteryLevel
+    - batteryStatus
+    - time
+    type: object
+  user.UserImpl:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+      name:
+        description: Id string `validate:"required" json:"id" example:"123"`
+        example: gil dong
+        type: string
+    required:
+    - email
+    - name
     type: object
 host: localhost
 info:
@@ -83,52 +120,16 @@ paths:
             - $ref: '#/definitions/models.JSONsuccessResult'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/models.Device'
-                  type: array
+                  $ref: '#/definitions/device.DeviceImpl'
               type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/models.JSONfailResult'
-      summary: Get All Device's Battery Level
+      summary: Get User's all Battery Level
       tags:
       - Battery
   /battery/{deviceID}:
-    get:
-      consumes:
-      - application/json
-      description: Get devices's battery
-      parameters:
-      - description: Device ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: With the bearer started
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.JSONsuccessResult'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Device'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.JSONfailResult'
-      summary: Get Battery Level
-      tags:
-      - Battery
     put:
       consumes:
       - application/json
@@ -139,7 +140,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.Device'
+          $ref: '#/definitions/device.DeviceImpl'
       - description: With the bearer started
         in: header
         name: Authorization
@@ -159,6 +160,38 @@ paths:
       summary: Update Battery Level
       tags:
       - Battery
+  /battery/history/{deviceId}}:
+    get:
+      consumes:
+      - application/json
+      description: Get devices's battery
+      parameters:
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.JSONsuccessResult'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/device.DeviceImpl'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Get All Device's Battery Level
+      tags:
+      - Battery
   /device:
     post:
       consumes:
@@ -170,7 +203,7 @@ paths:
         name: deviceInfo
         required: true
         schema:
-          $ref: '#/definitions/models.Spec'
+          $ref: '#/definitions/device.DeviceImpl'
       - description: With the bearer started
         in: header
         name: Authorization
@@ -220,4 +253,90 @@ paths:
       summary: Delete Device
       tags:
       - Device
+  /user/{userID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      parameters:
+      - description: user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JSONsuccessResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Delete user
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register New user
+      parameters:
+      - description: add user
+        in: body
+        name: userInfo
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserImpl'
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JSONsuccessResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Register New user
+      tags:
+      - user
+  /user/token:
+    post:
+      consumes:
+      - application/json
+      description: Create custom token
+      parameters:
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JSONsuccessResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Create custom token
+      tags:
+      - user
 swagger: "2.0"
