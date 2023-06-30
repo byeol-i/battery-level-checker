@@ -15,7 +15,7 @@ require (
 	golang.org/x/sync v0.3.0
 	google.golang.org/api v0.127.0
 	google.golang.org/grpc v1.56.1
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.31.0
 )
 
 require github.com/rogpeppe/go-internal v1.8.0 // indirect
