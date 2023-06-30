@@ -65,9 +65,9 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 	uid := req.Header.Get("Uid")
 	logger.Info("GetHistoryAllBattery", zap.String("uid", uid), zap.String("device", matches[1]))
 	
-
 	res, err := dbSvc.CallGetAllBattery(matches[1], uid)
 	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())
 		return
 	}

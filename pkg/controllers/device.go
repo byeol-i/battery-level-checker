@@ -37,12 +37,14 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 
 	err := json.NewDecoder(req.Body).Decode(&deviceSpec)
 	if err != nil {
+		logger.Error("Json parse error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, "invalid format")
 		return
 	}
 
 	err = device.SpecValidator(&deviceSpec)
 	if err != nil {
+		logger.Error("Device spec validator error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())	
 		return
 	}
@@ -50,6 +52,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	newDevice := device.NewDevice()
 	err = newDevice.SetDeviceSpec(&deviceSpec)
 	if err != nil {
+		logger.Error("Device spec validator error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -57,9 +60,9 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	uid := req.Header.Get("Uid")
 	logger.Info("Add New device", zap.String("uid", uid))
 	
-
 	err = dbSvc.CallAddNewDevice(newDevice, uid)
 	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -92,6 +95,7 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 	
 	err := dbSvc.CallRemoveDevice(matches[1], uid)
 	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())
 		return
 	}

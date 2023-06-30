@@ -59,22 +59,21 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 
 	err := json.NewDecoder(req.Body).Decode(&userSpec)
 	if err != nil {
+		logger.Error("Json parse error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, "invalid format")
 		return
 	}
 
 	err = user.UserValidator(&userSpec)
 	if err != nil {
+		logger.Error("User validator error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())	
 		return
 	}
 
-	newUser := user.NewUser()
-	newUser.SetUserCredential(userCredential)
-	newUser.SetName(userSpec.Name)
-
-	err = dbSvc.CallAddNewUser(&newUser.UserImpl, &userCredential)
+	err = dbSvc.CallAddNewUser(&userSpec, &userCredential)
 	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
         respondError(resp, http.StatusBadRequest, "User's form is not valid")
 		return
 	}

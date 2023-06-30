@@ -29,7 +29,7 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 
 		uid, err := firebaseSvc.CallVerifyToken(token)
 		if err != nil {
-			logger.Error("get some error", zap.Error(err))
+			logger.Error("dbSvc's error", zap.Error(err))
 			respondError(resp, 401, err.Error())
 			return nil
 		}
