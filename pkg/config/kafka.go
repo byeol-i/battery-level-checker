@@ -21,20 +21,20 @@ func init() {
 	flag.Parse()
 }
 
-func GetKafkaSarama() *sarama.Config {
+func (c *KafkaConfigManager) GetKafkaSarama() *sarama.Config {
 	config := sarama.NewConfig()
 
 	return config
 }
 
-func GetBrokerList() []string {
+func (c *KafkaConfigManager) GetBrokerList() []string {
 	return strings.Split(*brokerList, ",")
 }
 
-func GetMaxRetry() int {
+func (c *KafkaConfigManager) GetMaxRetry() int {
 	return *maxRetry
 }
 
-func GetTopic() string {
+func (c *KafkaConfigManager) GetTopic() string {
 	return *topic
 }

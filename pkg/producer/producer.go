@@ -8,13 +8,15 @@ import (
 )
 
 func Write() {
-	saramaConfig := config.GetKafkaSarama()
+	manager := config.NewKafkaConfigManager()
+
+	saramaConfig := manager.GetKafkaSarama()
 	
 	saramaConfig.Consumer.Return.Errors = true
-	brokers := config.GetBrokerList()
+	brokers := manager.GetBrokerList()
 	
 	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
-	saramaConfig.Producer.Retry.Max = config.GetMaxRetry()
+	saramaConfig.Producer.Retry.Max = manager.GetMaxRetry()
 	saramaConfig.Producer.Return.Successes = true
 	producer, err := sarama.NewSyncProducer(brokers, saramaConfig)
 	if err != nil {
@@ -26,12 +28,12 @@ func Write() {
 		}
 	}()
 	msg := &sarama.ProducerMessage{
-		Topic: config.GetTopic(),
+		Topic: manager.GetTopic(),
 		Value: sarama.StringEncoder("Something Cool"),
 	}
 	partition, offset, err := producer.SendMessage(msg)
 	if err != nil {
 		log.Panic(err)
 	}
-	log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", config.GetTopic(), partition, offset)
+	log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", manager.GetTopic(), partition, offset)
 }

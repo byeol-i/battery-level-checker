@@ -11,10 +11,12 @@ import (
 
 // returns device's id list
 func GetUserDevice(uid string) ([]string, error) {
-	saramaConfig := config.GetKafkaSarama()
+	manager := config.NewKafkaConfigManager()
+
+	saramaConfig := manager.GetKafkaSarama()
 	saramaConfig.Consumer.Return.Errors = true
 
-	client, err := sarama.NewClient(config.GetBrokerList(), saramaConfig)
+	client, err := sarama.NewClient(manager.GetBrokerList(), saramaConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -49,6 +49,16 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 	if err != nil {
 		return err
 	}
+
+	// admin, err := consumer.GetAdmin()
+	// if err != nil {
+	// 	return err
+	// }
+
+	// err = consumer.CreateTopic(admin, uid)
+	// if err != nil {
+	// 	return err
+	// }
 	// ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	// defer cancel()
 

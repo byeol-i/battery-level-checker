@@ -18,7 +18,7 @@ var (
 	dbSSLcert		= flag.String("dbSSLcert", "", "db's SSLcert")
 )
 
-func GetDBConfig() *db.DBConfig {
+func (c *DBConfigManager) GetDBConfig() *db.DBConfig {
 	flag.Parse()
 	return &db.DBConfig{
 		Host: *dbHost,

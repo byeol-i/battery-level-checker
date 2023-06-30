@@ -6,8 +6,10 @@ import (
 )
 
 func GetAdmin() (sarama.ClusterAdmin, error){
-	brokerList := config.GetBrokerList()
-	kafkaConf := config.GetKafkaSarama()
+	manager := config.NewKafkaConfigManager()
+
+	brokerList := manager.GetBrokerList()
+	kafkaConf := manager.GetKafkaSarama()
 	admin, err := sarama.NewClusterAdmin(brokerList, kafkaConf)
 	if err != nil {
 		return nil, err

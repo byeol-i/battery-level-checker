@@ -11,10 +11,11 @@ import (
 
 func GetTopics() {
 	time.Sleep(20 * time.Second)
-	saramaConfig := config.GetKafkaSarama()
+	manager := config.NewKafkaConfigManager()
+	saramaConfig := manager.GetKafkaSarama()
 	
 	saramaConfig.Consumer.Return.Errors = true
-	brokers := config.GetBrokerList()
+	brokers := manager.GetBrokerList()
 	master, err := sarama.NewConsumer(brokers, saramaConfig)
 	if err != nil {
 		log.Panic(err)

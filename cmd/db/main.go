@@ -42,7 +42,6 @@ func realMain() error {
 	dbPasswd := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
 
-
 	replicaDBAddr := os.Getenv("DB_REPLICA_ADDR")
 	replicaDBPort := os.Getenv("DB_REPLICA_PORT")
 
@@ -66,7 +65,6 @@ func realMain() error {
 		dbPasswd = "HelloWorld"
 		dbName = "battery"
 	}
-	
 
 	primaryDB, err := db.ConnectDB(&db.DBConfig{
 		Host:     primaryDBAddr,
@@ -99,8 +97,6 @@ func realMain() error {
 	if err != nil {
 		return err
 	}
-
-
 
 	gRPCL, err := net.Listen("tcp", *grpcAddr)
 	if err != nil {

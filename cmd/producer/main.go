@@ -10,13 +10,15 @@ import (
 )
 
 func main() {
-	saramaConfig := config.GetKafkaSarama()
+	manager := config.NewKafkaConfigManager()
+
+	saramaConfig := manager.GetKafkaSarama()
 	
 	saramaConfig.Consumer.Return.Errors = true
-	brokers := config.GetBrokerList()
+	brokers := manager.GetBrokerList()
 	
 	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
-	saramaConfig.Producer.Retry.Max = config.GetMaxRetry()
+	saramaConfig.Producer.Retry.Max = manager.GetMaxRetry()
 	saramaConfig.Producer.Return.Successes = true
 	producer, err := sarama.NewSyncProducer(brokers, saramaConfig)
 	if err != nil {
@@ -27,11 +29,11 @@ func main() {
 			log.Panic(err)
 		}
 	}()
-	
+
 	for i:=0; i<50; i++ {
 		time.Sleep(1*time.Second)
 		msg := &sarama.ProducerMessage{
-			Topic: config.GetTopic(),
+			Topic: manager.GetTopic(),
 			Headers: []sarama.RecordHeader{
 				{
 					Key: []byte("uid"), Value: []byte(strconv.Itoa(i)),
@@ -43,7 +45,7 @@ func main() {
 		if err != nil {
 			log.Panic(err)
 		}
-		log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", config.GetTopic(), partition, offset)
+		log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", manager.GetTopic(), partition, offset)
 	}
 }
 

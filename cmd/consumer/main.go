@@ -17,11 +17,10 @@ var (
 
 // For testing
 func main() {
-	flag.Parse()
-
-	saramaConfig := config.GetKafkaSarama()
-	brokers := config.GetBrokerList()
-	topic := config.GetTopic()
+	manager := config.NewKafkaConfigManager()
+	saramaConfig := manager.GetKafkaSarama()
+	brokers := manager.GetBrokerList()
+	topic := manager.GetTopic()
 
 	saramaConfig.Consumer.Return.Errors = true
 
