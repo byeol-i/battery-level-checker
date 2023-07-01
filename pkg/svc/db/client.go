@@ -146,6 +146,43 @@ func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {
 	return allBatteryLevel, nil
 }
 
+func CallGetAllDevices(uid string) ([]*device.Device, error) {
+	dialTimeout := 5 * time.Second
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	client := pb_svc_db.NewDBClient(conn)
+	in := &pb_svc_db.GetDevicesReq{
+		Uid: &pb_unit_user.UserCredential{
+			Uid: uid,
+		},
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
+
+	res, err := client.GetDevices(ctx, in)
+	if err != nil {
+		logger.Error("Can't call grpc call")
+		return nil, err
+	}
+
+	allDevices := []*device.Device{}
+
+	for _, v := range res.Devices {
+		newDevice, err := device.NewDeviceFromProto(v)
+		if err != nil {
+			logger.Error("Can't make pb to device struct", zap.Error(err))
+		}
+
+		allDevices = append(allDevices, newDevice)
+	}
+
+	return allDevices, nil
+}
+
 func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, error) {
 	dialTimeout := 5 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))

@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"sync/atomic"
-	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
@@ -22,7 +21,7 @@ import (
 
 var (
 	noAuth = flag.Bool("noAuth", false, "for testing")
-	cacheExpirationTime = 3 * time.Second
+	// cacheExpirationTime = 3 * time.Second
 	apiVersion = "v1"
 )
 
@@ -93,6 +92,7 @@ func realMain() error {
 	rtr.AddRule("Battery", "POST", `/battery/([0-9]+)*$`, batteryCtrl.UpdateBattery)
 	
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
+	rtr.AddRule("Device", "GET", `/device$`, deviceCtrl.GetDevices)
 	rtr.AddRule("Device", "DELETE", `/device/([0-9]+)*$`, deviceCtrl.DeleteDevice)
 
 	rtr.AddRule("User", "POST", "/user/register$", userCtrl.AddNewUser)

@@ -120,7 +120,9 @@ paths:
             - $ref: '#/definitions/models.JSONsuccessResult'
             - properties:
                 data:
-                  $ref: '#/definitions/device.DeviceImpl'
+                  items:
+                    $ref: '#/definitions/device.DeviceImpl'
+                  type: array
               type: object
         "400":
           description: Bad Request
@@ -221,6 +223,36 @@ paths:
           schema:
             $ref: '#/definitions/models.JSONfailResult'
       summary: Register New Device
+      tags:
+      - Device
+  /device/:
+    get:
+      consumes:
+      - application/json
+      description: Get Devices
+      parameters:
+      - description: With the bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.JSONsuccessResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/device.DeviceImpl'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JSONfailResult'
+      summary: Get Devices
       tags:
       - Device
   /device/{deviceID}:

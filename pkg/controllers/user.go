@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/byeol-i/battery-level-checker/pkg/exception"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	firebaseSvc "github.com/byeol-i/battery-level-checker/pkg/svc/firebase"
@@ -74,7 +75,7 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 	err = dbSvc.CallAddNewUser(&userSpec, &userCredential)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-        respondError(resp, http.StatusBadRequest, "User's form is not valid")
+        respondError(resp, http.StatusBadRequest, exception.CastingError(err))
 		return
 	}
 

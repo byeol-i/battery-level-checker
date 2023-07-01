@@ -18,7 +18,7 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 	INSERT INTO "Device" 
 	("name", "type", "os_name", "os_version", "app_version", "user_id") 
 	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING "id";
+	RETURNING "device_id";
 	`
 	
 	err := device.SpecValidator(&newDevice)

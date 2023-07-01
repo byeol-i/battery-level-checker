@@ -102,3 +102,35 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 	
 	respondJSON(resp, http.StatusOK, "success", nil)
 }
+
+// GetDevices godoc
+// @Summary Get Devices
+// @Description Get Devices
+// @Tags Device
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "With the bearer started"
+// @Failure 400 {object} models.JSONfailResult{}
+// @Success 200 {object} models.JSONsuccessResult{data=device.DeviceImpl{}}
+// @Router /device/ [get]
+func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Request) {
+	pattern := regexp.MustCompile(hdl.basePattern + `/device/(\\w+)`)
+	
+    matches := pattern.FindStringSubmatch(req.URL.Path)
+	if len(matches) < 2 {
+        respondError(resp, http.StatusBadRequest, "Not valid")
+        return
+    }
+
+	uid := req.Header.Get("Uid")
+	logger.Info("Delete device", zap.String("uid", uid), zap.String("device", matches[1]))
+	
+	res, err := dbSvc.CallGetAllDevices(uid)
+	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
+		respondError(resp, http.StatusBadRequest, err.Error())
+		return
+	}
+	
+	respondJSON(resp, http.StatusOK, "", res)
+}

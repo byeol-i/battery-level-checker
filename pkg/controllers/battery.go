@@ -28,7 +28,7 @@ func NewBatteryController(basePattern string) *BatteryController {
 // @Produce json
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
-// @Success 200 {object} models.JSONsuccessResult{data=device.DeviceImpl{}}
+// @Success 200 {object} models.JSONsuccessResult{data=[]device.DeviceImpl{Id,BatteryLevel}}
 // @Router /battery/ [get]
 func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
@@ -52,7 +52,7 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 // @Produce json
 // @Param Authorization header string true "With the bearer started"
 // @Failure 400 {object} models.JSONfailResult{}
-// @Success 200 {object} models.JSONsuccessResult{data=[]device.DeviceImpl{}}
+// @Success 200 {object} models.JSONsuccessResult{data=[]device.DeviceImpl{Id,BatteryLevel}}
 // @Router /battery/history/{deviceId}} [get]
 func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(`/battery/history/(\w+)`)

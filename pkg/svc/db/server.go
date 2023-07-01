@@ -8,6 +8,7 @@ import (
 
 	"github.com/byeol-i/battery-level-checker/pb/unit/common"
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
+	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
@@ -79,6 +80,25 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
+	admin, err := consumer.GetAdmin()
+	if err != nil {
+		logger.Error("Can't get kafka admin", zap.Error(err))
+		return &pb_svc_db.AddDeviceRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+
+	err = consumer.CreateTopic(admin, in.Uid)
+	if err != nil {
+		logger.Error("Can't create topic for device", zap.Error(err))
+		return &pb_svc_db.AddDeviceRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
 	return &pb_svc_db.AddDeviceRes{}, nil
 }
 

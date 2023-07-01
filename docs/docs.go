@@ -59,7 +59,10 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/device.DeviceImpl"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/device.DeviceImpl"
+                                            }
                                         }
                                     }
                                 }
@@ -211,6 +214,56 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.JSONsuccessResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.JSONfailResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/device/": {
+            "get": {
+                "description": "Get Devices",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Get Devices",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "With the bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.JSONsuccessResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/device.DeviceImpl"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {

@@ -85,6 +85,7 @@ func NewDeviceFromProto(pbDevice *pb_unit_device.Device) (*Device, error){
 
 	return m, nil
 }
+
 func (d *Device) SetDeviceId(id string) {
 	d.Id=id
 }
