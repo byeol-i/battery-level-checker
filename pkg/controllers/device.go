@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
@@ -60,7 +61,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	uid := req.Header.Get("Uid")
 	logger.Info("Add New device", zap.String("uid", uid))
 	
-	err = dbSvc.CallAddNewDevice(newDevice, uid)
+	err = dbSvc.CallAddNewDevice(newDevice, strings.Replace(uid, "\"", "", -1))
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusBadRequest, err.Error())

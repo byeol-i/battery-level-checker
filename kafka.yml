@@ -6,7 +6,8 @@ services:
         environment:
             HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
             KAFKA_BROKER_ID: 1
-            DOCKER_API_VERSION: 1.41
+            DOCKER_API_VERSION: ${CLI_API_VERSION}
+            # DOCKER_API_VERSION: 1.41
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182"
             KAFKA_DEFAULT_REPLICATION_FACTOR: 3
             KAFKA_MIN_INSYNC_REPLICAS: 2
@@ -50,7 +51,8 @@ services:
         environment:
             HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
             KAFKA_BROKER_ID: 2
-            DOCKER_API_VERSION: 1.41
+            DOCKER_API_VERSION: ${CLI_API_VERSION}
+            # DOCKER_API_VERSION: 1.41
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182"
             KAFKA_DEFAULT_REPLICATION_FACTOR: 3
             KAFKA_MIN_INSYNC_REPLICAS: 2
@@ -93,6 +95,7 @@ services:
     #     environment:
     #         HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
     #         KAFKA_BROKER_ID: 3
+    #         DOCKER_API_VERSION: ${CLI_API_VERSION}
     #         DOCKER_API_VERSION: 1.41
     #         KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
     #         KAFKA_DEFAULT_REPLICATION_FACTOR: 3

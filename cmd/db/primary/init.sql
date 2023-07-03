@@ -21,7 +21,7 @@ create table "Device"
     os_version  varchar,
     app_version varchar,
     uid         varchar
-        constraint user_id
+        constraint uid
             references "User"
             on update cascade on delete cascade
 );

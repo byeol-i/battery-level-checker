@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"time"
 
@@ -21,7 +20,8 @@ func (db *Database) AddNewUser(userSpec user.UserImpl, userCredential user.UserC
 
 	res := db.Conn.QueryRowContext(ctx, q, strings.Replace(userCredential.Uid, "\"", "", -1), userSpec.Name, userSpec.Email)
 	if res != nil {
-		return errors.New(res.Err().Error())
+		return res.Err()
 	}
+	
 	return nil
 }
