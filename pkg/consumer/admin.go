@@ -2,24 +2,19 @@ package consumer
 
 import (
 	"github.com/Shopify/sarama"
-	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 
-func GetAdmin() (sarama.ClusterAdmin, error){
-	manager := config.NewKafkaConfigManager()
-
-	brokerList := manager.GetBrokerList()
-	kafkaConf := manager.GetKafkaSarama()
-	admin, err := sarama.NewClusterAdmin(brokerList, kafkaConf)
+func (c *Consumer) GetAdmin() (sarama.ClusterAdmin, error){
+	admin, err := sarama.NewClusterAdmin(c.brokerList, c.kafkaConf)
 	if err != nil {
 		return nil, err
 	}
-	defer admin.Close()
+	// defer admin.Close()
 
 	return admin, nil
 }
 
-func CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
+func (c *Consumer) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	err := admin.CreateTopic(name, &sarama.TopicDetail{
 		NumPartitions: 1,
 		ReplicationFactor: 1,
@@ -28,6 +23,8 @@ func CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	if err != nil {
 		return err
 	}
+
+	defer admin.Close()
 
 	return nil
 }

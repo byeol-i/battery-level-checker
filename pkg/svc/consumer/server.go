@@ -11,16 +11,19 @@ import (
 
 type ConsumerSrv struct {
 	pb_svc_consumer.ConsumerServer
+	Consumer *consumer.Consumer
 }
 
 func NewConsumerServiceServer() *ConsumerSrv {
-	return &ConsumerSrv{}
+	return &ConsumerSrv{
+		Consumer : consumer.NewConsumer(),
+	}
 }
 
 // func CreateNewMsg
 
-func CreateNewTopic(ctx context.Context, in *pb_svc_consumer.CreateNewTopicReq) (*pb_svc_consumer.CreateNewTopicRes, error) {
-	admin, err := consumer.GetAdmin()
+func (s ConsumerSrv) CreateNewTopic(ctx context.Context, in *pb_svc_consumer.CreateNewTopicReq) (*pb_svc_consumer.CreateNewTopicRes, error) {
+	admin, err := s.Consumer.GetAdmin()
 	if err != nil {
 		return &pb_svc_consumer.CreateNewTopicRes{
 			Result: &common.ReturnMsg{
@@ -29,7 +32,7 @@ func CreateNewTopic(ctx context.Context, in *pb_svc_consumer.CreateNewTopicReq) 
 		}, err 
 	}
 
-	err = consumer.CreateTopic(admin, in.Topic)
+	err = s.Consumer.CreateTopic(admin, in.Topic)
 	if err != nil {
 		return &pb_svc_consumer.CreateNewTopicRes{
 			Result: &common.ReturnMsg{
@@ -45,8 +48,8 @@ func CreateNewTopic(ctx context.Context, in *pb_svc_consumer.CreateNewTopicReq) 
 	}, nil
 }
 
-func GetUserDevices(ctx context.Context, in *pb_svc_consumer.GetUserDevicesReq) (*pb_svc_consumer.GetUserDevicesRes, error) {
-	result, err := consumer.GetUserDevice(in.Uid)
+func (s ConsumerSrv) GetUserDevices(ctx context.Context, in *pb_svc_consumer.GetUserDevicesReq) (*pb_svc_consumer.GetUserDevicesRes, error) {
+	result, err := s.Consumer.GetUserDevice(in.Uid)
 	if err != nil {
 		return &pb_svc_consumer.GetUserDevicesRes{
 			Result: &common.ReturnMsg{

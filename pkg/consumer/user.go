@@ -6,17 +6,14 @@ import (
 	"os/signal"
 
 	"github.com/Shopify/sarama"
-	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 
 // returns device's id list
-func GetUserDevice(uid string) ([]string, error) {
-	manager := config.NewKafkaConfigManager()
-
-	saramaConfig := manager.GetKafkaSarama()
+func (c *Consumer) GetUserDevice(uid string) ([]string, error) {
+	saramaConfig := c.kafkaConf
 	saramaConfig.Consumer.Return.Errors = true
 
-	client, err := sarama.NewClient(manager.GetBrokerList(), saramaConfig)
+	client, err := sarama.NewClient(c.brokerList, saramaConfig)
 	if err != nil {
 		return nil, err
 	}

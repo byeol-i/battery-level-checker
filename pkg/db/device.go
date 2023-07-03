@@ -71,6 +71,15 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 		return err
 	}
 
+	// consumer := consumer.NewConsumer()
+
+	// admin, err := consumer.GetAdmin()
+	// if err != nil {
+	// 	return err
+	// }
+
+	// err = consumer.CreateTopic(admin, uid+"/"+deviceID)
+
 	// admin, err := consumer.GetAdmin()
 	// if err != nil {
 	// 	return err

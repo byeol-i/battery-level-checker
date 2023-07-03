@@ -19,12 +19,14 @@ type DBSrv struct {
 	pb_svc_db.DBServer
 	primaryDB db.Database
 	slaveDB db.Database
+	Consumer *consumer.Consumer
 }
 
 func NewDBServiceServer(primaryDB *db.Database, slaveDB *db.Database) *DBSrv {
 	return &DBSrv{
 		primaryDB: *primaryDB,
 		slaveDB: *slaveDB,
+		Consumer: consumer.NewConsumer(),
 	}
 }
 
@@ -80,7 +82,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	admin, err := consumer.GetAdmin()
+	admin, err := s.Consumer.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -90,7 +92,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = consumer.CreateTopic(admin, in.Uid)
+	err = s.Consumer.CreateTopic(admin, in.Uid)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
