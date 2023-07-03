@@ -72,7 +72,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.primaryDB.AddNewDevice(*newDevice.GetDeviceSpec(), in.Uid)
+	deviceId, err := s.primaryDB.AddNewDevice(*newDevice.GetDeviceSpec(), in.Uid)
 	if err != nil {
 		logger.Error("Can't add new device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -92,7 +92,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.Consumer.CreateTopic(admin, in.Uid)
+	err = s.Consumer.CreateTopic(admin, in.Uid+"_"+deviceId)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{

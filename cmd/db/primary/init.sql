@@ -1,9 +1,10 @@
 create table "User"
 (
-    user_id varchar not null
-        primary key,
-    name    varchar,
-    email   varchar
+    uid   varchar not null
+        primary key
+        unique,
+    name  varchar,
+    email varchar
 );
 
 alter table "User"
@@ -11,7 +12,7 @@ alter table "User"
 
 create table "Device"
 (
-    device_id   varchar
+    device_id   varchar not null
         constraint device_pk
             primary key,
     name        varchar,
@@ -19,7 +20,7 @@ create table "Device"
     os_name     varchar,
     os_version  varchar,
     app_version varchar,
-    user_id     varchar
+    uid         varchar
         constraint user_id
             references "User"
             on update cascade on delete cascade

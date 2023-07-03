@@ -11,38 +11,38 @@ import (
 
 const maxRetry = 10;
 
-func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error {
+func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) (string, error) {
 	const selectQuery = `
 	SELECT COUNT(*) FROM "Device"
-	WHERE "name" = $1 AND "type" = $2 AND "os_name" = $3 AND "os_version" = $4 AND "app_version" = $5 AND "user_id" = $6;	
+	WHERE "name" = $1 AND "type" = $2 AND "os_name" = $3 AND "os_version" = $4 AND "app_version" = $5 AND "uid" = $6;	
 	`
 	
 	const insertQuery = `
 	INSERT INTO "Device" 
-	("device_id", "name", "type", "os_name", "os_version", "app_version", "user_id") 
+	("device_id", "name", "type", "os_name", "os_version", "app_version", "uid") 
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 	
 	err := device.SpecValidator(&newDevice)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	ctx := context.Background()
 	tx, err := db.Conn.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer tx.Rollback()
 
 	var count int
 	err = tx.QueryRowContext(ctx, selectQuery, newDevice.Name, newDevice.Type, newDevice.OS, newDevice.OSversion, newDevice.AppVersion, uid).Scan(&count)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if count > 0 {
-		return errors.New("device already exists")
+		return "",errors.New("device already exists")
 	}
 	
 	deviceID := ""
@@ -53,7 +53,7 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 		var existingCount int
 		err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM \"Device\" WHERE \"device_id\" = $1", newUUID).Scan(&existingCount)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		if existingCount == 0 {
@@ -63,12 +63,12 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 	}
 
 	if deviceID == "" {
-		return errors.New("failed to generate unique device ID")
+		return "", errors.New("failed to generate unique device ID")
 	}
 
 	_, err = tx.ExecContext(ctx, insertQuery, deviceID, newDevice.Name, newDevice.Type, newDevice.OS, newDevice.OSversion, newDevice.AppVersion, uid)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// consumer := consumer.NewConsumer()
@@ -96,7 +96,7 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 	// if res != nil {
 	// 	return errors.New(res.Err().Error())
 	// }
-	return tx.Commit()
+	return deviceID, tx.Commit()
 }
 
 
@@ -104,7 +104,7 @@ func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 	const q = `
 	DELETE FROM "Device" 
 	WHERE "device_id" = $1 AND
-	"user_id" = $2
+	"uid" = $2
 	`
 
 	ctx := context.Background()
@@ -127,7 +127,7 @@ func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	const q = `
 	SELECT * FROM "Device" 
-	WHERE "user_id" = $1
+	WHERE "uid" = $1
 	`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -183,7 +183,7 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 func (db *Database) GetDevice(deviceId string, uid string) (*device.DeviceSpec, error) {
 	const q = `
 	SELECT * FROM "Device"
-	WHERE "user_id" = $1 AND
+	WHERE "uid" = $1 AND
 	"device_id" = $2
 	`
 

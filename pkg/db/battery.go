@@ -11,7 +11,7 @@ func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLeve
 	const q = `
 	SELECT * FROM "BatteryLevel"
 	WHERE "device_id" = $1 AND
-	"user_id" = $2	
+	"uid" = $2	
 	ORDER BY time DESC
 	LIMIT 1;
 	`
@@ -30,7 +30,7 @@ func (db *Database) GetUsersAllBatteryLevels(uid string) ([]*device.BatteryLevel
 
 	q := `
 	SELECT * FROM "BatteryLevel"
-	WHERE "user_id" = $1`
+	WHERE "uid" = $1`
 
 	rows, err := db.Conn.Query(q, uid)
 	if err != nil {
@@ -62,7 +62,7 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 	q := `
 	SELECT * FROM "BatteryLevel"
 	WHERE "device_id" = $1 AND
-	"user_id" = $2`
+	"uid" = $2`
 
 	rows, err := db.Conn.Query(q, deviceId, uid)
 	if err != nil {
@@ -90,7 +90,7 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 
 func (db *Database) UpdateBattery(deviceId string, uid string, batteryLevel *device.BatteryLevel) error {
 	const q = `
-	INSERT INTO "BatteryLevel"("device_id", "user_id", "time", "battery_level", "battery_status")
+	INSERT INTO "BatteryLevel"("device_id", "uid", "time", "battery_level", "battery_status")
 	VALUES ($1, $2, $3, $4, $5)
 	`
 

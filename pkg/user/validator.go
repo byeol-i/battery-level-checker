@@ -21,8 +21,6 @@ func UserValidator(spec *UserImpl) error {
 	return nil
 }
 
-
-
 func TokenValidator(spec *Token) error {
 	validate := validator.New()
 	validate.RegisterValidation("script", models.ValidateScript)
