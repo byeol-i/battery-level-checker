@@ -1,4 +1,4 @@
-create table if not exists "User"
+create table "User"
 (
     user_id varchar not null
         primary key,
@@ -9,9 +9,9 @@ create table if not exists "User"
 alter table "User"
     owner to table_admin;
 
-create table if not exists "Device"
+create table "Device"
 (
-    device_id   serial
+    device_id   varchar
         constraint device_pk
             primary key,
     name        varchar,
@@ -28,12 +28,12 @@ create table if not exists "Device"
 alter table "Device"
     owner to table_admin;
 
-create table if not exists "BatteryLevel"
+create table "BatteryLevel"
 (
     time           timestamp,
     battery_level  integer not null,
     battery_status varchar not null,
-    device_id      integer
+    device_id      varchar
         constraint device
             references "Device"
             on update cascade on delete cascade

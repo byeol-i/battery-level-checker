@@ -6,7 +6,10 @@ import (
 	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
+	"github.com/google/uuid"
 )
+
+const maxRetry = 10;
 
 func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error {
 	const selectQuery = `
@@ -16,9 +19,8 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 	
 	const insertQuery = `
 	INSERT INTO "Device" 
-	("name", "type", "os_name", "os_version", "app_version", "user_id") 
-	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING "device_id";
+	("device_id", "name", "type", "os_name", "os_version", "app_version", "user_id") 
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 	
 	err := device.SpecValidator(&newDevice)
@@ -42,10 +44,29 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) error 
 	if count > 0 {
 		return errors.New("device already exists")
 	}
+	
+	deviceID := ""
 
-	var returnedId = device.Id{}
+	for i := 0; i < maxRetry; i++ {
+		newUUID := uuid.New().String()
 
-	err = tx.QueryRowContext(ctx, insertQuery, newDevice.Name, newDevice.Type, newDevice.OS, newDevice.OSversion, newDevice.AppVersion, uid).Scan(&returnedId)
+		var existingCount int
+		err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM \"Device\" WHERE \"device_id\" = $1", newUUID).Scan(&existingCount)
+		if err != nil {
+			return err
+		}
+
+		if existingCount == 0 {
+			deviceID = newUUID
+			break
+		}
+	}
+
+	if deviceID == "" {
+		return errors.New("failed to generate unique device ID")
+	}
+
+	_, err = tx.ExecContext(ctx, insertQuery, deviceID, newDevice.Name, newDevice.Type, newDevice.OS, newDevice.OSversion, newDevice.AppVersion, uid)
 	if err != nil {
 		return err
 	}
