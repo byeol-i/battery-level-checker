@@ -194,7 +194,6 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 			BatteryStatus: v.BatteryStatus,
 		}
 
-
 		batteryLevels = append(batteryLevels, newBatteryLevel)
 	}
 
@@ -202,7 +201,6 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 		AllBatteryLevel: batteryLevels,
 	}, nil
 }
-
 
 func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUsersAllBatteryLevelReq) (*pb_svc_db.GetUsersAllBatteryLevelRes, error) {
 	// if in != nil {
@@ -223,7 +221,6 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}
-
 
 		batteryLevels = append(batteryLevels, newBatteryLevel)
 	}

@@ -17,13 +17,19 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+const contextTime = time.Second * 5
+
 var (
 	addr = flag.String("dbsvc-addr", "battery_db:50012", "db grpc addr")
 )
 
-func CallAddNewUser(userSpec *user.UserImpl, userCredential *user.UserCredential) error {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
+func CallAddNewUser(userSpec *user.UserImpl, userCredential *user.UserCredential) error {	
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+	
+	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
+	
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		return err
 	}
@@ -41,12 +47,9 @@ func CallAddNewUser(userSpec *user.UserImpl, userCredential *user.UserCredential
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
-
 	_, err = client.AddNewUser(ctx, in)
 	if err != nil {
-		logger.Error("Can't call grpc call")
+		logger.Error("Can't call grpc call", zap.Error(err) )
 		return err
 	}
 
@@ -54,8 +57,11 @@ func CallAddNewUser(userSpec *user.UserImpl, userCredential *user.UserCredential
 }
 
 func CallAddNewDevice(newDevice *device.Device, uid string) error {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+	
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	// conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
 	}
@@ -70,9 +76,6 @@ func CallAddNewDevice(newDevice *device.Device, uid string) error {
 		Uid: uid,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
-
 	_, err = client.AddDevice(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
@@ -83,8 +86,11 @@ func CallAddNewDevice(newDevice *device.Device, uid string) error {
 }
 
 func CallRemoveDevice(deviceID string, uid string) error {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	// conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return err
 	}
@@ -96,9 +102,6 @@ func CallRemoveDevice(deviceID string, uid string) error {
 		
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
-
 	_, err = client.RemoveDevice(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call")
@@ -108,9 +111,12 @@ func CallRemoveDevice(deviceID string, uid string) error {
 	return nil
 }
 
-func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {	
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +130,6 @@ func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
 
 	res, err := client.GetUsersAllBatteryLevel(ctx, in)
 	if err != nil {
@@ -146,9 +150,12 @@ func CallGetUsersAllBattery(uid string) ([]*device.BatteryLevel, error) {
 	return allBatteryLevel, nil
 }
 
-func CallGetAllDevices(uid string) ([]*device.Device, error) {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+func CallGetAllDevices(uid string) ([]*device.Device, error) {	
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+	// conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	
 	if err != nil {
 		return nil, err
 	}
@@ -160,8 +167,6 @@ func CallGetAllDevices(uid string) ([]*device.Device, error) {
 			Uid: uid,
 		},
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
 
 	res, err := client.GetDevices(ctx, in)
 	if err != nil {
@@ -183,9 +188,12 @@ func CallGetAllDevices(uid string) ([]*device.Device, error) {
 	return allDevices, nil
 }
 
-func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, error) {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, error) {	
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return nil, err
 	}
@@ -201,9 +209,6 @@ func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, err
 			Uid: uid,
 		},
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
 
 	res, err := client.GetAllBattery(ctx, in)
 	if err != nil {
@@ -224,9 +229,12 @@ func CallGetAllBattery(deviceID string, uid string) ([]*device.BatteryLevel, err
 	return allBatteryLevel, nil
 }
 
-func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {	
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	
+	// conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return nil, err
 	}
@@ -242,9 +250,6 @@ func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 			Uid: uid,
 		},
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
 
 	res, err := client.GetBattery(ctx, in)
 	if err != nil {
@@ -262,8 +267,12 @@ func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 }
 
 func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.BatteryLevel) error {
-	dialTimeout := 5 * time.Second
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
+	defer cancel()
+
+	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
+	conn, err := grpc.DialContext(ctx, *addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	
 	if err != nil {
 		return err
 	}
@@ -287,8 +296,6 @@ func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.Ba
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
 
 	_, err = client.UpdateBatteryLevel(ctx, in)
 	if err != nil {

@@ -19,7 +19,6 @@ var (
 	cacheExpirationTime = 30 * time.Minute
 )
 
-
 type FirebaseApp struct {
 	app *firebase.App
 	cache *cache.Cache

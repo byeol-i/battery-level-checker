@@ -12,6 +12,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+const contextTime = time.Second * 5
+
 var (
 	addr = flag.String("auth addr", "battery_auth:50010", "auth grpc addr")
 )
@@ -31,7 +33,7 @@ func CallVerifyToken(token string) (string, error) {
 		Token: token,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
 	defer cancel()
 
 	res, err := client.VerifyIdToken(ctx, in)
@@ -59,7 +61,7 @@ func CallGetUser(uid string) error {
 		Uid: uid,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
 	defer cancel()
 
 	_, err = client.GetUser(ctx, in)
@@ -88,7 +90,7 @@ func CallCreateCustomToken(token user.Token) (string, error) {
 		AccessToken: token.Token,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
 	defer cancel()
 
 	res, err := client.CreateCustomToken(ctx, in)
