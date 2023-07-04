@@ -21,10 +21,6 @@ func NewAuthServiceServer(app *auth.FirebaseApp) *AuthSrv {
 }
 
 func (s AuthSrv) GetUser(ctx context.Context, in *pb_svc_firebase.GetUserReq) (*pb_svc_firebase.GetUserRes, error) {
-	// if in != nil {
-	// 	logger.Error("in is not nil")
-	// }
-
 	result, err := s.app.GetUser(ctx, in.Uid)
 	if err != nil {
 		return &pb_svc_firebase.GetUserRes{
@@ -53,10 +49,6 @@ func (s AuthSrv) GetUser(ctx context.Context, in *pb_svc_firebase.GetUserReq) (*
 }
 
 func (s AuthSrv) CreateCustomToken(ctx context.Context, in *pb_svc_firebase.CreateCustomTokenReq) (*pb_svc_firebase.CreateCustomTokenRes, error) {
-	// if in != nil {
-	// 	logger.Error("in is not nil")
-	// }
-
 	token, err := s.app.CreateCustomToken(ctx, in.Uid)
 	if err != nil {
 		return &pb_svc_firebase.CreateCustomTokenRes{}, err
@@ -81,6 +73,7 @@ func (s AuthSrv) VerifyIdToken(ctx context.Context, in *pb_svc_firebase.VerifyId
 			},	
 		}, err
 	}
+	
 	jsonRes, err := json.Marshal(result)
 	if err != nil {
 		return &pb_svc_firebase.VerifyIdTokenRes{
@@ -119,6 +112,7 @@ func (s AuthSrv) GetUserIdByIdToken(ctx context.Context, in *pb_svc_firebase.Get
 			},	
 		}, err
 	}
+
 	res := Res{}
 	err = json.Unmarshal([]byte(jsonRes), &res)
 	if err != nil {

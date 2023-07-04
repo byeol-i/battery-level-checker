@@ -87,13 +87,13 @@ func realMain() error {
 		logger.Info("Didn't using auth server")
 	}
 
-	rtr.AddRule("Battery", "GET", `/battery/history/([0-9]+)*$`, batteryCtrl.GetHistoryAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery/history/([a-fA-F0-9-]+)$`, batteryCtrl.GetHistoryAllBattery)
 	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetUsersAllBattery)
-	rtr.AddRule("Battery", "POST", `/battery/([0-9]+)*$`, batteryCtrl.UpdateBattery)
+	rtr.AddRule("Battery", "POST", `/battery/([a-fA-F0-9-]+)$`, batteryCtrl.UpdateBattery)
 	
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)
 	rtr.AddRule("Device", "GET", `/device$`, deviceCtrl.GetDevices)
-	rtr.AddRule("Device", "DELETE", `/device/([0-9]+)*$`, deviceCtrl.DeleteDevice)
+	rtr.AddRule("Device", "DELETE", `/device/([a-fA-F0-9-]+)$`, deviceCtrl.DeleteDevice)
 
 	rtr.AddRule("User", "POST", "/user/register$", userCtrl.AddNewUser)
 	rtr.AddRule("User", "POST", "/user/custom-token$", userCtrl.CreateCustomToken)

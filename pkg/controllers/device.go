@@ -115,16 +115,7 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 // @Success 200 {object} models.JSONsuccessResult{data=device.DeviceImpl{}}
 // @Router /device/ [get]
 func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Request) {
-	pattern := regexp.MustCompile(hdl.basePattern + `/device/(\\w+)`)
-	
-    matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches) < 2 {
-        respondError(resp, http.StatusBadRequest, "Not valid")
-        return
-    }
-
 	uid := req.Header.Get("Uid")
-	logger.Info("Delete device", zap.String("uid", uid), zap.String("device", matches[1]))
 	
 	res, err := dbSvc.CallGetAllDevices(uid)
 	if err != nil {

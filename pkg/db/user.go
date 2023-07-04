@@ -8,7 +8,6 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
 
-
 func (db *Database) AddNewUser(userSpec user.UserImpl, userCredential user.UserCredential) error {
 	const q = `
 	INSERT INTO "User" ("uid", "name", "email") 
@@ -22,6 +21,6 @@ func (db *Database) AddNewUser(userSpec user.UserImpl, userCredential user.UserC
 	if res != nil {
 		return res.Err()
 	}
-	
+
 	return nil
 }

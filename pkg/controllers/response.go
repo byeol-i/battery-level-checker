@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/byeol-i/battery-level-checker/pkg/models"
 )
@@ -26,5 +27,7 @@ func respondJSON(resp http.ResponseWriter, status int, message string, payload i
 }
 
 func respondError(resp http.ResponseWriter, code int, message string) {
-	respondJSON(resp, code, "error",  map[string]string{"error": message})
+	errMsg := strings.Replace(message, "rpc error: code = Unknown desc = ", "", 1)
+		
+	respondJSON(resp, code, "error",  map[string]string{"error": errMsg})
 }
