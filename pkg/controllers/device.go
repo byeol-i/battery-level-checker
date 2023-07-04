@@ -39,14 +39,14 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	err := json.NewDecoder(req.Body).Decode(&deviceSpec)
 	if err != nil {
 		logger.Error("Json parse error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, "invalid format")
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
 		return
 	}
 
 	err = device.SpecValidator(&deviceSpec)
 	if err != nil {
 		logger.Error("Device spec validator error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())	
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
 		return
 	}
 
@@ -54,7 +54,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	err = newDevice.SetDeviceSpec(&deviceSpec)
 	if err != nil {
 		logger.Error("Device spec validator error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
 		return
 	}
 
@@ -64,7 +64,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	err = dbSvc.CallAddNewDevice(newDevice, strings.Replace(uid, "\"", "", -1))
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -83,10 +83,10 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Router /device/{deviceID} [delete]
 func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.Request) {
-	pattern := regexp.MustCompile(hdl.basePattern + `/device/(\\w+)`)
+	pattern := regexp.MustCompile(hdl.basePattern + `/device/([a-zA-Z0-9-]+)`)
 	
     matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches) < 2 {
+	if len(matches[1]) < 2 {
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
@@ -94,10 +94,12 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 	uid := req.Header.Get("Uid")
 	logger.Info("Delete device", zap.String("uid", uid), zap.String("device", matches[1]))
 	
+
+	logger.Info("matches", zap.Any("deviceID?",matches[1]))
 	err := dbSvc.CallRemoveDevice(matches[1], uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 	
@@ -120,7 +122,7 @@ func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Req
 	res, err := dbSvc.CallGetAllDevices(uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 	

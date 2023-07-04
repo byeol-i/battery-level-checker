@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"regexp"
 
+	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	"go.uber.org/zap"
@@ -36,7 +38,8 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 	
 	res, err := dbSvc.CallGetUsersAllBattery(uid)
 	if err != nil {
-		respondError(resp, http.StatusBadRequest, err.Error())
+		logger.Error("dbSvc's error", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -57,7 +60,7 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
     matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches) < 2 {
+	if len(matches[1]) < 2 {
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
@@ -68,7 +71,7 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 	res, err := dbSvc.CallGetAllBattery(matches[1], uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -89,11 +92,36 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 // @Router /battery/{deviceID} [put]
 func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
-    matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches) < 2 {
+    deviceId := pattern.FindStringSubmatch(req.URL.Path)
+	if len(deviceId) < 2 {
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
+
+	var newBatteryLevel device.BatteryLevel
+
+	err := json.NewDecoder(req.Body).Decode(&newBatteryLevel)
+	if err != nil {
+		logger.Error("Json parse error", zap.Error(err))
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
+		return
+	}
+
+	err = device.BatteryLevelValidator(&newBatteryLevel)
+	if err != nil {
+		logger.Error("Battery level is not validate", zap.Error(err))	
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
+		return
+	}
+
+	uid := req.Header.Get("Uid")
+
+	err = dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, &newBatteryLevel)
+	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		return
+	}
 
 	// t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
 	// if err != nil {
@@ -118,7 +146,6 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 	// if err != nil {
 	// 	respondError(resp, 405, "not valid form")
 	// }
-	logger.Info("Update Battery")
 
 	// producer.Write() 
 

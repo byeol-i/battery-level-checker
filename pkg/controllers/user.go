@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/byeol-i/battery-level-checker/pkg/exception"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	firebaseSvc "github.com/byeol-i/battery-level-checker/pkg/svc/firebase"
@@ -52,8 +51,9 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 
 		uid, err := firebaseSvc.CallVerifyToken(token)
 		if err != nil {
-			logger.Error("get some error", zap.Error(err))
-			respondError(resp, 401, err.Error())
+			logger.Error("auth server error", zap.Error(err))
+			respondError(resp, http.StatusInternalServerError, "Internal server error")
+		
 		}
 		userCredential.Uid = uid
 	}
@@ -61,21 +61,23 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 	err := json.NewDecoder(req.Body).Decode(&userSpec)
 	if err != nil {
 		logger.Error("Json parse error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, "invalid format")
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
+		
 		return
 	}
 
 	err = user.UserValidator(&userSpec)
 	if err != nil {
 		logger.Error("User validator error", zap.Error(err))
-		respondError(resp, http.StatusBadRequest, err.Error())	
+		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
+		
 		return
 	}
 
 	err = dbSvc.CallAddNewUser(&userSpec, &userCredential)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-        respondError(resp, http.StatusBadRequest, exception.CastingError(err))
+        respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -111,7 +113,8 @@ func (hdl *UserControllers) CreateCustomToken(resp http.ResponseWriter, req *htt
 
 	customToken, err := firebaseSvc.CallCreateCustomToken(tokenSpec)
 	if err != nil {
-        respondError(resp, http.StatusBadRequest, err.Error())
+		logger.Error("firebase svc's error", zap.Error(err))
+        respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -132,7 +135,7 @@ func (hdl *UserControllers) CreateCustomToken(resp http.ResponseWriter, req *htt
 func (hdl *UserControllers) DeleteUser(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(hdl.basePattern + `/user/([A-Za-z])$`)
     matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches) < 2 {
+	if len(matches[1]) < 2 {
         respondError(resp, http.StatusBadRequest, "Not valid in Delete User")
         return
     }

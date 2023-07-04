@@ -23,6 +23,8 @@ else
     find .env -type f -exec sed -i -e /^CLI_API_VERSION=/s/=.*/=$CliApiVersion/ {} \;
 fi
 
+docker secret create firebase-key ./conf/firebase/key.json
+
 docker stack deploy -c <(docker-compose -f db.yml config) battery
 docker stack deploy -c <(docker-compose -f app.yml config) battery
 

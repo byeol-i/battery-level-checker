@@ -2,7 +2,7 @@
 
 # Purpose
 
-for check device's battery level in anywhere
+The purpose of this project is to hands on learning experience about Kafka while impl a battery level checking application
 
 # System diagram
 
@@ -10,36 +10,70 @@ WIP
 
 That System is constructed in several kafka brokers and middleware which use HTTP transport
 
-<img width="530" alt="image" src="https://user-images.githubusercontent.com/35767154/185879467-d1d8eb77-135a-46c5-a467-b3544597dabb.png">
-
-detailed diagram
-
-<img width="1331" alt="Screen Shot 2022-09-20 at 10 02 58 AM" src="https://user-images.githubusercontent.com/35767154/191145000-cf4901ca-224b-4450-b189-b00ffeb19af7.png">
+<img width="330" alt="image" src="https://user-images.githubusercontent.com/35767154/185879467-d1d8eb77-135a-46c5-a467-b3544597dabb.png">
 
 # Simple scenario
 
-Register user
+### 1. Register user
 
-> Firebase login -> Get custom token -> Post to Auth server -> Get credential
+-   Getting token by firebase login
+
+-   Create custom token (Using for generate access token)
+
+-   Post to user date to server
+
+### 2. Get devices
+
+-   Added token at header
+
+-   Get {domain}/api/v1/device
+
+...
 
 # rest API
 
-> https://byeol-i.github.io/battery-level-checker/
+For detailed information about the API, Please read this [documentation](https://byeol-i.github.io/battery-level-checker/)
 
-# golang dependency
+# Running
 
-In Swaggo
+To running this application, need to setup docker swarm system.
 
-> https://github.com/swaggo/echo-swagger
+## 1. Running zookeeper & kafka
 
-> "github.com/swaggo/swag"
+> docker stack deploy -c kafka.yml {stack name}
 
-> github.com/labstack/echo/v4
+or
 
-In Kakfa
+> cd shell && ./deployZoo.sh && ./deployKafka.sh
 
-> "github.com/Shopify/sarama"
+## 2. Running auth, apid ...etc
 
-Logger
+> cd shell && ./deployApp.sh
 
-> "go.uber.org/zap"
+# Environment
+
+## 1. labeling worker at worker
+
+> docker node update --label-add kafka=1 {hostname}
+
+> docker node update --label-add kafka=2 {hostname}
+
+> ...
+
+## 2. Creating firebase api
+
+> locate firebase key at ./conf/firebase/key.json
+
+# Dependency
+
+The following dependencies are used in the project:
+
+> [Echo swagger](https://github.com/swaggo/echo-swagger)
+
+> [swag]("github.com/swaggo/swag")
+
+> [echo]("github.com/labstack/echo/v4")
+
+> [sarama]("github.com/Shopify/sarama")
+
+> [zap]("go.uber.org/zap")
