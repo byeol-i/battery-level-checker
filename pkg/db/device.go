@@ -71,31 +71,6 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) (strin
 		return "", err
 	}
 
-	// consumer := consumer.NewConsumer()
-
-	// admin, err := consumer.GetAdmin()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// err = consumer.CreateTopic(admin, uid+"/"+deviceID)
-
-	// admin, err := consumer.GetAdmin()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// err = consumer.CreateTopic(admin, uid)
-	// if err != nil {
-	// 	return err
-	// }
-	// ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	// defer cancel()
-
-	// res := db.Conn.QueryRowContext(ctx, q, newDevice.Name, newDevice.Type, newDevice.OS, newDevice.OSversion, newDevice.AppVersion, uid)
-	// if res != nil {
-	// 	return errors.New(res.Err().Error())
-	// }
 	return deviceID, tx.Commit()
 }
 
@@ -123,7 +98,8 @@ func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 
 func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	const q = `
-	SELECT * FROM "Device" 
+	SELECT ("device_id", "name", "type", "os_name", "os_version", app_version) 
+	FROM "Device" 
 	WHERE "uid" = $1
 	`
 
@@ -141,6 +117,7 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 
 	for rows.Next() {
 		var (
+			DeviceId string
 			Name       string 
 			Type       string 
 			OS         string 
@@ -149,6 +126,7 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 		)
 
 		err := rows.Scan(
+			&DeviceId,
 			&Name,
 			&Type,
 			&OS,
@@ -170,6 +148,8 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 				AppVersion: AppVersion,
 			},
 		)
+
+		d.SetDeviceId(DeviceId)
 
 		devices = append(devices, d.Clone())
 	}

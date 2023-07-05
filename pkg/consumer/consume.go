@@ -34,7 +34,7 @@ func GetTopics() {
 	}
 }
 
-func ConsumeLatestMessage(topic string, groupId string) error {
+func ConsumeLatestMessage(topic string) error {
 	manager := config.NewKafkaConfigManager()
 	saramaConfig := manager.GetKafkaSarama()
 

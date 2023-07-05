@@ -85,6 +85,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 	}
 
 	err = s.Consumer.CreateTopic(admin, in.Uid + "_" + deviceId)
+
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -93,6 +94,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 			},
 		}, err
 	}
+
 	return &pb_svc_db.AddDeviceRes{}, nil
 }
 
@@ -153,7 +155,6 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	}, nil
 }
 
-
 func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb_svc_db.GetBatteryRes, error) {
 	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
 	if err != nil {
@@ -168,6 +169,11 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 		BatteryStatus: raw.BatteryStatus,
 	}
 
+	err = consumer.ConsumeLatestMessage(in.Uid.Uid+"_"+in.DeviceId.Id)
+	if err != nil {
+		logger.Error("Can't consume msg", zap.Error(err))
+	}
+	
 	return &pb_svc_db.GetBatteryRes{
 		BatteryLevel: pbUnit,
 	}, nil
