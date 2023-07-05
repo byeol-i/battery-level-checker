@@ -99,7 +99,6 @@ func (db *Database) AddNewDevice(newDevice device.DeviceSpec, uid string) (strin
 	return deviceID, tx.Commit()
 }
 
-
 func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 	const q = `
 	DELETE FROM "Device" 
@@ -121,8 +120,6 @@ func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 
 	return tx.Commit()
 }
-
-
 
 func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	const q = `

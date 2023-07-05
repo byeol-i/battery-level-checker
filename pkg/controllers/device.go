@@ -92,10 +92,7 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
     }
 
 	uid := req.Header.Get("Uid")
-	logger.Info("Delete device", zap.String("uid", uid), zap.String("device", matches[1]))
 	
-
-	logger.Info("matches", zap.Any("deviceID?",matches[1]))
 	err := dbSvc.CallRemoveDevice(matches[1], uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))

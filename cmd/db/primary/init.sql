@@ -37,6 +37,10 @@ create table "BatteryLevel"
     device_id      varchar
         constraint device
             references "Device"
+            on update cascade on delete cascade,
+    uid            varchar
+        constraint uid
+            references "User"
             on update cascade on delete cascade
 );
 

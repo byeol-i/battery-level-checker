@@ -29,7 +29,7 @@ type DeviceInterface interface {
 }
 
 type DeviceImpl struct {
-	Id string `validate:"required" json:"id" example:"1"`
+	Id string `validate:"required" json:"id" example:"f8aa8e64-eefa-423d-be40-a761231db093"`
 	BatteryLevel BatteryLevel
 	Spec DeviceSpec
 }
