@@ -28,3 +28,14 @@ func (c *Consumer) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 
 	return nil
 }
+
+func (c *Consumer) DeleteTopic(admin sarama.ClusterAdmin, name string) error {
+	err := admin.DeleteTopic(name)
+	if err != nil {
+		return err
+	}
+
+	defer admin.Close()
+
+	return nil
+}

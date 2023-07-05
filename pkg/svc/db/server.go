@@ -84,7 +84,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.Consumer.CreateTopic(admin, in.Uid+"_"+deviceId)
+	err = s.Consumer.CreateTopic(admin, in.Uid + "_" + deviceId)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -109,6 +109,25 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 		}, err
 	}
 
+	admin, err := s.Consumer.GetAdmin()
+	if err != nil {
+		logger.Error("Can't get kafka admin", zap.Error(err))
+		return &pb_svc_db.RemoveDeviceRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+
+	err = s.Consumer.DeleteTopic(admin, in.Uid.Uid + "_" + in.DeviceId.Id)
+	if err != nil {
+		logger.Error("Can't delete topic", zap.Error(err))
+		return &pb_svc_db.RemoveDeviceRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
 	return &pb_svc_db.RemoveDeviceRes{}, nil
 }
 

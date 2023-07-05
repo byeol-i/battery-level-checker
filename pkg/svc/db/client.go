@@ -12,6 +12,7 @@ import (
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -274,8 +275,6 @@ func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.Ba
 
 	client := pb_svc_db.NewDBClient(conn)
 
-	// device, err := device
-
 	in := &pb_svc_db.UpdateBatteryLevelReq{
 		BatteryLevel: &pb_unit_device.BatteryLevel{
 			Time: batteryLevel.Time.String(),
@@ -290,10 +289,15 @@ func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.Ba
 		},
 	}
 
-
 	_, err = client.UpdateBatteryLevel(ctx, in)
 	if err != nil {
-		logger.Error("Can't call grpc call")
+		logger.Error("Can't call grpc call", zap.Error(err))
+		return err
+	}
+
+	err = producer.WriteBatteryTime(batteryLevel, deviceID, uid)
+	if err != nil {
+		logger.Error("Can't producer msg", zap.Error(err))
 		return err
 	}
 
