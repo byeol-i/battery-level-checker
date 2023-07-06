@@ -122,6 +122,13 @@ func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Req
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
+
+	result, err := json.Marshal(res)
+	if err != nil {
+		logger.Error("Json marshal error", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		return
+	}
 	
-	respondJSON(resp, http.StatusOK, "", res)
+	respondJSON(resp, http.StatusOK, "", string(result))
 }

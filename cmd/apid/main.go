@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"log"
@@ -22,6 +23,10 @@ import (
 var (
 	noAuth = flag.Bool("noAuth", false, "for testing")
 	apiVersion = "v1"
+	apidAddr = flag.String("apid addr", "0.0.0.0:80", "apid address")
+	usingTls = flag.Bool("grpc.tls", false, "using http2")
+	serverCrt = flag.String("cert.crt", "/run/secrets/crt-file", "crt file location")
+	serverKey = flag.String("cert.key", "/run/secrets/key-file", "ket file location")
 )
 
 type ConnectionWatcher struct {
@@ -103,8 +108,21 @@ func realMain() error {
 
 	wg.Go(func() error {
 		var err error
-		
-		ln, err := net.Listen("tcp", "0.0.0.0:80")
+		var ln net.Listener
+
+		if *usingTls {
+			cert, err := tls.LoadX509KeyPair(*serverCrt, *serverKey)
+			if err != nil {
+				return err
+			}
+
+			ln, err = tls.Listen("tcp", *apidAddr, &tls.Config{
+				Certificates: []tls.Certificate{cert},
+			})
+		} else {
+			ln, err = net.Listen("tcp", *apidAddr)
+		}
+
 		if err != nil {
 			return err
 		}
