@@ -60,6 +60,11 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			continue
 		}
 
+		if path == "/api/" + rtr.version + "/stress" {
+			rule.handler.ServeHTTP(resp, req)
+			return
+		}
+
 		// logger.Info("found handler", zap.String("rule", rule.name), zap.String("path", path))
 
 		if rtr.middleware != nil {

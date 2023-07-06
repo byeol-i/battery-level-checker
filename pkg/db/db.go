@@ -25,7 +25,6 @@ type DBConfig struct {
 	SSLcert     string
 }
 
-
 func ConnectDB(config *DBConfig) (*Database, error) {
 	psqInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		config.Host, config.Port, config.User, config.Password, config.DBname, config.SSLmode)

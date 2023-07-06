@@ -137,7 +137,9 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	raws, err := s.slaveDB.GetDevices(in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetDevicesRes{
-			Error: err.Error(),
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
 		}, err
 	}
 	
@@ -151,6 +153,9 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 	}
 
 	return &pb_svc_db.GetDevicesRes{
+		Result: &common.ReturnMsg{
+			Result: "done",
+		},
 		Devices: devices,
 	}, nil
 }
@@ -159,7 +164,9 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetBatteryRes{
-			Error: err.Error(),
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
 		}, err
 	}
 	
@@ -175,6 +182,9 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	}
 	
 	return &pb_svc_db.GetBatteryRes{
+		// Result: &common.ReturnMsg{
+		// 	Result: pbUnit.String(),
+		// },
 		BatteryLevel: pbUnit,
 	}, nil
 }
@@ -183,7 +193,9 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	raws, err := s.slaveDB.GetAllBatteryLevels(in.DeviceId.Id, in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetAllBatteryRes{
-			Error: err.Error(),
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
 		}, err
 	}
 	
@@ -207,7 +219,9 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	raws, err := s.slaveDB.GetUsersAllBatteryLevels(in.Uid.Uid)
 	if err != nil {
 		return &pb_svc_db.GetUsersAllBatteryLevelRes{
-			Error: err.Error(),
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
 		}, err
 	}
 	
@@ -223,6 +237,9 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	}
 
 	return &pb_svc_db.GetUsersAllBatteryLevelRes{
+		Result: &common.ReturnMsg{
+			Result: "Done",
+		},
 		AllBatteryLevel: batteryLevels,
 	}, nil
 }

@@ -98,7 +98,7 @@ func (db *Database) RemoveDevice(deviceId device.Id, uid string) error {
 
 func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 	const q = `
-	SELECT ("device_id", "name", "type", "os_name", "os_version", app_version) 
+	SELECT "device_id", "name", "type", "os_name", "os_version", app_version
 	FROM "Device" 
 	WHERE "uid" = $1
 	`
@@ -113,18 +113,16 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 		return nil, err
 	}
 
-	d := device.NewDevice()
+	var (
+		DeviceId    string
+		Name        string
+		Type        string
+		OS          string
+		OSversion   string
+		AppVersion  string
+	)
 
 	for rows.Next() {
-		var (
-			DeviceId string
-			Name       string 
-			Type       string 
-			OS         string 
-			OSversion  string 
-			AppVersion string 
-		)
-
 		err := rows.Scan(
 			&DeviceId,
 			&Name,
@@ -133,25 +131,23 @@ func (db *Database) GetDevices(uid string) ([]*device.Device, error) {
 			&OSversion,
 			&AppVersion,
 		)
-
+	
 		if err != nil {
 			return nil, err
 		}
 
-		
-		d.SetDeviceSpec(
-			&device.DeviceSpec{
-				Name: Name,
-				Type: Type,
-				OS: OS,
-				OSversion: OSversion,
-				AppVersion: AppVersion,
-			},
-		)
+		newDevice := device.NewDevice()
 
-		d.SetDeviceId(DeviceId)
-
-		devices = append(devices, d.Clone())
+		newDevice.SetDeviceSpec(&device.DeviceSpec{
+			Name : Name,
+			Type : Type,
+			OS : OS,
+			OSversion : OSversion,
+			AppVersion : AppVersion,
+		})
+		newDevice.SetDeviceId(DeviceId)
+	
+		devices = append(devices, newDevice)
 	}
 
 	return devices, nil

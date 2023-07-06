@@ -116,12 +116,22 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 	
+	logger.Info("GetDevices uid", zap.Any("uid",uid))
 	res, err := dbSvc.CallGetAllDevices(uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
+	logger.Info("GetDevices res", zap.Any("devices res",res))
+
+
+	result, err := json.Marshal(res)
+	if err != nil {
+		logger.Error("Json marshal error", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		return
+	}
 	
-	respondJSON(resp, http.StatusOK, "", res)
+	respondJSON(resp, http.StatusOK, "", string(result))
 }
