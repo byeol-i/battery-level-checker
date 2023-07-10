@@ -24,8 +24,9 @@ message GetUsersAllBatteryLevelReq {
 }
 
 message GetUsersAllBatteryLevelRes {
-    repeated unit.device.BatteryLevel allBatteryLevel = 1;
-    string error = 2;
+    unit.common.ReturnMsg result = 1;
+    repeated unit.device.BatteryLevel allBatteryLevel = 2;
+    // string error = 2;
 }
 
 message GetBatteryReq {
@@ -34,8 +35,9 @@ message GetBatteryReq {
 }
 
 message GetBatteryRes {
-    unit.device.BatteryLevel batteryLevel = 1;
-    string error = 2;
+    unit.common.ReturnMsg result = 1;
+    unit.device.BatteryLevel batteryLevel = 2;
+    // string error = 2;
 }
 
 message GetAllBatteryReq {
@@ -44,8 +46,9 @@ message GetAllBatteryReq {
 }
 
 message GetAllBatteryRes {
-    repeated unit.device.BatteryLevel allBatteryLevel = 1;
-    string error = 2;
+    unit.common.ReturnMsg result = 1;
+    repeated unit.device.BatteryLevel allBatteryLevel = 2;
+    // string error = 2;
 }
 
 message AddNewUserReq {
@@ -72,8 +75,9 @@ message GetDevicesReq {
 }
 
 message GetDevicesRes {
-    repeated unit.device.Device devices = 1;
-    string error = 2;
+    unit.common.ReturnMsg result = 1;
+    repeated unit.device.Device devices = 2;
+    // string error = 2;
 }
 
 message RemoveDeviceReq {
