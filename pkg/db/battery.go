@@ -27,7 +27,6 @@ func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLeve
 
 func (db *Database) GetUsersAllBatteryLevels(uid string) ([]*device.BatteryLevel, error) {
 	var batteryLevels []*device.BatteryLevel
-
 	q := `
 	SELECT * FROM "BatteryLevel"
 	WHERE "uid" = $1`

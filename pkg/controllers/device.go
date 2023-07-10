@@ -122,6 +122,8 @@ func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Req
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
+	logger.Info("All devices  res", zap.Any("devices res",res))
+
 
 	result, err := json.Marshal(res)
 	if err != nil {
