@@ -126,6 +126,7 @@ func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Req
 	logger.Info("GetDevices res", zap.Any("devices res",res))
 
 
+
 	result, err := json.Marshal(res)
 	if err != nil {
 		logger.Error("Json marshal error", zap.Error(err))
