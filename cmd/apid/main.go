@@ -93,6 +93,7 @@ func realMain() error {
 
 	rtr.AddRule("Battery", "GET", `/battery/history/([a-fA-F0-9-]+)$`, batteryCtrl.GetHistoryAllBattery)
 	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetUsersAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery/([a-fA-F0-9-]+)$`, batteryCtrl.GetBattery)
 	rtr.AddRule("Battery", "POST", `/battery/([a-fA-F0-9-]+)$`, batteryCtrl.UpdateBattery)
 	
 	rtr.AddRule("Device", "POST", `/device$`, deviceCtrl.AddNewDevice)

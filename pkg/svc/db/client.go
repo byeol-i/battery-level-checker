@@ -171,9 +171,6 @@ func CallGetAllDevices(uid string) ([]*device.Device, error) {
 		logger.Error("Can't call grpc call")
 		return nil, err
 	}
-
-	logger.Info("res", zap.Any("res in CallGetAllDevices", res))
-
 	allDevices := []*device.Device{}
 
 	for _, v := range res.Devices {
@@ -184,9 +181,7 @@ func CallGetAllDevices(uid string) ([]*device.Device, error) {
 
 		allDevices = append(allDevices, newDevice)
 	}
-
-	logger.Info("All devices", zap.Any("devices",allDevices))
-
+	
 	return allDevices, nil
 }
 

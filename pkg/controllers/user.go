@@ -81,7 +81,7 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	respondJSON(resp, http.StatusOK, "success", nil)
+	respondJSON(resp, http.StatusOK, "AddNewUser", nil)
 }
 
 // CreateCustomToken godoc
@@ -118,7 +118,7 @@ func (hdl *UserControllers) CreateCustomToken(resp http.ResponseWriter, req *htt
 		return
 	}
 
-	respondJSON(resp, http.StatusOK, "success", customToken)
+	respondJSON(resp, http.StatusOK, "CreateCustomToken", customToken)
 }
 
 // DeleteUser godoc
@@ -140,5 +140,5 @@ func (hdl *UserControllers) DeleteUser(resp http.ResponseWriter, req *http.Reque
         return
     }
 
-	respondJSON(resp, http.StatusOK, "success", nil)
+	respondJSON(resp, http.StatusOK, "DeleteUser", nil)
 }

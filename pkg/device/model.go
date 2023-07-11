@@ -81,7 +81,8 @@ func NewDeviceFromProto(pbDevice *pb_unit_device.Device) (*Device, error){
 	}
 	
 	m := NewDevice()
-	m.SetDeviceSpec(spec) 
+	m.SetDeviceSpec(spec)
+	m.SetDeviceId(pbDevice.Id.Id)
 
 	return m, nil
 }

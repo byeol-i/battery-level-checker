@@ -24,7 +24,7 @@ func NewBatteryController(basePattern string) *BatteryController {
 
 // GetUsersAllBattery godoc
 // @Summary Get User's all Battery Level
-// @Description Get devices's battery
+// @Description Get device's battery
 // @Tags Battery
 // @Accept json
 // @Produce json
@@ -35,7 +35,6 @@ func NewBatteryController(basePattern string) *BatteryController {
 func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 
-	
 	res, err := dbSvc.CallGetUsersAllBattery(uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
@@ -44,8 +43,44 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 	}
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", res)
+	respondJSON(resp, http.StatusOK, "GetUsersAllBattery", res)
 }
+
+
+// GetSpecificDevice's battery godoc
+// @Summary Get Specific Device's Battery Level
+// @Description Get device battery
+// @Tags Battery
+// @Accept json
+// @Produce json
+// @Param id path string true "Device ID"
+// @Param Authorization header string true "With the bearer started"
+// @Failure 400 {object} models.JSONfailResult{}
+// @Success 200 {object} models.JSONsuccessResult{data=device.DeviceImpl{Id,BatteryLevel}}
+// @Router /battery/ [get]
+func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Request) {
+	pattern := regexp.MustCompile(hdl.basePattern + `/device/([a-zA-Z0-9-]+)`)
+	
+    matches := pattern.FindStringSubmatch(req.URL.Path)
+	if len(matches[1]) < 2 {
+        respondError(resp, http.StatusBadRequest, "Not valid")
+        return
+    }
+
+	uid := req.Header.Get("Uid")
+
+	res, err := dbSvc.CallGetBattery(matches[1], uid)
+	if err != nil {
+		logger.Error("dbSvc's error", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	// consumer.GetTopics()
+	respondJSON(resp, http.StatusOK, "GetBattery", res)
+}
+
+
 
 // GetHistoryAllBattery godoc
 // @Summary Get All Device's Battery Level
@@ -76,7 +111,7 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 	}
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "success", res)
+	respondJSON(resp, http.StatusOK, "GetHistoryAllBattery", res)
 }
 
 // UpdateBatteryLevel godoc
@@ -149,5 +184,5 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 
 	// producer.Write() 
 
-	respondJSON(resp, 200, "success", "")
+	respondJSON(resp, 200, "UpdateBattery", "")
 }
