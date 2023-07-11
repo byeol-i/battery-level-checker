@@ -34,6 +34,8 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 			return nil
 		}
 
+		uid = strings.Replace(uid, "\"", "", -1)
+
 		req.Header.Set("Uid", uid)
 		return next
 	}
