@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package pb.unit.device;
 option go_package = "github.com/byeol-i/battery-level-checker/pb/unit/device";
+import "google/protobuf/timestamp.proto";
 
 message Device {
     ID id = 1;
@@ -22,7 +23,7 @@ message Spec {
 }
 
 message BatteryLevel {
-    string time = 1;
+    google.protobuf.Timestamp time = 1;
     int64 batteryLevel = 2;
     string batteryStatus = 3;
 }

@@ -59,10 +59,10 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 // @Success 200 {object} models.JSONsuccessResult{data=device.DeviceImpl{Id,BatteryLevel}}
 // @Router /battery/ [get]
 func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Request) {
-	pattern := regexp.MustCompile(hdl.basePattern + `/device/([a-zA-Z0-9-]+)`)
+	pattern := regexp.MustCompile(hdl.basePattern + `/battery/([a-zA-Z0-9-]+)`)
 	
     matches := pattern.FindStringSubmatch(req.URL.Path)
-	if len(matches[1]) < 2 {
+	if len(matches) == 0 {
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
@@ -126,7 +126,8 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 // @Failure 400 {object} models.JSONfailResult{}
 // @Router /battery/{deviceID} [put]
 func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
-	pattern := regexp.MustCompile(`/battery/history/(\w+)`)
+	pattern := regexp.MustCompile(hdl.basePattern + `/battery/([a-zA-Z0-9-]+)`)
+	
     deviceId := pattern.FindStringSubmatch(req.URL.Path)
 	if len(deviceId) < 2 {
         respondError(resp, http.StatusBadRequest, "Not valid")

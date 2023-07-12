@@ -16,6 +16,7 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const contextTime = time.Second * 5
@@ -181,7 +182,7 @@ func CallGetAllDevices(uid string) ([]*device.Device, error) {
 
 		allDevices = append(allDevices, newDevice)
 	}
-	
+
 	return allDevices, nil
 }
 
@@ -276,7 +277,7 @@ func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.Ba
 
 	in := &pb_svc_db.UpdateBatteryLevelReq{
 		BatteryLevel: &pb_unit_device.BatteryLevel{
-			Time: batteryLevel.Time.String(),
+			Time: timestamppb.New(*batteryLevel.Time),
 			BatteryLevel: int64(batteryLevel.BatteryLevel),
 			BatteryStatus: batteryLevel.BatteryStatus,
 		},

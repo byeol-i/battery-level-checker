@@ -5,6 +5,7 @@ import (
 
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/byeol-i/battery-level-checker/pb/unit/common"
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
@@ -173,7 +174,7 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	}
 	
 	pbUnit := &pb_unit_device.BatteryLevel{
-		Time: raw.Time.GoString(),
+		Time: timestamppb.New(*raw.Time),
 		BatteryLevel: int64(raw.BatteryLevel),
 		BatteryStatus: raw.BatteryStatus,
 	}
@@ -204,7 +205,7 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	var batteryLevels []*pb_unit_device.BatteryLevel
 	for _, v := range raws {
 		newBatteryLevel := &pb_unit_device.BatteryLevel{
-			Time: v.Time.GoString(),
+			Time: timestamppb.New(*v.Time),
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}
@@ -230,7 +231,7 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	var batteryLevels []*pb_unit_device.BatteryLevel
 	for _, v := range raws {
 		newBatteryLevel := &pb_unit_device.BatteryLevel{
-			Time: v.Time.GoString(),
+			Time: timestamppb.New(*v.Time),
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}

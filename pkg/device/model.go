@@ -6,6 +6,7 @@ import (
 	"time"
 
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Device struct {
@@ -167,7 +168,7 @@ func (d *Device) ToProtoBatteryLevel() (*pb_unit_device.BatteryLevel) {
 
 	pbUnit.BatteryLevel = int64(d.BatteryLevel.BatteryLevel)
 	pbUnit.BatteryStatus = d.BatteryLevel.BatteryStatus
-	pbUnit.Time = d.BatteryLevel.Time.GoString()
+	pbUnit.Time = timestamppb.New(*d.BatteryLevel.Time)
 
 	return pbUnit
 }
@@ -179,11 +180,15 @@ func ProtoToBatteryLevel(pbBatteryLevel *pb_unit_device.BatteryLevel) (*BatteryL
 	batteryLevel.BatteryLevel = int(pbBatteryLevel.BatteryLevel)
 	batteryLevel.BatteryStatus = pbBatteryLevel.BatteryStatus
 
-	parseTime, err := time.Parse(time.RFC3339, pbBatteryLevel.Time)
-    if err != nil {
-        return nil, err
-    }
-	batteryLevel.Time = &parseTime 
+	// parseTime, err := time.Parse(time.RFC3339, pbBatteryLevel.Time.AsTime())
+    // if err != nil {
+    //     return nil, err
+    // }
+	// batteryLevel.Time = &parseTime 
+
+
+	time := pbBatteryLevel.Time.AsTime()
+	batteryLevel.Time = &time
 
 	return  batteryLevel, nil
 }
