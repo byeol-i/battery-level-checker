@@ -50,6 +50,9 @@ or
 
 > cd shell && ./deployApp.sh
 
+## or just ./deploy.sh
+
+<img src="https://github.com/byeol-i/battery-level-checker/assets/35767154/700e6836-a271-4927-aeed-62d3e318095c" width="1200">
 # Environment
 
 ## 1. labeling worker at worker
