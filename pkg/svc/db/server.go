@@ -13,6 +13,7 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
 
@@ -164,22 +165,22 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 }
 
 func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb_svc_db.GetBatteryRes, error) {
-	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
-	if err != nil {
-		return &pb_svc_db.GetBatteryRes{
-			Result: &common.ReturnMsg{
-				Error: err.Error(),
-			},
-		}, err
-	}
+	// raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
+	// if err != nil {
+	// 	return &pb_svc_db.GetBatteryRes{
+	// 		Result: &common.ReturnMsg{
+	// 			Error: err.Error(),
+	// 		},
+	// 	}, err
+	// }
 	
-	pbUnit := &pb_unit_device.BatteryLevel{
-		Time: timestamppb.New(*raw.Time),
-		BatteryLevel: int64(raw.BatteryLevel),
-		BatteryStatus: raw.BatteryStatus,
-	}
+	// pbUnit := &pb_unit_device.BatteryLevel{
+	// 	Time: timestamppb.New(*raw.Time),
+	// 	BatteryLevel: int64(raw.BatteryLevel),
+	// 	BatteryStatus: raw.BatteryStatus,
+	// }
 
-	err = consumer.ConsumeLatestMessage(in.Uid.Uid+"_"+in.DeviceId.Id)
+	err := consumer.ConsumeLatestMessage(in.Uid.Uid+"_"+in.DeviceId.Id)
 	if err != nil {
 		logger.Error("Can't consume msg", zap.Error(err))
 	}
@@ -188,7 +189,7 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 		// Result: &common.ReturnMsg{
 		// 	Result: pbUnit.String(),
 		// },
-		BatteryLevel: pbUnit,
+		// BatteryLevel: pbUnit,
 	}, nil
 }
 
@@ -248,7 +249,26 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 }
 
 func (s DBSrv) UpdateBatteryLevel(ctx context.Context, in *pb_svc_db.UpdateBatteryLevelReq) (*pb_svc_db.UpdateBatteryLevelRes, error) {
-	return &pb_svc_db.UpdateBatteryLevelRes{
+	batteryLevel, err := device.ProtoToBatteryLevel(in.BatteryLevel)
+	if err != nil {
+		return &pb_svc_db.UpdateBatteryLevelRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+	err = producer.WriteBatteryTime(batteryLevel, in.DeviceId.Id, in.Uid.Uid)
+	if err != nil {
+		return &pb_svc_db.UpdateBatteryLevelRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
 
+	return &pb_svc_db.UpdateBatteryLevelRes{
+		Result: &common.ReturnMsg{
+			Result: "Done",
+		},
 	}, nil
 }
