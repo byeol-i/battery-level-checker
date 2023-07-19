@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
+	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
@@ -236,30 +237,38 @@ func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 	}
 	defer conn.Close()
 
-	client := pb_svc_db.NewDBClient(conn)
+	// client := pb_svc_db.NewDBClient(conn)
 
-	in := &pb_svc_db.GetBatteryReq{
-		DeviceId: &pb_unit_device.ID{
-			Id: deviceID,
-		},
-		Uid: &pb_unit_user.UserCredential{
-			Uid: uid,
-		},
-	}
+	// in := &pb_svc_db.GetBatteryReq{
+	// 	DeviceId: &pb_unit_device.ID{
+	// 		Id: deviceID,
+	// 	},
+	// 	Uid: &pb_unit_user.UserCredential{
+	// 		Uid: uid,
+	// 	},
+	// }
 
-	res, err := client.GetBattery(ctx, in)
+
+	err = consumer.ConsumeLatestMessage(uid + "_" + deviceID)
 	if err != nil {
-		logger.Error("Can't call grpc call")
 		return nil, err
 	}
 
-	newBatteryLevel, err := device.ProtoToBatteryLevel(res.BatteryLevel)
-	if err != nil {
-		logger.Error("Can't make pb to batteryLevel struct", zap.Error(err))
-		return nil, err
-	}
+	return nil, nil
 
-	return newBatteryLevel, nil
+	// res, err := client.GetBattery(ctx, in)
+	// if err != nil {
+	// 	logger.Error("Can't call grpc call")
+	// 	return nil, err
+	// }
+
+	// newBatteryLevel, err := device.ProtoToBatteryLevel(res.BatteryLevel)
+	// if err != nil {
+	// 	logger.Error("Can't make pb to batteryLevel struct", zap.Error(err))
+	// 	return nil, err
+	// }
+
+	// return newBatteryLevel, nil
 }
 
 func CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.BatteryLevel) error {

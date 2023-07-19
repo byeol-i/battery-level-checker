@@ -6,6 +6,8 @@ import (
 	"time"
 
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -187,8 +189,12 @@ func ProtoToBatteryLevel(pbBatteryLevel *pb_unit_device.BatteryLevel) (*BatteryL
 	// batteryLevel.Time = &parseTime 
 
 
-	time := pbBatteryLevel.Time.AsTime()
-	batteryLevel.Time = &time
+	if pbBatteryLevel.Time != nil {
+		time := pbBatteryLevel.Time.AsTime()
+		batteryLevel.Time = &time
+	} else {
+		logger.Error("battery time is null", zap.Any("pb bl", pbBatteryLevel))
+	}
 
 	return  batteryLevel, nil
 }

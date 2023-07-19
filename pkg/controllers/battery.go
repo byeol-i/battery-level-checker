@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	"go.uber.org/zap"
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
@@ -70,10 +72,15 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	uid := req.Header.Get("Uid")
 
 	res, err := dbSvc.CallGetBattery(matches[1], uid)
-	if err != nil {
+	if err != nil  {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
+	}
+
+	err = consumer.ConsumeLatestMessage(uid+"_"+matches[1])
+	if err != nil {
+		logger.Error("Can't consume msg", zap.Error(err))
 	}
 
 	// consumer.GetTopics()
@@ -159,6 +166,12 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 		return
 	}
 
+	err = producer.WriteBatteryTime(&newBatteryLevel, deviceId[1], uid)
+	if err != nil {
+		logger.Error("can't producer ", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		return
+	}
 	// t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
 	// if err != nil {
 	// 	respondError(resp, 405, "time error")

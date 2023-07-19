@@ -180,10 +180,10 @@ func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb
 	// 	BatteryStatus: raw.BatteryStatus,
 	// }
 
-	err := consumer.ConsumeLatestMessage(in.Uid.Uid+"_"+in.DeviceId.Id)
-	if err != nil {
-		logger.Error("Can't consume msg", zap.Error(err))
-	}
+	// err := consumer.ConsumeLatestMessage(in.Uid.Uid+"_"+in.DeviceId.Id)
+	// if err != nil {
+	// 	logger.Error("Can't consume msg", zap.Error(err))
+	// }
 	
 	return &pb_svc_db.GetBatteryRes{
 		// Result: &common.ReturnMsg{
