@@ -20,7 +20,7 @@ type Consumer struct {
 // }	
 
 func NewConsumer() *Consumer {
-	manager := config.NewKafkaConfigManager()
+	manager := config.GetInstance()
 
 	return &Consumer{
 		kafkaConf: manager.GetKafkaSarama(),

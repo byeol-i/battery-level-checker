@@ -37,6 +37,15 @@ func NewBatteryController(basePattern string) *BatteryController {
 func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 
+
+
+	// test
+
+	// err := consumer.ConsumeLatestMessage("test_test")
+	// if err != nil {
+	// 	logger.Error("Can't consume msg", zap.Error(err))
+	// }
+
 	res, err := dbSvc.CallGetUsersAllBattery(uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
@@ -71,20 +80,22 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 
 	uid := req.Header.Get("Uid")
 
-	res, err := dbSvc.CallGetBattery(matches[1], uid)
-	if err != nil  {
-		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusInternalServerError, "Internal server error")
-		return
-	}
+	// res, err := dbSvc.CallGetBattery(matches[1], uid)
+	// if err != nil  {
+	// 	logger.Error("dbSvc's error", zap.Error(err))
+	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
+	// 	return
+	// }
 
-	err = consumer.ConsumeLatestMessage(uid+"_"+matches[1])
+	err := consumer.ConsumeLatestMessage(uid+"_"+matches[1])
 	if err != nil {
 		logger.Error("Can't consume msg", zap.Error(err))
 	}
 
 	// consumer.GetTopics()
-	respondJSON(resp, http.StatusOK, "GetBattery", res)
+	// respondJSON(resp, http.StatusOK, "GetBattery", res)
+
+	respondJSON(resp, http.StatusOK, "GetBattery", nil)
 }
 
 

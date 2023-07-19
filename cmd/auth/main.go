@@ -2,23 +2,18 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"net"
 	"os"
 
 	pb_svc_firebase "github.com/byeol-i/battery-level-checker/pb/svc/firebase"
 	auth "github.com/byeol-i/battery-level-checker/pkg/authentication/firebase"
+	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	server "github.com/byeol-i/battery-level-checker/pkg/svc/firebase"
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
-)
-
-var (
-	grpcAddr = flag.String("apid grpc addr", "0.0.0.0:50010", "grpc address")
-	usingTls = flag.Bool("grpc.tls", false, "using http2")
 )
 
 func main() {
@@ -29,7 +24,8 @@ func main() {
 }
 
 func realMain() error {
-	gRPCL, err := net.Listen("tcp", *grpcAddr)
+	configManager := config.GetInstance()
+	gRPCL, err := net.Listen("tcp", configManager.GrpcConfig.GetAuthAddr())
 	if err != nil {
 		return err
 	}
@@ -51,7 +47,7 @@ func realMain() error {
 	wg, _ := errgroup.WithContext(context.Background())
 
 	wg.Go(func() error {
-		logger.Info("Starting grpc server..." + *grpcAddr)
+		logger.Info("Starting grpc server..." + configManager.GrpcConfig.GetAuthAddr())
 		err := grpcServer.Serve(gRPCL)
 		if err != nil {
 			log.Fatalf("failed to serve: %v", err)

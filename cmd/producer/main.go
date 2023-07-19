@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	manager := config.NewKafkaConfigManager()
+	manager := config.GetInstance()
 
 	saramaConfig := manager.GetKafkaSarama()
 	

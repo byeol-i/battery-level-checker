@@ -13,7 +13,7 @@ import (
 
 func GetTopics() {
 	time.Sleep(20 * time.Second)
-	manager := config.NewKafkaConfigManager()
+	manager := config.GetInstance()
 	saramaConfig := manager.GetKafkaSarama()
 	
 	saramaConfig.Consumer.Return.Errors = true
@@ -35,7 +35,7 @@ func GetTopics() {
 }
 
 func ConsumeLatestMessage(topic string) error {
-	manager := config.NewKafkaConfigManager()
+	manager := config.GetInstance()
 	saramaConfig := manager.GetKafkaSarama()
 
 	client, err := sarama.NewClient(manager.GetBrokerList(), saramaConfig)
@@ -63,7 +63,7 @@ func ConsumeLatestMessage(topic string) error {
 	for _, partition := range partitions {
 		offset, err := client.GetOffset(topic, partition, sarama.OffsetNewest)
 		if err != nil {
-			logger.Error("Can't get Offset", zap.Error(err))
+			logger.Error("Can't get offset", zap.Error(err))
 			return err
 		}
 

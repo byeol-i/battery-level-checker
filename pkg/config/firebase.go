@@ -14,9 +14,14 @@ var (
 	firebaseProjectID = flag.String("firebaseProjectID", "worker-51312", "firebaseProjectID")
 )
 
-func GetFirebaseCredFilePath() string {
-	flag.Parse()
+type FirebaseConfig interface {
+	GetFirebaseCredFilePath() string
+	GetFirebaseProjectID() string
+	GetApiKey() string
+	GetAppID() string
+}
 
+func GetFirebaseCredFilePath() string {
 	if *local {
 		logger.Info("Using local conf")
 		return "conf/firebase/key.json"
@@ -26,7 +31,6 @@ func GetFirebaseCredFilePath() string {
 }
 
 func GetFirebaseProjectID() string {
-	flag.Parse()
 	return *firebaseProjectID
 }
 

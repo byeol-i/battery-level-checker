@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"sync/atomic"
 
+	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/controllers"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/router"
@@ -20,14 +21,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-var (
-	noAuth = flag.Bool("noAuth", false, "for testing")
-	apiVersion = "v1"
-	apidAddr = flag.String("apid addr", "0.0.0.0:80", "apid address")
-	usingTls = flag.Bool("grpc.tls", false, "using http2")
-	serverCrt = flag.String("cert.crt", "/run/secrets/crt-file", "crt file location")
-	serverKey = flag.String("cert.key", "/run/secrets/key-file", "ket file location")
-)
 
 type ConnectionWatcher struct {
     n int64
@@ -75,6 +68,13 @@ func main() {
 func realMain() error {
 	wg, _ := errgroup.WithContext(context.Background())
 
+	configManager := config.GetInstance()
+
+	apiVersion := configManager.ApidConfig.GetApiVersion()
+	usingAuth := configManager.ApidConfig.GetUsingAuth()
+	usingSSL := configManager.ApidConfig.GetUsingSSL()
+	apidAddr := configManager.ApidConfig.GetApidAddr()
+
 	notFoundCtrl := &controllers.NotFoundController{}
 	batteryCtrl := controllers.NewBatteryController("^/api/"+apiVersion)
 	deviceCtrl := controllers.NewDeviceController("^/api/"+apiVersion)
@@ -85,7 +85,7 @@ func realMain() error {
 
 	var cw ConnectionWatcher
 
-	if (!*noAuth) {
+	if (usingAuth) {
 		rtr.Use(authCtrl.VerifyToken)
 	} else {
 		logger.Info("Didn't using auth server")
@@ -111,17 +111,19 @@ func realMain() error {
 		var err error
 		var ln net.Listener
 
-		if *usingTls {
-			cert, err := tls.LoadX509KeyPair(*serverCrt, *serverKey)
+		if usingSSL {
+
+			serverCrt, serverKey := configManager.ApidConfig.GetKeyPath()
+			cert, err := tls.LoadX509KeyPair(serverCrt, serverKey)
 			if err != nil {
 				return err
 			}
 
-			ln, err = tls.Listen("tcp", *apidAddr, &tls.Config{
+			ln, err = tls.Listen("tcp", apidAddr, &tls.Config{
 				Certificates: []tls.Certificate{cert},
 			})
 		} else {
-			ln, err = net.Listen("tcp", *apidAddr)
+			ln, err = net.Listen("tcp", apidAddr)
 		}
 
 		if err != nil {

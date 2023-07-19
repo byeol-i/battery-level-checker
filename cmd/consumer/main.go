@@ -17,7 +17,7 @@ var (
 
 // For testing
 func main() {
-	manager := config.NewKafkaConfigManager()
+	manager := config.GetInstance()
 	saramaConfig := manager.GetKafkaSarama()
 	brokers := manager.GetBrokerList()
 	topic := manager.GetTopic()

@@ -12,7 +12,7 @@ import (
 )
 
 func WriteBatteryTime(batteryLevel *device.BatteryLevel, deviceId string, uid string) error {
-	manager := config.NewKafkaConfigManager()
+	manager := config.GetInstance()
 
 	saramaConfig := manager.GetKafkaSarama()
 	
