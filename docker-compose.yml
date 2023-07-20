@@ -1,22 +1,17 @@
 version: "3"
 
 services:
-    consumer:
+    apid:
         build:
             context: .
-            dockerfile: cmd/consumer/Dockerfile
+            dockerfile: cmd/apid/Dockerfile
         networks:
             - kafka-network
+        ports:
+            - 80:80
         environment:
             - TZ=Asia/Seoul
-    producer:
-        build:
-            context: .
-            dockerfile: cmd/producer/Dockerfile
-        networks:
-            - kafka-network
-        environment:
-            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main -usingAuth=false"
 
 networks:
     kafka-network:

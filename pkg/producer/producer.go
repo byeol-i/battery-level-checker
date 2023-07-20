@@ -51,6 +51,6 @@ func WriteBatteryTime(batteryLevel *device.BatteryLevel, deviceId string, uid st
 		log.Panic(err)
 	}
 
-	log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", manager.GetTopic(), partition, offset)
+	log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", msg.Topic, partition, offset)
 	return nil
 }

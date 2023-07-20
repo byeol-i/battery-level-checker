@@ -67,6 +67,15 @@ func Clone(d *Device) *Device {
 
 	// m.SetDeviceSpec(d.GetDeviceSpec())
 	return m
+
+}
+
+func ParseFromJson(body string) (*BatteryLevel, error) {
+	var newBatteryLevel BatteryLevel
+
+	json.Unmarshal([]byte(body), &newBatteryLevel)
+
+	return &newBatteryLevel, nil
 }
 
 func NewDeviceFromProto(pbDevice *pb_unit_device.Device) (*Device, error){

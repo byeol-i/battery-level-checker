@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 
@@ -86,6 +86,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
 	// 	return
 	// }
+	logger.Info("deviceId", zap.Any("id", matches[1]))
 
 	err := consumer.ConsumeLatestMessage(uid+"_"+matches[1])
 	if err != nil {
@@ -151,17 +152,20 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
+	
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		logger.Error("Can't reading body", zap.Error(err))
+	}
 
-	var newBatteryLevel device.BatteryLevel
-
-	err := json.NewDecoder(req.Body).Decode(&newBatteryLevel)
+	newBatteryLevel, err := device.ParseFromJson(string(body[:]))
 	if err != nil {
 		logger.Error("Json parse error", zap.Error(err))
 		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
 		return
 	}
 
-	err = device.BatteryLevelValidator(&newBatteryLevel)
+	err = device.BatteryLevelValidator(newBatteryLevel)
 	if err != nil {
 		logger.Error("Battery level is not validate", zap.Error(err))	
 		respondError(resp, http.StatusRequestedRangeNotSatisfiable, "invalid format")
@@ -170,14 +174,14 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 
 	uid := req.Header.Get("Uid")
 
-	err = dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, &newBatteryLevel)
-	if err != nil {
-		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusInternalServerError, "Internal server error")
-		return
-	}
+	// err = dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, newBatteryLevel)
+	// if err != nil {
+	// 	logger.Error("dbSvc's error", zap.Error(err))
+	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
+	// 	return
+	// }
 
-	err = producer.WriteBatteryTime(&newBatteryLevel, deviceId[1], uid)
+	err = producer.WriteBatteryTime(newBatteryLevel, deviceId[1], uid)
 	if err != nil {
 		logger.Error("can't producer ", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
