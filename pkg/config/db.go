@@ -18,8 +18,12 @@ var (
 	dbSSLcert		= flag.String("dbSSLcert", "", "db's SSLcert")
 )
 
-type DBConfig interface {
+type DBConfigImpl interface {
 	GetDBConfig() *db.DBConfig
+}
+
+type DBConfig struct {
+	DBConfigImpl
 }
 
 func GetDBConfig() *db.DBConfig {

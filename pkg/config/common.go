@@ -27,6 +27,7 @@ func GetInstance() *configManager {
 		if configManagerInstance == nil {
 			logger.Info("Creating configManager instance")
 			flag.Parse()
+
 			configManagerInstance = &configManager{}
 		} 
 	}

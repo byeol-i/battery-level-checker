@@ -7,15 +7,18 @@ var (
 	usingTls = flag.Bool("grpc.tls", false, "using http2")
 )
 
-type GrpcConfig interface {
+type GrpcConfigImpl interface {
 	GetAuthAddr() (string)
 	GetUsingTls() (bool)
 }
+type GrpcConfig struct {
+	GrpcConfigImpl
+}
 
-func GetAuthAddr() (string) {
+func (c GrpcConfig) GetAuthAddr() (string) {
 	return *authAddr
 }
 
-func GetUsingTls() (bool) {
+func (c GrpcConfig) GetUsingTls() (bool) {
 	return *usingTls
 }
