@@ -42,7 +42,7 @@ func WriteBatteryTime(batteryLevel *device.BatteryLevel, deviceId string, uid st
 	}
 
 	msg := &sarama.ProducerMessage{
-		Topic: uid + "_" + deviceId,
+		Topic: "battery_device__" + uid + "__" + deviceId,
 		Value: sarama.StringEncoder(marshaledData),
 	}
 

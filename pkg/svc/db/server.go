@@ -49,6 +49,26 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
+	admin, err := s.Consumer.GetAdmin()
+	if err != nil {
+		logger.Error("Can't get kafka admin", zap.Error(err))
+		return &pb_svc_db.AddNewUserRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+
+	err = s.Consumer.CreateTopic(admin, "battery_user__" + in.User.UserCredential.Uid)
+	if err != nil {
+		logger.Error("Can't create topic for device", zap.Error(err))
+		return &pb_svc_db.AddNewUserRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
+
 	return &pb_svc_db.AddNewUserRes{
 		Result: &common.ReturnMsg{
 			Result: "success",
@@ -86,8 +106,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.Consumer.CreateTopic(admin, in.Uid + "_" + deviceId)
-
+	err = s.Consumer.CreateTopic(admin, "battery_device__" + in.Uid + "__" + deviceId)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{

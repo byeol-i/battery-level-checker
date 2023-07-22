@@ -249,7 +249,7 @@ func CallGetBattery(deviceID string, uid string) (*device.BatteryLevel, error) {
 	// }
 
 
-	err = consumer.ConsumeLatestMessage(uid + "_" + deviceID)
+	err = consumer.ConsumeLatestMessage("battery_user__" + uid + "_" + deviceID)
 	if err != nil {
 		return nil, err
 	}

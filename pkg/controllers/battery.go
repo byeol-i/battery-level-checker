@@ -88,7 +88,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	// }
 	logger.Info("deviceId", zap.Any("id", matches[1]))
 
-	err := consumer.ConsumeLatestMessage(uid+"_"+matches[1])
+	err := consumer.ConsumeLatestMessage("battery_device__"+uid+"_"+matches[1])
 	if err != nil {
 		logger.Error("Can't consume msg", zap.Error(err))
 	}

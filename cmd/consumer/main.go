@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
-	"flag"
+	"fmt"
 	"log"
+	"regexp"
 	"sync"
+	"time"
 
 	"github.com/Shopify/sarama"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
@@ -12,7 +14,8 @@ import (
 )
 
 var (
-	group = flag.String("group", "my-consumer-group", "using for consumer group")
+	patterns = []string{"battery_device____", "battery_user__"}
+
 )
 
 // For testing
@@ -20,7 +23,9 @@ func main() {
 	manager := config.GetInstance()
 	saramaConfig := manager.GetKafkaSarama()
 	brokers := manager.GetBrokerList()
-	topic := manager.GetTopic()
+	
+	// batteryUserTopic := "battery_user__"
+	// batteryDeviceTopic := "battery_device____.*"
 
 	saramaConfig.Consumer.Return.Errors = true
 
@@ -39,32 +44,80 @@ func main() {
 		log.Panic(err)
 	}
 
-	client, err := sarama.NewConsumerGroupFromClient(*group, newClient)
+	client, err := sarama.NewConsumerGroupFromClient(manager.GetConsumerGroup(), newClient)
 	if err != nil {
 		log.Panic(err)
 	}
+
+	availableTopics, err := newClient.Topics()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	
+	var mu sync.Mutex
+	data := make([]string, 0)
 
 	handler := &consumer.MessageHandler{}
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	wg := &sync.WaitGroup{}
-	wg.Add(1)
+	wg.Add(2)
+
 	go func() {
-		defer wg.Done()
 		for {
-			if err := client.Consume(ctx, []string{topic}, handler); err != nil {
+			mu.Lock() 
+			filteredTopics := filterTopicsByPatterns(patterns, availableTopics)
+			data = nil
+			data = filteredTopics
+			mu.Unlock()
+			time.Sleep(2 * time.Second)
+		}
+	}()
+
+	go func() {
+		for {
+			mu.Lock()
+			if (len(data) == 0) {
+				continue
+			}
+
+			if err := client.Consume(ctx, data, handler); err != nil {
 				log.Printf("Error from consumer: %v", err)
 				cancel()
 				return
 			}
-			
+						
 			if ctx.Err() != nil {
 				log.Println(ctx.Err())
 				return
 			}
+			mu.Unlock() 
+			time.Sleep(2 * time.Second)
 		}
 	}()
 	log.Printf("Keep running!...")
 	select {}
+}
+
+func filterTopicsByPatterns(patterns []string, topics []string) []string {
+	filtered := make([]string, 0)
+
+	for _, str := range topics {
+		for _, pattern := range patterns {
+			regExp, err := regexp.Compile(pattern)
+			if err != nil {
+				fmt.Printf("Invalid pattern: %s - %v\n", pattern, err)
+				continue
+			}
+
+			if regExp.MatchString(str) {
+				filtered = append(filtered, str)
+				break 
+			}
+		}
+	}
+
+	return filtered
 }

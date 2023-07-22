@@ -12,6 +12,15 @@ services:
         environment:
             - TZ=Asia/Seoul
         command: "/opt/bin/app/main -usingAuth=false"
+    consumer:
+        build:
+            context: .
+            dockerfile: cmd/consumer/Dockerfile
+        networks:
+            - kafka-network
+        environment:
+            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main"
 
 networks:
     kafka-network:
