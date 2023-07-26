@@ -16,7 +16,7 @@ func WriteBatteryTime(batteryLevel *device.BatteryLevel, deviceId string, uid st
 
 	saramaConfig := manager.GetKafkaSarama()
 	
-	saramaConfig.Consumer.Return.Errors = true
+	saramaConfig.Producer.Return.Errors = true
 	brokers := manager.GetBrokerList()
 	
 	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll

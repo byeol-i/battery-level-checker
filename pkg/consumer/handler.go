@@ -2,8 +2,11 @@ package consumer
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/Shopify/sarama"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"go.uber.org/zap"
 )
 
 type MessageHandler struct{}
@@ -21,16 +24,35 @@ func (h *MessageHandler) Cleanup(sarama.ConsumerGroupSession) error {
 // Impl ConsumeClaim
 func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {	
 	topic := claim.Topic()
-	userID := extractUserIDFromTopic(topic)
-	
+
+	logger.Info(topic)
+	userId, deviceId, err := extractUUIDs(topic)
+	if err != nil {
+		logger.Error("Can't extract uuid", zap.Error(err))
+	}
+
 	for message := range claim.Messages() {
-		
-		fmt.Printf("Received message: %s, offset : %d, uid: %s\n", string(message.Value), message.Offset, userID)
+
+		logger.Info("UserId", zap.Any("userID",userId))
+		logger.Info("DeviceId", zap.Any("deviceId",deviceId))
+		fmt.Printf("Received message: %s, offset : %d\n", string(message.Value), message.Offset)
 		session.MarkMessage(message, "") 
 	}
 
 	return nil
 }
-func extractUserIDFromTopic(topic string) string {
-	return topic[len("battery_device____"):]
+
+func extractUUIDs(input string) (uuid1, uuid2 string, err error) {
+	re := regexp.MustCompile(`^battery_device__(.*?)__(.*?)`)
+	matches := re.FindStringSubmatch(input)
+	if len(matches) != 3 {
+		return "", "", fmt.Errorf("invalid input format")
+	}
+	uuid1 = matches[1]
+	uuid2 = matches[2]
+	return uuid1, uuid2, nil
 }
+
+// func extractUserIDFromTopic(topic string) string {
+// 	return topic[len("battery_device____"):]
+// }

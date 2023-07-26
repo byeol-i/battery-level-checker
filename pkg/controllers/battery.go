@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
@@ -78,7 +77,9 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
         return
     }
 
-	uid := req.Header.Get("Uid")
+	// uid := "P1RPAH3URaYL0FoZdjLKJf20h9T2"
+	
+	// uid := req.Header.Get("Uid")
 
 	// res, err := dbSvc.CallGetBattery(matches[1], uid)
 	// if err != nil  {
@@ -86,12 +87,11 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
 	// 	return
 	// }
-	logger.Info("deviceId", zap.Any("id", matches[1]))
 
-	err := consumer.ConsumeLatestMessage("battery_device__"+uid+"_"+matches[1])
-	if err != nil {
-		logger.Error("Can't consume msg", zap.Error(err))
-	}
+	// err := consumer.ConsumeLatestMessage("battery_device__"+uid+"_"+matches[1])
+	// if err != nil {
+	// 	logger.Error("Can't consume msg", zap.Error(err))
+	// }
 
 	// consumer.GetTopics()
 	// respondJSON(resp, http.StatusOK, "GetBattery", res)
@@ -172,7 +172,11 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 		return
 	}
 
-	uid := req.Header.Get("Uid")
+	
+
+	uid := "P1RPAH3URaYL0FoZdjLKJf20h9T2"
+	
+	// uid := req.Header.Get("Uid")
 
 	// err = dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, newBatteryLevel)
 	// if err != nil {

@@ -2,9 +2,33 @@ package consumer
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 
-func (c *Consumer) GetAdmin() (sarama.ClusterAdmin, error){
+type Admin struct {
+	kafkaConf *sarama.Config
+	brokerList []string
+}
+
+// type Connector interface {
+// 	NewConsumer() *Consumer
+// }
+
+// type ConsumerImpl interface {
+// 	GetAdmin() (sarama.ClusterAdmin, error)
+// 	CreateTopic(admin sarama.ClusterAdmin, name string) (error)
+// }	
+
+func NewAdmin() *Admin {
+	manager := config.GetInstance()
+
+	return &Admin{
+		kafkaConf: manager.GetKafkaSarama(),
+		brokerList: manager.GetBrokerList(),
+	}
+}
+
+func (c *Admin) GetAdmin() (sarama.ClusterAdmin, error){
 	admin, err := sarama.NewClusterAdmin(c.brokerList, c.kafkaConf)
 	if err != nil {
 		return nil, err
@@ -14,7 +38,7 @@ func (c *Consumer) GetAdmin() (sarama.ClusterAdmin, error){
 	return admin, nil
 }
 
-func (c *Consumer) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
+func (c *Admin) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	err := admin.CreateTopic(name, &sarama.TopicDetail{
 		NumPartitions: 1,
 		ReplicationFactor: 1,
@@ -29,7 +53,7 @@ func (c *Consumer) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	return nil
 }
 
-func (c *Consumer) DeleteTopic(admin sarama.ClusterAdmin, name string) error {
+func (c *Admin) DeleteTopic(admin sarama.ClusterAdmin, name string) error {
 	err := admin.DeleteTopic(name)
 	if err != nil {
 		return err

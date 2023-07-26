@@ -21,14 +21,14 @@ type DBSrv struct {
 	pb_svc_db.DBServer
 	primaryDB db.Database
 	slaveDB db.Database
-	Consumer *consumer.Consumer
+	Admin *consumer.Admin
 }
 
 func NewDBServiceServer(primaryDB *db.Database, slaveDB *db.Database) *DBSrv {
 	return &DBSrv{
 		primaryDB: *primaryDB,
 		slaveDB: *slaveDB,
-		Consumer: consumer.NewConsumer(),
+		Admin: consumer.NewAdmin(),
 	}
 }
 
@@ -49,7 +49,7 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	admin, err := s.Consumer.GetAdmin()
+	admin, err := s.Admin.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.AddNewUserRes{
@@ -59,7 +59,7 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	err = s.Consumer.CreateTopic(admin, "battery_user__" + in.User.UserCredential.Uid)
+	err = s.Admin.CreateTopic(admin, "battery_user__" + in.User.UserCredential.Uid)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddNewUserRes{
@@ -96,7 +96,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	admin, err := s.Consumer.GetAdmin()
+	admin, err := s.Admin.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -106,7 +106,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.Consumer.CreateTopic(admin, "battery_device__" + in.Uid + "__" + deviceId)
+	err = s.Admin.CreateTopic(admin, "battery_device__" + in.Uid + "__" + deviceId)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -132,7 +132,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 		}, err
 	}
 
-	admin, err := s.Consumer.GetAdmin()
+	admin, err := s.Admin.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{
@@ -142,7 +142,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 		}, err
 	}
 
-	err = s.Consumer.DeleteTopic(admin, in.Uid.Uid + "_" + in.DeviceId.Id)
+	err = s.Admin.DeleteTopic(admin, in.Uid.Uid + "__" + in.DeviceId.Id)
 	if err != nil {
 		logger.Error("Can't delete topic", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{

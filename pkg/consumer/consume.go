@@ -1,6 +1,7 @@
 package consumer
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -10,6 +11,22 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"go.uber.org/zap"
 )
+
+func KeepConsume(ctx context.Context, topics []string, client sarama.ConsumerGroup) {
+	handler := &MessageHandler{}
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Context has something!", ctx.Err())
+			return
+		default:
+			if err := client.Consume(ctx, topics, handler); err != nil {
+				log.Printf("Error from consumer: %v", err)
+			}
+		}
+	}
+}
 
 func GetTopics() {
 	time.Sleep(20 * time.Second)

@@ -3,13 +3,15 @@ package consumer
 import (
 	"fmt"
 	"log"
+	"reflect"
 	"regexp"
+	"sort"
 
 	"github.com/Shopify/sarama"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 var (
-	patterns = []string{"battery_device____"}
+	patterns = []string{"^battery_device__(.*?)__(.*)", "^battery_user__(.*?)__(.*)"}
 )
 
 type topicManager struct {
@@ -29,11 +31,6 @@ func NewTopicManager() (*topicManager, error) {
 		log.Panic(err)
 	}
 
-	// availableTopics, err := newClient.Topics()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	client, err := sarama.NewConsumerGroupFromClient(manager.GetConsumerGroup(), newClient)
 	if err != nil {
 		log.Panic(err)
@@ -46,32 +43,7 @@ func NewTopicManager() (*topicManager, error) {
 	}, nil
 }
 
-
-func contains(slice []string, str string) bool {
-	for _, s := range slice {
-		if s == str {
-			return true
-		}
-	}
-	return false
-}
-
-func remove(slice []string, str string) []string {
-	index := -1
-	for i, s := range slice {
-		if s == str {
-			index = i
-			break
-		}
-	}
-	if index == -1 {
-		return slice
-	}
-	return append(slice[:index], slice[index+1:]...)
-}
-
-
-func filterTopicsByPatterns(patterns []string, topics []string) []string {
+func FilterTopicsByPatterns(topics []string) []string {
 	filtered := make([]string, 0)
 
 	for _, str := range topics {
@@ -90,4 +62,15 @@ func filterTopicsByPatterns(patterns []string, topics []string) []string {
 	}
 
 	return filtered
+}
+
+func CompareTopics(a, b []string) bool {
+	if (len(a) != len(b)) {
+		return false
+	}
+
+	sort.Strings(a)
+	sort.Strings(b)
+
+	return reflect.DeepEqual(a, b)
 }
