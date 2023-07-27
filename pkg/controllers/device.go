@@ -14,11 +14,13 @@ import (
 
 type DeviceControllers struct {
 	basePattern string
+	dbSvc *dbSvc.DBSvcClient
 }
 
-func NewDeviceController(basePattern string) *DeviceControllers {
+func NewDeviceController(basePattern string, dbSvcAddr string) *DeviceControllers {
 	return &DeviceControllers{
 		basePattern: basePattern,
+		dbSvc: dbSvc.NewDBSvcClient(dbSvcAddr),
 	}
 }
 
@@ -61,7 +63,7 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	uid := req.Header.Get("Uid")
 	logger.Info("Add New device", zap.String("uid", uid))
 	
-	err = dbSvc.CallAddNewDevice(newDevice, strings.Replace(uid, "\"", "", -1))
+	err = hdl.dbSvc.CallAddNewDevice(newDevice, strings.Replace(uid, "\"", "", -1))
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
@@ -93,7 +95,7 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 
 	uid := req.Header.Get("Uid")
 	
-	err := dbSvc.CallRemoveDevice(matches[1], uid)
+	err := hdl.dbSvc.CallRemoveDevice(matches[1], uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
@@ -116,7 +118,7 @@ func (hdl *DeviceControllers) DeleteDevice(resp http.ResponseWriter, req *http.R
 func (hdl *DeviceControllers) GetDevices(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 	
-	res, err := dbSvc.CallGetAllDevices(uid)
+	res, err := hdl.dbSvc.CallGetAllDevices(uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")

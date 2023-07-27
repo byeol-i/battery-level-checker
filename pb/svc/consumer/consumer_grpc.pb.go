@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Consumer_CreateNewMsg_FullMethodName   = "/pb.svc.consumer.Consumer/CreateNewMsg"
-	Consumer_CreateNewTopic_FullMethodName = "/pb.svc.consumer.Consumer/CreateNewTopic"
-	Consumer_GetUserDevices_FullMethodName = "/pb.svc.consumer.Consumer/GetUserDevices"
+	Consumer_CreateNewMsg_FullMethodName              = "/pb.svc.consumer.Consumer/CreateNewMsg"
+	Consumer_CreateNewTopic_FullMethodName            = "/pb.svc.consumer.Consumer/CreateNewTopic"
+	Consumer_GetUserRecentBatteryLevel_FullMethodName = "/pb.svc.consumer.Consumer/GetUserRecentBatteryLevel"
 )
 
 // ConsumerClient is the client API for Consumer service.
@@ -30,7 +30,8 @@ const (
 type ConsumerClient interface {
 	CreateNewMsg(ctx context.Context, in *CreateNewMsgReq, opts ...grpc.CallOption) (*CreateNewMsgRes, error)
 	CreateNewTopic(ctx context.Context, in *CreateNewTopicReq, opts ...grpc.CallOption) (*CreateNewTopicRes, error)
-	GetUserDevices(ctx context.Context, in *GetUserDevicesReq, opts ...grpc.CallOption) (*GetUserDevicesRes, error)
+	// rpc GetUserDevices(GetUserDevicesReq) returns (GetUserDevicesRes);
+	GetUserRecentBatteryLevel(ctx context.Context, in *GetUserRecentBatteryLevelReq, opts ...grpc.CallOption) (*GetUserRecentBatteryLevelRes, error)
 }
 
 type consumerClient struct {
@@ -59,9 +60,9 @@ func (c *consumerClient) CreateNewTopic(ctx context.Context, in *CreateNewTopicR
 	return out, nil
 }
 
-func (c *consumerClient) GetUserDevices(ctx context.Context, in *GetUserDevicesReq, opts ...grpc.CallOption) (*GetUserDevicesRes, error) {
-	out := new(GetUserDevicesRes)
-	err := c.cc.Invoke(ctx, Consumer_GetUserDevices_FullMethodName, in, out, opts...)
+func (c *consumerClient) GetUserRecentBatteryLevel(ctx context.Context, in *GetUserRecentBatteryLevelReq, opts ...grpc.CallOption) (*GetUserRecentBatteryLevelRes, error) {
+	out := new(GetUserRecentBatteryLevelRes)
+	err := c.cc.Invoke(ctx, Consumer_GetUserRecentBatteryLevel_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,8 @@ func (c *consumerClient) GetUserDevices(ctx context.Context, in *GetUserDevicesR
 type ConsumerServer interface {
 	CreateNewMsg(context.Context, *CreateNewMsgReq) (*CreateNewMsgRes, error)
 	CreateNewTopic(context.Context, *CreateNewTopicReq) (*CreateNewTopicRes, error)
-	GetUserDevices(context.Context, *GetUserDevicesReq) (*GetUserDevicesRes, error)
+	// rpc GetUserDevices(GetUserDevicesReq) returns (GetUserDevicesRes);
+	GetUserRecentBatteryLevel(context.Context, *GetUserRecentBatteryLevelReq) (*GetUserRecentBatteryLevelRes, error)
 	mustEmbedUnimplementedConsumerServer()
 }
 
@@ -88,8 +90,8 @@ func (UnimplementedConsumerServer) CreateNewMsg(context.Context, *CreateNewMsgRe
 func (UnimplementedConsumerServer) CreateNewTopic(context.Context, *CreateNewTopicReq) (*CreateNewTopicRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNewTopic not implemented")
 }
-func (UnimplementedConsumerServer) GetUserDevices(context.Context, *GetUserDevicesReq) (*GetUserDevicesRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserDevices not implemented")
+func (UnimplementedConsumerServer) GetUserRecentBatteryLevel(context.Context, *GetUserRecentBatteryLevelReq) (*GetUserRecentBatteryLevelRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserRecentBatteryLevel not implemented")
 }
 func (UnimplementedConsumerServer) mustEmbedUnimplementedConsumerServer() {}
 
@@ -140,20 +142,20 @@ func _Consumer_CreateNewTopic_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Consumer_GetUserDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserDevicesReq)
+func _Consumer_GetUserRecentBatteryLevel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRecentBatteryLevelReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ConsumerServer).GetUserDevices(ctx, in)
+		return srv.(ConsumerServer).GetUserRecentBatteryLevel(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Consumer_GetUserDevices_FullMethodName,
+		FullMethod: Consumer_GetUserRecentBatteryLevel_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConsumerServer).GetUserDevices(ctx, req.(*GetUserDevicesReq))
+		return srv.(ConsumerServer).GetUserRecentBatteryLevel(ctx, req.(*GetUserRecentBatteryLevelReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -174,8 +176,8 @@ var Consumer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Consumer_CreateNewTopic_Handler,
 		},
 		{
-			MethodName: "GetUserDevices",
-			Handler:    _Consumer_GetUserDevices_Handler,
+			MethodName: "GetUserRecentBatteryLevel",
+			Handler:    _Consumer_GetUserRecentBatteryLevel_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

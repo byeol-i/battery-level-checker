@@ -76,10 +76,10 @@ func realMain() error {
 	apidAddr := configManager.ApidConfig.GetApidAddr()
 
 	notFoundCtrl := &controllers.NotFoundController{}
-	batteryCtrl := controllers.NewBatteryController("^/api/"+apiVersion)
-	deviceCtrl := controllers.NewDeviceController("^/api/"+apiVersion)
+	batteryCtrl := controllers.NewBatteryController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr())
+	deviceCtrl := controllers.NewDeviceController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr())
 	authCtrl := controllers.NewAuthController()
-	userCtrl := controllers.NewUserController("^/api/"+apiVersion)
+	userCtrl := controllers.NewUserController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr())
 
 	rtr := router.NewRouter(notFoundCtrl, apiVersion)
 

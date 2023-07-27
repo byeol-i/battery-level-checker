@@ -8,7 +8,8 @@ import "pb/unit/common/msg.proto";
 service Consumer {
     rpc CreateNewMsg(CreateNewMsgReq) returns (CreateNewMsgRes);
     rpc CreateNewTopic(CreateNewTopicReq) returns (CreateNewTopicRes);
-    rpc GetUserDevices(GetUserDevicesReq) returns (GetUserDevicesRes);
+    // rpc GetUserDevices(GetUserDevicesReq) returns (GetUserDevicesRes);
+    rpc GetUserRecentBatteryLevel(GetUserRecentBatteryLevelReq) returns (GetUserRecentBatteryLevelRes); 
 }
 
 message GetUserDevicesReq {
@@ -33,4 +34,12 @@ message CreateNewTopicReq {
 
 message CreateNewTopicRes {
     unit.common.ReturnMsg result = 1;
+}
+
+message GetUserRecentBatteryLevelReq {
+
+}
+
+message GetUserRecentBatteryLevelRes {
+     
 }

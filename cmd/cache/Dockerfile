@@ -14,7 +14,7 @@ RUN go mod tidy \
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o /opt/bin/app/main cmd/producer/main.go \    
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o /opt/bin/app/main cmd/cache/main.go \    
     && upx --lzma /opt/bin/app/main
 
 FROM debian:stretch-slim AS runtime

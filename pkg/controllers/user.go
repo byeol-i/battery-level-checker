@@ -16,11 +16,13 @@ import (
 
 type UserControllers struct {
 	basePattern string
+	dbSvc *dbSvc.DBSvcClient
 }
 
-func NewUserController(basePattern string) *UserControllers {
+func NewUserController(basePattern string, dbSvcAddr string) *UserControllers {
 	return &UserControllers{
 		basePattern: basePattern,
+		dbSvc: dbSvc.NewDBSvcClient(dbSvcAddr),
 	}
 }
 
@@ -74,7 +76,7 @@ func (hdl *UserControllers) AddNewUser(resp http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	err = dbSvc.CallAddNewUser(&userSpec, &userCredential)
+	err = hdl.dbSvc.CallAddNewUser(&userSpec, &userCredential)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
         respondError(resp, http.StatusInternalServerError, "Internal server error")

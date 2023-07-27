@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package pb.svc.cache;
+option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/cache";
+
+import "pb/unit/common/msg.proto";
+
+
+service Cache {
+    rpc WriteMsg(WriteMsgReq) returns (WriteMsgRes);
+    rpc GetMsg(GetMsgReq) returns (GetMsgRes);
+}
+
+message WriteMsgReq {
+    string key = 1;
+    string value = 2;
+}
+
+message WriteMsgRes {
+    unit.common.ReturnMsg result = 1;
+}
+
+message GetMsgReq {
+    string key = 1;
+}
+
+message GetMsgRes {
+    unit.common.ReturnMsg result = 1;
+}
+

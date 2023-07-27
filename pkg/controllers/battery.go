@@ -15,11 +15,13 @@ import (
 
 type BatteryController struct {
 	basePattern string
+	dbSvc *dbSvc.DBSvcClient
 }
 
-func NewBatteryController(basePattern string) *BatteryController {
+func NewBatteryController(basePattern string, dbSvcAddr string) *BatteryController {
 	return &BatteryController{
 		basePattern: basePattern,
+		dbSvc: dbSvc.NewDBSvcClient(dbSvcAddr),
 	}
 }
 
@@ -45,7 +47,7 @@ func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *
 	// 	logger.Error("Can't consume msg", zap.Error(err))
 	// }
 
-	res, err := dbSvc.CallGetUsersAllBattery(uid)
+	res, err := hdl.dbSvc.CallGetUsersAllBattery(uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
@@ -81,7 +83,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	
 	// uid := req.Header.Get("Uid")
 
-	// res, err := dbSvc.CallGetBattery(matches[1], uid)
+	// res, err := hdl.dbSvc.CallGetBattery(matches[1], uid)
 	// if err != nil  {
 	// 	logger.Error("dbSvc's error", zap.Error(err))
 	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
@@ -122,7 +124,7 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 	uid := req.Header.Get("Uid")
 	logger.Info("GetHistoryAllBattery", zap.String("uid", uid), zap.String("device", matches[1]))
 	
-	res, err := dbSvc.CallGetAllBattery(matches[1], uid)
+	res, err := hdl.dbSvc.CallGetAllBattery(matches[1], uid)
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
@@ -174,11 +176,9 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 
 	
 
-	uid := "P1RPAH3URaYL0FoZdjLKJf20h9T2"
-	
-	// uid := req.Header.Get("Uid")
+	uid := req.Header.Get("Uid")
 
-	// err = dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, newBatteryLevel)
+	// err = hdl.dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, newBatteryLevel)
 	// if err != nil {
 	// 	logger.Error("dbSvc's error", zap.Error(err))
 	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
