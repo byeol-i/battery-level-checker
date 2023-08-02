@@ -3,7 +3,6 @@
 .env
 .DS_Store
 
-.vendor
-
-vendor
 testing
+
+vendor/
