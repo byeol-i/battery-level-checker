@@ -3,6 +3,7 @@ package device
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
@@ -38,9 +39,13 @@ type DeviceImpl struct {
 }
 
 type BatteryLevel struct {	
-	Time          *time.Time `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
+	Time          BatteryTime `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
 	BatteryLevel  int        `validate:"required" json:"batteryLevel" example:"50"`
 	BatteryStatus string     `validate:"required" json:"batteryStatus" example:"charging"`
+}
+
+type BatteryTime struct {
+	BT  time.Time
 }
  
 type DeviceSpec struct {
@@ -70,10 +75,26 @@ func Clone(d *Device) *Device {
 
 }
 
+func (b *BatteryTime) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), "\"")
+	layout := "2006-01-02 15:04:05"
+	t, err := time.Parse(layout, s)
+	if err != nil {
+		return err
+	}
+
+	b.BT = t
+	
+	return nil
+}
+
 func ParseFromJson(body string) (*BatteryLevel, error) {
 	var newBatteryLevel BatteryLevel
 
-	json.Unmarshal([]byte(body), &newBatteryLevel)
+	err := json.Unmarshal([]byte(body), &newBatteryLevel)
+	if err != nil {
+		return nil, err
+	}
 
 	return &newBatteryLevel, nil
 }
@@ -179,7 +200,7 @@ func (d *Device) ToProtoBatteryLevel() (*pb_unit_device.BatteryLevel) {
 
 	pbUnit.BatteryLevel = int64(d.BatteryLevel.BatteryLevel)
 	pbUnit.BatteryStatus = d.BatteryLevel.BatteryStatus
-	pbUnit.Time = timestamppb.New(*d.BatteryLevel.Time)
+	pbUnit.Time = timestamppb.New(d.BatteryLevel.Time.BT)
 
 	return pbUnit
 }
@@ -200,7 +221,8 @@ func ProtoToBatteryLevel(pbBatteryLevel *pb_unit_device.BatteryLevel) (*BatteryL
 
 	if pbBatteryLevel.Time != nil {
 		time := pbBatteryLevel.Time.AsTime()
-		batteryLevel.Time = &time
+		batteryLevel.Time = BatteryTime{BT:time}
+
 	} else {
 		logger.Error("battery time is null", zap.Any("pb bl", pbBatteryLevel))
 	}

@@ -5,9 +5,14 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
+	pb_svc_cache "github.com/byeol-i/battery-level-checker/pb/svc/cache"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	server "github.com/byeol-i/battery-level-checker/pkg/svc/cache"
+	"github.com/patrickmn/go-cache"
+
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 )
@@ -21,7 +26,7 @@ func main() {
 
 func realMain() error {
 	configManager := config.GetInstance()
-	gRPCL, err := net.Listen("tcp", configManager.GrpcConfig.GetAuthAddr())
+	gRPCL, err := net.Listen("tcp", configManager.GrpcConfig.GetCacheAddr())
 	if err != nil {
 		return err
 	}
@@ -29,11 +34,11 @@ func realMain() error {
 
 	var opts []grpc.ServerOption
 
+	deviceCache := cache.New(2*time.Hour, 1*time.Hour)
 	grpcServer := grpc.NewServer(opts...)
-
-	// authSrv := server.NewAuthServiceServer(firebaseApp)
-
-	// pb_svc_firebase.RegisterFirebaseServer(grpcServer, authSrv)
+	
+	cacheSrv := server.NewCacheServiceServer(deviceCache)
+	pb_svc_cache.RegisterCacheServer(grpcServer, cacheSrv)
 
 	wg, _ := errgroup.WithContext(context.Background())
 

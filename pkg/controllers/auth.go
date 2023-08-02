@@ -40,14 +40,6 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 		return next
 	}
 
-	// const customTokenPrefix = "Secret "
-	// if strings.HasPrefix(token, customTokenPrefix) {
-	// 	token = token[len(customTokenPrefix):]
-
-	// 	respondError(resp, 401, "Secret token not supported")
-	// 	return nil
-	// }
-
 	respondError(resp, 401, "Invalid token format")
 	return next
 }

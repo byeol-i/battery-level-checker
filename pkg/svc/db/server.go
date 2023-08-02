@@ -9,11 +9,11 @@ import (
 
 	"github.com/byeol-i/battery-level-checker/pb/unit/common"
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
-	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
+	"github.com/byeol-i/battery-level-checker/pkg/topic"
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
 
@@ -21,14 +21,14 @@ type DBSrv struct {
 	pb_svc_db.DBServer
 	primaryDB db.Database
 	slaveDB db.Database
-	Admin *consumer.Admin
+	Admin *topic.Admin
 }
 
 func NewDBServiceServer(primaryDB *db.Database, slaveDB *db.Database) *DBSrv {
 	return &DBSrv{
 		primaryDB: *primaryDB,
 		slaveDB: *slaveDB,
-		Admin: consumer.NewAdmin(),
+		Admin: topic.NewAdmin(),
 	}
 }
 
@@ -225,7 +225,7 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	var batteryLevels []*pb_unit_device.BatteryLevel
 	for _, v := range raws {
 		newBatteryLevel := &pb_unit_device.BatteryLevel{
-			Time: timestamppb.New(*v.Time),
+			Time: timestamppb.New(v.Time.BT),
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}
@@ -251,7 +251,7 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	var batteryLevels []*pb_unit_device.BatteryLevel
 	for _, v := range raws {
 		newBatteryLevel := &pb_unit_device.BatteryLevel{
-			Time: timestamppb.New(*v.Time),
+			Time: timestamppb.New(v.Time.BT),
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}

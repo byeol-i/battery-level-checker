@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
-	"github.com/byeol-i/battery-level-checker/pkg/consumer"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
@@ -252,10 +251,6 @@ func (c *DBSvcClient) CallGetBattery(deviceID string, uid string) (*device.Batte
 	// }
 
 
-	err = consumer.ConsumeLatestMessage("battery_user__" + uid + "_" + deviceID)
-	if err != nil {
-		return nil, err
-	}
 
 	return nil, nil
 
@@ -289,7 +284,7 @@ func (c *DBSvcClient) CallUpdateBatteryLevel(deviceID string, uid string, batter
 
 	in := &pb_svc_db.UpdateBatteryLevelReq{
 		BatteryLevel: &pb_unit_device.BatteryLevel{
-			Time: timestamppb.New(*batteryLevel.Time),
+			Time: timestamppb.New(*&time.Time{}),
 			BatteryLevel: int64(batteryLevel.BatteryLevel),
 			BatteryStatus: batteryLevel.BatteryStatus,
 		},

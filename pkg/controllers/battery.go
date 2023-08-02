@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 
@@ -155,7 +155,7 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
         return
     }
 	
-	body, err := ioutil.ReadAll(req.Body)
+	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		logger.Error("Can't reading body", zap.Error(err))
 	}
@@ -174,7 +174,6 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 		return
 	}
 
-	
 
 	uid := req.Header.Get("Uid")
 

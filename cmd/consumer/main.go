@@ -52,7 +52,6 @@ func main() {
 	go func() {
 		defer wg.Done()
 		for {
-
 			newClient, err := sarama.NewClient(brokers, saramaConfig)
 			if err != nil {
 				log.Panic(err)
@@ -82,14 +81,13 @@ func main() {
 		defer ticker.Stop()
 		defer wg.Done()
 
-
 		rwMutex.RLock()
 		subscribeTopics := make([]string, len(topics))
 		copy(subscribeTopics, topics)
 		rwMutex.RUnlock()
 		
 		if (len(subscribeTopics) != 0) {
-			go consumer.KeepConsume(ctx, topics, client)
+			go consumer.KeepConsume(ctx, topics, client, manager.GrpcConfig.GetCacheSvcAddr(), manager.GrpcConfig.GetDBSvcAddr())
 		} 
 
 		for {
@@ -107,14 +105,12 @@ func main() {
 					logger.Info("Find new Topics, restart consume func", zap.Any("topic's count", len(subscribeTopics)))
 					ctx, cancel = context.WithCancel(context.Background())
 
-                	go consumer.KeepConsume(ctx, topics, client)
+                	go consumer.KeepConsume(ctx, topics, client, manager.GrpcConfig.GetCacheSvcAddr(), manager.GrpcConfig.GetDBSvcAddr())
 				} 
 			}
 		}
-		
 	}() 
+
 	wg.Wait()
-	log.Printf("Keep running!...")
 	select {}
 }
-

@@ -5,17 +5,17 @@ import (
 
 	pb_svc_consumer "github.com/byeol-i/battery-level-checker/pb/svc/consumer"
 	"github.com/byeol-i/battery-level-checker/pb/unit/common"
-	"github.com/byeol-i/battery-level-checker/pkg/consumer"
+	"github.com/byeol-i/battery-level-checker/pkg/topic"
 )
 
 type ConsumerSrv struct {
 	pb_svc_consumer.ConsumerServer
-	Admin *consumer.Admin
+	Admin *topic.Admin
 }
 
 func NewConsumerServiceServer() *ConsumerSrv {
 	return &ConsumerSrv{
-		Admin : consumer.NewAdmin(),
+		Admin : topic.NewAdmin(),
 	}
 }
 

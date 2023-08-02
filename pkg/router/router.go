@@ -64,9 +64,7 @@ func (rtr *Router) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			rule.handler.ServeHTTP(resp, req)
 			return
 		}
-
-		// logger.Info("found handler", zap.String("rule", rule.name), zap.String("path", path))
-
+		
 		if rtr.middleware != nil {
 			handler := rtr.middleware(rule.handler, resp, req)
 			if handler != nil {

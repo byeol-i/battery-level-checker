@@ -11,13 +11,34 @@ services:
             - 80:80
         environment:
             - TZ=Asia/Seoul
-        command: "/opt/bin/app/main -usingAuth=false"
+        command: "/opt/bin/app/main"
     consumer:
         build:
             context: .
             dockerfile: cmd/consumer/Dockerfile
         networks:
             - kafka-network
+        environment:
+            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main"
+    auth:
+        build:
+            context: .
+            dockerfile: cmd/auth/Dockerfile
+        networks:
+            - kafka-network
+        environment:
+            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main"
+    cache:
+        build:
+            context: .
+            dockerfile: cmd/cache/Dockerfile
+        hostname: battery_cache
+        networks:
+            - kafka-network
+        ports:
+            - 50015:50015
         environment:
             - TZ=Asia/Seoul
         command: "/opt/bin/app/main"

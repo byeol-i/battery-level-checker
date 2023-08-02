@@ -15,6 +15,7 @@ import (
 type DeviceControllers struct {
 	basePattern string
 	dbSvc *dbSvc.DBSvcClient
+	
 }
 
 func NewDeviceController(basePattern string, dbSvcAddr string) *DeviceControllers {

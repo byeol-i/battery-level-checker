@@ -14,8 +14,8 @@ jobs:
                 appname:
                     - apid
                     - auth
-                    # - consumer
-                    # - producer
+                    - consumer
+                    - cache
                     - db
         steps:
             - name: Checkout

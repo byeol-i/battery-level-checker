@@ -112,7 +112,6 @@ func realMain() error {
 		var ln net.Listener
 
 		if usingSSL {
-
 			serverCrt, serverKey := configManager.ApidConfig.GetKeyPath()
 			cert, err := tls.LoadX509KeyPair(serverCrt, serverKey)
 			if err != nil {

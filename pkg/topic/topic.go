@@ -1,4 +1,4 @@
-package consumer
+package topic
 
 import (
 	"github.com/Shopify/sarama"
@@ -9,15 +9,6 @@ type Admin struct {
 	kafkaConf *sarama.Config
 	brokerList []string
 }
-
-// type Connector interface {
-// 	NewConsumer() *Consumer
-// }
-
-// type ConsumerImpl interface {
-// 	GetAdmin() (sarama.ClusterAdmin, error)
-// 	CreateTopic(admin sarama.ClusterAdmin, name string) (error)
-// }	
 
 func NewAdmin() *Admin {
 	manager := config.GetInstance()

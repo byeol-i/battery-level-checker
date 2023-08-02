@@ -9,11 +9,14 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	cacheSvc "github.com/byeol-i/battery-level-checker/pkg/svc/cache"
 	"go.uber.org/zap"
 )
 
-func KeepConsume(ctx context.Context, topics []string, client sarama.ConsumerGroup) {
-	handler := &MessageHandler{}
+func KeepConsume(ctx context.Context, topics []string, client sarama.ConsumerGroup, cacheSvcAddr, dbSvcAddr string) {
+	handler := &MessageHandler{
+		cacheClient: cacheSvc.NewCacheSvcClient(cacheSvcAddr),
+	}
 
 	for {
 		select {
