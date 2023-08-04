@@ -9,19 +9,23 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
+
+	cacheSvc "github.com/byeol-i/battery-level-checker/pkg/svc/cache"
 	"go.uber.org/zap"
 	// "github.com/byeol-i/battery-level-checker/pkg/models"
 )
 
 type BatteryController struct {
 	basePattern string
-	dbSvc *dbSvc.DBSvcClient
+	dbClient *dbSvc.DBSvcClient
+	cacheClient *cacheSvc.CacheSvcClient
 }
 
-func NewBatteryController(basePattern string, dbSvcAddr string) *BatteryController {
+func NewBatteryController(basePattern string, dbClientAddr, cacheSvcAddr string,) *BatteryController {
 	return &BatteryController{
 		basePattern: basePattern,
-		dbSvc: dbSvc.NewDBSvcClient(dbSvcAddr),
+		dbClient: dbSvc.NewDBSvcClient(dbClientAddr),
+		cacheClient: cacheSvc.NewCacheSvcClient(cacheSvcAddr),
 	}
 }
 
@@ -38,18 +42,9 @@ func NewBatteryController(basePattern string, dbSvcAddr string) *BatteryControll
 func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 
-
-
-	// test
-
-	// err := consumer.ConsumeLatestMessage("test_test")
-	// if err != nil {
-	// 	logger.Error("Can't consume msg", zap.Error(err))
-	// }
-
-	res, err := hdl.dbSvc.CallGetUsersAllBattery(uid)
+	res, err := hdl.dbClient.CallGetUsersAllBattery(uid)
 	if err != nil {
-		logger.Error("dbSvc's error", zap.Error(err))
+		logger.Error("dbClient's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
@@ -83,9 +78,9 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 	
 	// uid := req.Header.Get("Uid")
 
-	// res, err := hdl.dbSvc.CallGetBattery(matches[1], uid)
+	// res, err := hdl.dbClient.CallGetBattery(matches[1], uid)
 	// if err != nil  {
-	// 	logger.Error("dbSvc's error", zap.Error(err))
+	// 	logger.Error("dbClient's error", zap.Error(err))
 	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
 	// 	return
 	// }
@@ -124,9 +119,9 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 	uid := req.Header.Get("Uid")
 	logger.Info("GetHistoryAllBattery", zap.String("uid", uid), zap.String("device", matches[1]))
 	
-	res, err := hdl.dbSvc.CallGetAllBattery(matches[1], uid)
+	res, err := hdl.dbClient.CallGetAllBattery(matches[1], uid)
 	if err != nil {
-		logger.Error("dbSvc's error", zap.Error(err))
+		logger.Error("dbClient's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
@@ -177,9 +172,9 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 
 	uid := req.Header.Get("Uid")
 
-	// err = hdl.dbSvc.CallUpdateBatteryLevel(deviceId[1], uid, newBatteryLevel)
+	// err = hdl.dbClient.CallUpdateBatteryLevel(deviceId[1], uid, newBatteryLevel)
 	// if err != nil {
-	// 	logger.Error("dbSvc's error", zap.Error(err))
+	// 	logger.Error("dbClient's error", zap.Error(err))
 	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
 	// 	return
 	// }

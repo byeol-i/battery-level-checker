@@ -25,23 +25,28 @@ func (s CacheSrv) WriteMsg(ctx context.Context, in *pb_svc_cache.WriteMsgReq) (*
 	return &pb_svc_cache.WriteMsgRes{}, nil
 }
 
-func (s CacheSrv) GetMsg(ctx context.Context, in *pb_svc_cache.GetMsgReq) (*pb_svc_cache.GetMsgRes, error) {
-	data, found := s.deviceCache.Get(in.DeviceId)
-	logger.Info("data:", zap.Any("data", data))
-
-	if found {
-		if bytes, ok := data.([]byte); ok {
-			return &pb_svc_cache.GetMsgRes{
-				Result: string(bytes[:]),
-			}, nil
-		} else {
-			return &pb_svc_cache.GetMsgRes{
-				Result: "something is wrong",
-			}, nil
-		}
+func (s CacheSrv) GetCurrentMsg(ctx context.Context, in *pb_svc_cache.GetCurrentMsgReq) (*pb_svc_cache.GetCurrentMsgRes, error) {
+	// data, _ := s.deviceCache.Get(in.UserId)
+	// logger.Info("data:", zap.Any("data", data))
+	
+	// s.deviceCache.
+	for idx, v := range s.deviceCache.Items() {
+		logger.Info(idx, zap.Any("Cached", v))
 	}
 
-	return &pb_svc_cache.GetMsgRes{
-		Result: "nothing",
+	// if found {
+	// 	if bytes, ok := data.([]byte); ok {
+	// 		return &pb_svc_cache.GetCurrentMsgRes{
+	// 			Result: string(bytes[:]),
+	// 		}, nil
+	// 	} else {
+	// 		return &pb_svc_cache.GetCurrentMsgRes{
+	// 			Result: "something is wrong",
+	// 		}, nil
+	// 	}
+	// }
+
+	return &pb_svc_cache.GetCurrentMsgRes{
+		// Result: "nothing",
 	}, nil
 }

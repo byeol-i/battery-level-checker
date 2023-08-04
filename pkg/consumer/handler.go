@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/Shopify/sarama"
+	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	cacheSvc "github.com/byeol-i/battery-level-checker/pkg/svc/cache"
 
@@ -38,7 +39,6 @@ func (h *MessageHandler) Cleanup(sarama.ConsumerGroupSession) error {
 func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {	
 	topic := claim.Topic()
 
-	logger.Info("looking ", zap.Any("topic", topic))
 	userId, deviceId, err := extractUUIDs(topic)
 	if err != nil {
 		logger.Error("Can't extract uuid", zap.Error(err))
@@ -49,9 +49,17 @@ func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 		if err != nil {
 			logger.Error("Can't write to cache srv", zap.Error(err))
 		}
-		logger.Info("UserId", zap.Any("userID",userId))
-		logger.Info("DeviceId", zap.Any("deviceId",deviceId))
-		fmt.Printf("Received message: %s, offset : %d\n", string(message.Value), message.Offset)
+
+		bl, err := device.ParseFromJson(string(message.Value[:]))
+		if err != nil {
+			logger.Error("Can't parse from json", zap.Error(err))
+		}
+
+		err = h.dbClient.CallUpdateBatteryLevel(deviceId, userId, bl)
+		if err != nil {
+			logger.Error("Can't write to db srv", zap.Error(err))
+		}
+		
 		session.MarkMessage(message, "") 
 	}
 

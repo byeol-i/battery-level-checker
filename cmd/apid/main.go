@@ -76,7 +76,7 @@ func realMain() error {
 	apidAddr := configManager.ApidConfig.GetApidAddr()
 
 	notFoundCtrl := &controllers.NotFoundController{}
-	batteryCtrl := controllers.NewBatteryController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr())
+	batteryCtrl := controllers.NewBatteryController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr(), configManager.GrpcConfig.GetCacheSvcAddr())
 	deviceCtrl := controllers.NewDeviceController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr())
 	authCtrl := controllers.NewAuthController()
 	userCtrl := controllers.NewUserController("^/api/"+apiVersion, configManager.GrpcConfig.GetDBSvcAddr())

@@ -59,6 +59,7 @@ services:
             # PGDATA: /var/lib/postgresql
     pgslave:
         image: ghcr.io/byeol-i/battery-level-checker--postgresql-replica:latest
+        hostname: pgslave
         networks:
             - kafka-network
         ports:

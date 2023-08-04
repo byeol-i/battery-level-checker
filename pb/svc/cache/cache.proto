@@ -5,7 +5,7 @@ option go_package = "github.com/byeol-i/battery-level-checker/pb/svc/cache";
 
 service Cache {
     rpc WriteMsg(WriteMsgReq) returns (WriteMsgRes);
-    rpc GetMsg(GetMsgReq) returns (GetMsgRes);
+    rpc GetCurrentMsg(GetCurrentMsgReq) returns (GetCurrentMsgRes);
 }
 
 message WriteMsgReq {
@@ -17,11 +17,11 @@ message WriteMsgRes {
     // unit.common.ReturnMsg result = 1;
 }
 
-message GetMsgReq {
-    string deviceId = 1;
+message GetCurrentMsgReq {
+    string userId = 1;
 }
 
-message GetMsgRes {
-    string result = 1;
+message GetCurrentMsgRes {
+    repeated string result = 1;
 }
 

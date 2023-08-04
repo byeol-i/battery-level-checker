@@ -42,6 +42,25 @@ services:
         environment:
             - TZ=Asia/Seoul
         command: "/opt/bin/app/main"
+    db:
+        build:
+            context: .
+            dockerfile: cmd/db/Dockerfile
+        hostname: battery_db
+        networks:
+            - kafka-network
+        ports:
+            - 50012:50012
+        environment:
+            - DB_PRIMARY_ADDR=pgmaster
+            - DB_PRIMARY_PORT=5432
+            - DB_REPLICA_ADDR=pgslave
+            - DB_REPLICA_PORT=5432
+            - DB_USER=table_admin
+            - DB_PASSWORD=HelloWorld
+            - DB_NAME=battery
+            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main"
 
 networks:
     kafka-network:

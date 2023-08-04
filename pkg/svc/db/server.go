@@ -225,7 +225,7 @@ func (s DBSrv) GetAllBattery(ctx context.Context, in *pb_svc_db.GetAllBatteryReq
 	var batteryLevels []*pb_unit_device.BatteryLevel
 	for _, v := range raws {
 		newBatteryLevel := &pb_unit_device.BatteryLevel{
-			Time: timestamppb.New(v.Time.BT),
+			Time: timestamppb.New(v.Time.Time),
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}
@@ -251,7 +251,7 @@ func (s DBSrv) GetUsersAllBatteryLevel(ctx context.Context, in *pb_svc_db.GetUse
 	var batteryLevels []*pb_unit_device.BatteryLevel
 	for _, v := range raws {
 		newBatteryLevel := &pb_unit_device.BatteryLevel{
-			Time: timestamppb.New(v.Time.BT),
+			Time: timestamppb.New(v.Time.Time),
 			BatteryLevel: int64(v.BatteryLevel),
 			BatteryStatus: v.BatteryStatus,
 		}

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/araddon/dateparse"
 	pb_unit_device "github.com/byeol-i/battery-level-checker/pb/unit/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	"go.uber.org/zap"
@@ -39,13 +40,13 @@ type DeviceImpl struct {
 }
 
 type BatteryLevel struct {	
-	Time          BatteryTime `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
+	Time BatteryTime `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
 	BatteryLevel  int        `validate:"required" json:"batteryLevel" example:"50"`
 	BatteryStatus string     `validate:"required" json:"batteryStatus" example:"charging"`
 }
 
 type BatteryTime struct {
-	BT  time.Time
+	time.Time
 }
  
 type DeviceSpec struct {
@@ -77,13 +78,17 @@ func Clone(d *Device) *Device {
 
 func (b *BatteryTime) UnmarshalJSON(data []byte) error {
 	s := strings.Trim(string(data), "\"")
-	layout := "2006-01-02 15:04:05"
-	t, err := time.Parse(layout, s)
+	logger.Info("time", zap.Any("t", s))
+
+	t, err := dateparse.ParseAny(s)
+	// layout := "2006-01-02 15:04:05"
+	// 레이아웃을 여러개 두고 반복으로 돌리면서 파싱하는게 좋을듯
+	// t, err := time.Parse(time.RFC3339, s)
 	if err != nil {
 		return err
 	}
 
-	b.BT = t
+	b.Time = t
 	
 	return nil
 }
@@ -200,7 +205,7 @@ func (d *Device) ToProtoBatteryLevel() (*pb_unit_device.BatteryLevel) {
 
 	pbUnit.BatteryLevel = int64(d.BatteryLevel.BatteryLevel)
 	pbUnit.BatteryStatus = d.BatteryLevel.BatteryStatus
-	pbUnit.Time = timestamppb.New(d.BatteryLevel.Time.BT)
+	pbUnit.Time = timestamppb.New(d.BatteryLevel.Time.Time)
 
 	return pbUnit
 }
@@ -221,7 +226,7 @@ func ProtoToBatteryLevel(pbBatteryLevel *pb_unit_device.BatteryLevel) (*BatteryL
 
 	if pbBatteryLevel.Time != nil {
 		time := pbBatteryLevel.Time.AsTime()
-		batteryLevel.Time = BatteryTime{BT:time}
+		batteryLevel.Time = BatteryTime{Time:time}
 
 	} else {
 		logger.Error("battery time is null", zap.Any("pb bl", pbBatteryLevel))

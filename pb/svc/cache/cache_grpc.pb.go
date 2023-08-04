@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Cache_WriteMsg_FullMethodName = "/pb.svc.cache.Cache/WriteMsg"
-	Cache_GetMsg_FullMethodName   = "/pb.svc.cache.Cache/GetMsg"
+	Cache_WriteMsg_FullMethodName      = "/pb.svc.cache.Cache/WriteMsg"
+	Cache_GetCurrentMsg_FullMethodName = "/pb.svc.cache.Cache/GetCurrentMsg"
 )
 
 // CacheClient is the client API for Cache service.
@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CacheClient interface {
 	WriteMsg(ctx context.Context, in *WriteMsgReq, opts ...grpc.CallOption) (*WriteMsgRes, error)
-	GetMsg(ctx context.Context, in *GetMsgReq, opts ...grpc.CallOption) (*GetMsgRes, error)
+	GetCurrentMsg(ctx context.Context, in *GetCurrentMsgReq, opts ...grpc.CallOption) (*GetCurrentMsgRes, error)
 }
 
 type cacheClient struct {
@@ -48,9 +48,9 @@ func (c *cacheClient) WriteMsg(ctx context.Context, in *WriteMsgReq, opts ...grp
 	return out, nil
 }
 
-func (c *cacheClient) GetMsg(ctx context.Context, in *GetMsgReq, opts ...grpc.CallOption) (*GetMsgRes, error) {
-	out := new(GetMsgRes)
-	err := c.cc.Invoke(ctx, Cache_GetMsg_FullMethodName, in, out, opts...)
+func (c *cacheClient) GetCurrentMsg(ctx context.Context, in *GetCurrentMsgReq, opts ...grpc.CallOption) (*GetCurrentMsgRes, error) {
+	out := new(GetCurrentMsgRes)
+	err := c.cc.Invoke(ctx, Cache_GetCurrentMsg_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *cacheClient) GetMsg(ctx context.Context, in *GetMsgReq, opts ...grpc.Ca
 // for forward compatibility
 type CacheServer interface {
 	WriteMsg(context.Context, *WriteMsgReq) (*WriteMsgRes, error)
-	GetMsg(context.Context, *GetMsgReq) (*GetMsgRes, error)
+	GetCurrentMsg(context.Context, *GetCurrentMsgReq) (*GetCurrentMsgRes, error)
 	mustEmbedUnimplementedCacheServer()
 }
 
@@ -73,8 +73,8 @@ type UnimplementedCacheServer struct {
 func (UnimplementedCacheServer) WriteMsg(context.Context, *WriteMsgReq) (*WriteMsgRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WriteMsg not implemented")
 }
-func (UnimplementedCacheServer) GetMsg(context.Context, *GetMsgReq) (*GetMsgRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMsg not implemented")
+func (UnimplementedCacheServer) GetCurrentMsg(context.Context, *GetCurrentMsgReq) (*GetCurrentMsgRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCurrentMsg not implemented")
 }
 func (UnimplementedCacheServer) mustEmbedUnimplementedCacheServer() {}
 
@@ -107,20 +107,20 @@ func _Cache_WriteMsg_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Cache_GetMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMsgReq)
+func _Cache_GetCurrentMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCurrentMsgReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CacheServer).GetMsg(ctx, in)
+		return srv.(CacheServer).GetCurrentMsg(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Cache_GetMsg_FullMethodName,
+		FullMethod: Cache_GetCurrentMsg_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CacheServer).GetMsg(ctx, req.(*GetMsgReq))
+		return srv.(CacheServer).GetCurrentMsg(ctx, req.(*GetCurrentMsgReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -137,8 +137,8 @@ var Cache_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Cache_WriteMsg_Handler,
 		},
 		{
-			MethodName: "GetMsg",
-			Handler:    _Cache_GetMsg_Handler,
+			MethodName: "GetCurrentMsg",
+			Handler:    _Cache_GetCurrentMsg_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

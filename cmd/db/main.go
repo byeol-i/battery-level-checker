@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
+	"go.uber.org/zap"
 
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	server "github.com/byeol-i/battery-level-checker/pkg/svc/db"
@@ -27,7 +28,8 @@ var (
 
 func main() {
 	if err := realMain(); err != nil {
-		log.Printf("err :%s", err)
+		logger.Error("main has error", zap.Error(err))
+		// log.Printf("err :%s", err)
 		os.Exit(1)
 	}
 }
@@ -54,9 +56,8 @@ func realMain() error {
 	replicaDBport, err := strconv.Atoi(replicaDBPort)
 	if err != nil {
 		fmt.Errorf("Can't read dbPort!: %v %v", replicaDBPort, err)
-		primaryDBport = 8432
+		replicaDBport = 8432
 	}
-
 
 	if *test {
 		primaryDBAddr = "localhost"

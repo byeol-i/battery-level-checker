@@ -46,11 +46,10 @@ func WriteBatteryTime(batteryLevel *device.BatteryLevel, deviceId string, uid st
 		Value: sarama.StringEncoder(marshaledData),
 	}
 
-	partition, offset, err := producer.SendMessage(msg)
+	_, _, err = producer.SendMessage(msg)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", msg.Topic, partition, offset)
 	return nil
 }
