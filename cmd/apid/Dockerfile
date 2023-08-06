@@ -1,6 +1,7 @@
-FROM golang:1.18 AS builder
+FROM golang:1.20-alpine AS builder
 
-RUN apt update && apt install -y ca-certificates upx
+# RUN apt update && apt install -y ca-certificates upx
+RUN apk add upx ca-certificates
 
 WORKDIR "/go/src/github.com/byeol-i/battery-level-checker/"
 
