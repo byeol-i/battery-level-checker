@@ -8,6 +8,8 @@ import (
 type Admin struct {
 	kafkaConf *sarama.Config
 	brokerList []string
+	numOfReplicationFactor int16
+	numOfPartitions int32
 }
 
 func NewAdmin() *Admin {
@@ -16,6 +18,8 @@ func NewAdmin() *Admin {
 	return &Admin{
 		kafkaConf: manager.GetKafkaSarama(),
 		brokerList: manager.GetBrokerList(),
+		numOfReplicationFactor: manager.GetNumOfReplicationFactor(),
+		numOfPartitions: manager.GetNumOfPartitions(),
 	}
 }
 
@@ -31,8 +35,8 @@ func (c *Admin) GetAdmin() (sarama.ClusterAdmin, error){
 
 func (c *Admin) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	err := admin.CreateTopic(name, &sarama.TopicDetail{
-		NumPartitions: 1,
-		ReplicationFactor: 1,
+		NumPartitions: c.numOfPartitions,
+		ReplicationFactor: c.numOfReplicationFactor,
 	}, false)
 	 
 	if err != nil {

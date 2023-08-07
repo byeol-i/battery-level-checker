@@ -49,8 +49,8 @@ fi
 
 cd shell
 
-sh ./deployZoo.sh
+bash ./deployZoo.sh
 
-sh ./deployKafka.sh
+bash ./deployKafka.sh
 
-sh ./deployApp.sh
+bash ./deployApp.sh

@@ -9,6 +9,7 @@ services:
             - traefik-network
         environment:
             - TZ=Asia/Seoul
+        command: "/opt/bin/app/main -numOfPartitions=2 -numOfReplicationFactor=2"
         deploy:
             update_config:
                 parallelism: 2

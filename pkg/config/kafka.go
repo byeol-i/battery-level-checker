@@ -15,6 +15,9 @@ var (
 	// partition         = flag.String("partition", "2", "Partition number")
 	// offsetType        = flag.Int("offsetType", -1, "Offset Type (OffsetNewest | OffsetOldest)")
 	// messageCountStart = flag.Int("messageCountStart", 0, "Message counter start from:")
+	
+	numOfReplicationFactor = flag.Int("numOfReplicationFactor", 2, "numOfReplicationFactor")
+	numOfPartitions = flag.Int("numOfPartitions", 2, "numOfPartitions")
 	maxRetry   		  = flag.Int("maxRetry", 5, "Retry limit")
 )
 
@@ -23,11 +26,21 @@ type KafkaConfigImpl interface {
 	GetKafkaSarama() *sarama.Config
 	GetBrokerList() []string
 	GetMaxRetry() int
+	GetNumOfPartitions() int
+	GetNumOfReplicationFactor() int
 	GetTopic() string
 }
 
 type KafkaConfig struct {
 	KafkaConfigImpl
+}
+
+func (c KafkaConfig) GetNumOfPartitions() int32 {
+	return int32(*numOfPartitions)
+}
+
+func (c KafkaConfig) GetNumOfReplicationFactor() int16 {
+	return int16(*numOfReplicationFactor)
 }
 
 func (c KafkaConfig) GetConsumerGroup() string {
