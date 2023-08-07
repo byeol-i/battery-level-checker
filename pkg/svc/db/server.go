@@ -12,7 +12,6 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
-	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	"github.com/byeol-i/battery-level-checker/pkg/topic"
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 )
@@ -276,7 +275,8 @@ func (s DBSrv) UpdateBatteryLevel(ctx context.Context, in *pb_svc_db.UpdateBatte
 			},
 		}, err
 	}
-	err = producer.WriteBatteryTime(batteryLevel, in.DeviceId.Id, in.Uid.Uid)
+	
+	err = s.primaryDB.UpdateBattery(in.DeviceId.Id, in.Uid.Uid, batteryLevel)
 	if err != nil {
 		return &pb_svc_db.UpdateBatteryLevelRes{
 			Result: &common.ReturnMsg{

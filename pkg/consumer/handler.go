@@ -18,7 +18,7 @@ type MessageHandler struct{
 	dbClient  *dbSvc.DBSvcClient
 }
 
-func NewMessageHandler(cacheClient *cacheSvc.CacheSvcClient, dbClient  *dbSvc.DBSvcClient) *MessageHandler {
+func NewMessageHandler(cacheClient *cacheSvc.CacheSvcClient, dbClient *dbSvc.DBSvcClient) *MessageHandler {
 	return &MessageHandler{
 		cacheClient: cacheClient,
 		dbClient: dbClient,

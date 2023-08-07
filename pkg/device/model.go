@@ -78,12 +78,8 @@ func Clone(d *Device) *Device {
 
 func (b *BatteryTime) UnmarshalJSON(data []byte) error {
 	s := strings.Trim(string(data), "\"")
-	logger.Info("time", zap.Any("t", s))
-
+	
 	t, err := dateparse.ParseAny(s)
-	// layout := "2006-01-02 15:04:05"
-	// 레이아웃을 여러개 두고 반복으로 돌리면서 파싱하는게 좋을듯
-	// t, err := time.Parse(time.RFC3339, s)
 	if err != nil {
 		return err
 	}

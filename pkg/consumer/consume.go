@@ -10,12 +10,14 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	cacheSvc "github.com/byeol-i/battery-level-checker/pkg/svc/cache"
+	dbSvc "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 	"go.uber.org/zap"
 )
 
 func KeepConsume(ctx context.Context, topics []string, client sarama.ConsumerGroup, cacheSvcAddr, dbSvcAddr string) {
 	handler := &MessageHandler{
 		cacheClient: cacheSvc.NewCacheSvcClient(cacheSvcAddr),
+		dbClient: dbSvc.NewDBSvcClient(dbSvcAddr),
 	}
 
 	for {

@@ -11,7 +11,6 @@ import (
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
-	"github.com/byeol-i/battery-level-checker/pkg/producer"
 	"github.com/byeol-i/battery-level-checker/pkg/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -32,7 +31,7 @@ func (c *DBSvcClient) CallAddNewUser(userSpec *user.UserImpl, userCredential *us
 	
 	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
 	defer cancel()
-	
+
 	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),  grpc.WithTimeout(dialTimeout))
 	conn, err := grpc.DialContext(ctx, c.addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
@@ -284,7 +283,7 @@ func (c *DBSvcClient) CallUpdateBatteryLevel(deviceID string, uid string, batter
 
 	in := &pb_svc_db.UpdateBatteryLevelReq{
 		BatteryLevel: &pb_unit_device.BatteryLevel{
-			Time: timestamppb.New(*&time.Time{}),
+			Time: timestamppb.New(batteryLevel.Time.Time),
 			BatteryLevel: int64(batteryLevel.BatteryLevel),
 			BatteryStatus: batteryLevel.BatteryStatus,
 		},
@@ -299,12 +298,6 @@ func (c *DBSvcClient) CallUpdateBatteryLevel(deviceID string, uid string, batter
 	_, err = client.UpdateBatteryLevel(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call", zap.Error(err))
-		return err
-	}
-
-	err = producer.WriteBatteryTime(batteryLevel, deviceID, uid)
-	if err != nil {
-		logger.Error("Can't producer msg", zap.Error(err))
 		return err
 	}
 

@@ -73,8 +73,6 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
         respondError(resp, http.StatusBadRequest, "Not valid")
         return
     }
-
-	// uid := "P1RPAH3URaYL0FoZdjLKJf20h9T2"
 	
 	// uid := req.Header.Get("Uid")
 

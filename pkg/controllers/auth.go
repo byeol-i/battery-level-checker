@@ -15,10 +15,8 @@ func NewAuthController() *AuthControllers {
 	return &AuthControllers{}
 }
 
+
 func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWriter, req *http.Request) http.Handler {
-	req.Header.Set("Uid", "test")
-	return next
-	
 	token := req.Header.Get("Authorization")
 
 	if len(token) < 5 {
