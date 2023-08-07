@@ -56,6 +56,47 @@ services:
                 window: 120s
             placement:
                 constraints: [node.role==worker]
+    cache:
+        image: ghcr.io/byeol-i/battery-level-checker--cache:latest
+        hostname: battery_cache
+        networks:
+            - kafka-network
+        environment:
+            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main"
+        deploy:
+            update_config:
+                parallelism: 2
+                order: start-first
+                failure_action: rollback
+                delay: 10s
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+            placement:
+                constraints: [node.role==worker]
+    consumer:
+        image: ghcr.io/byeol-i/battery-level-checker--consumer:latest
+        networks:
+            - kafka-network
+        environment:
+            - TZ=Asia/Seoul
+        command: "/opt/bin/app/main"
+        deploy:
+            update_config:
+                parallelism: 2
+                order: start-first
+                failure_action: rollback
+                delay: 10s
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+            placement:
+                constraints: [node.role==worker]
     db:
         image: ghcr.io/byeol-i/battery-level-checker--db:latest
         networks:
