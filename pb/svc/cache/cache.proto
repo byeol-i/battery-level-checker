@@ -10,7 +10,8 @@ service Cache {
 
 message WriteMsgReq {
     string deviceId = 1;
-    bytes value = 2;
+    string userId = 2;
+    bytes value = 3;
 }
 
 message WriteMsgRes {

@@ -12,15 +12,10 @@ RUN mkdir -p /opt/bin/app/
 
 # COPY vendor/ /go/src/
 
-# COPY . .
-
-# RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o /opt/bin/app/main cmd/consumer/main.go \    
-#   && upx --lzma /opt/bin/app/main
+COPY . .
 
 RUN go mod tidy \
     && go get -u -d -v ./...
-
-COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o /opt/bin/app/main cmd/consumer/main.go \    
     && upx --lzma /opt/bin/app/main

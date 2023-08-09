@@ -33,6 +33,7 @@ func (c *CacheSvcClient) CallWriteMsg(userId, deviceId string, value []byte) err
 	client := pb_svc_cache.NewCacheClient(conn)
 
 	in := &pb_svc_cache.WriteMsgReq{
+		UserId: userId,
 		DeviceId: deviceId,
 		Value: value,
 	}

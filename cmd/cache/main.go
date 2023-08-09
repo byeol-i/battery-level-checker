@@ -5,13 +5,12 @@ import (
 	"log"
 	"net"
 	"os"
-	"time"
 
 	pb_svc_cache "github.com/byeol-i/battery-level-checker/pb/svc/cache"
+	"github.com/byeol-i/battery-level-checker/pkg/cache"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
 	server "github.com/byeol-i/battery-level-checker/pkg/svc/cache"
-	"github.com/patrickmn/go-cache"
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -34,10 +33,10 @@ func realMain() error {
 
 	var opts []grpc.ServerOption
 
-	deviceCache := cache.New(2*time.Hour, 1*time.Hour)
+	cacheManager := cache.NewCacheManager()
 	grpcServer := grpc.NewServer(opts...)
 	
-	cacheSrv := server.NewCacheServiceServer(deviceCache)
+	cacheSrv := server.NewCacheServiceServer(cacheManager)
 	pb_svc_cache.RegisterCacheServer(grpcServer, cacheSrv)
 
 	wg, _ := errgroup.WithContext(context.Background())
