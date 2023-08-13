@@ -15,6 +15,10 @@ func NewAuthController() *AuthControllers {
 	return &AuthControllers{}
 }
 
+func (hdl *AuthControllers) MockToken(next http.Handler, resp http.ResponseWriter, req *http.Request) http.Handler {
+	req.Header.Set("Uid", "test")
+	return next
+}
 
 func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWriter, req *http.Request) http.Handler {
 	token := req.Header.Get("Authorization")
@@ -30,7 +34,7 @@ func (hdl *AuthControllers) VerifyToken(next http.Handler, resp http.ResponseWri
 
 		uid, err := firebaseSvc.CallVerifyToken(token)
 		if err != nil {
-			logger.Error("dbSvc's error", zap.Error(err))
+			logger.Error("firebaseSvc's error", zap.Error(err))
 			respondError(resp, 401, err.Error())
 			return nil
 		}

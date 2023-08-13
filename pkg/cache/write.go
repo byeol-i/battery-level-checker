@@ -4,7 +4,7 @@ import "github.com/patrickmn/go-cache"
 
 func (m *CacheManager) Write(deviceId, userId string, value []byte) {
 	m.deviceCache.Set(deviceId, value, cache.DefaultExpiration)
-
+	
 	res, found := m.userCache.Get(userId)
 	if found {
 		list := AddDeviceInUser(res.([]string), m.deviceCache, deviceId)

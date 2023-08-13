@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"time"
-
 	"github.com/patrickmn/go-cache"
 )
 type CacheManager struct {
@@ -10,9 +8,9 @@ type CacheManager struct {
 	userCache *cache.Cache
 }
 
-func NewCacheManager() *CacheManager {
+func NewCacheManager(deviceCache, userCache *cache.Cache) *CacheManager {
 	return &CacheManager{
-		deviceCache: cache.New(2*time.Hour, 1*time.Hour),
-		userCache: cache.New(2*time.Hour, 1*time.Hour),
+		deviceCache: deviceCache,
+		userCache: userCache,
 	}
 }

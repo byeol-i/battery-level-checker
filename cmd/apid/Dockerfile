@@ -10,9 +10,9 @@ COPY go.sum .
 
 RUN mkdir -p /opt/bin/app/
 
-COPY . .
-
 # COPY vendor/ /go/src/
+
+COPY . .
 
 RUN go mod tidy \
     && go get -u -d -v ./...

@@ -238,34 +238,30 @@ func (c *DBSvcClient) CallGetBattery(deviceID string, uid string) (*device.Batte
 	}
 	defer conn.Close()
 
-	// client := pb_svc_db.NewDBClient(conn)
+	client := pb_svc_db.NewDBClient(conn)
 
-	// in := &pb_svc_db.GetBatteryReq{
-	// 	DeviceId: &pb_unit_device.ID{
-	// 		Id: deviceID,
-	// 	},
-	// 	Uid: &pb_unit_user.UserCredential{
-	// 		Uid: uid,
-	// 	},
-	// }
+	in := &pb_svc_db.GetBatteryReq{
+		DeviceId: &pb_unit_device.ID{
+			Id: deviceID,
+		},
+		Uid: &pb_unit_user.UserCredential{
+			Uid: uid,
+		},
+	}
 
+	res, err := client.GetBattery(ctx, in)
+	if err != nil {
+		logger.Error("Can't call grpc call")
+		return nil, err
+	}
 
+	newBatteryLevel, err := device.ProtoToBatteryLevel(res.BatteryLevel)
+	if err != nil {
+		logger.Error("Can't make pb to batteryLevel struct", zap.Error(err))
+		return nil, err
+	}
 
-	return nil, nil
-
-	// res, err := client.GetBattery(ctx, in)
-	// if err != nil {
-	// 	logger.Error("Can't call grpc call")
-	// 	return nil, err
-	// }
-
-	// newBatteryLevel, err := device.ProtoToBatteryLevel(res.BatteryLevel)
-	// if err != nil {
-	// 	logger.Error("Can't make pb to batteryLevel struct", zap.Error(err))
-	// 	return nil, err
-	// }
-
-	// return newBatteryLevel, nil
+	return newBatteryLevel, nil
 }
 
 func (c *DBSvcClient) CallUpdateBatteryLevel(deviceID string, uid string, batteryLevel *device.BatteryLevel) error {

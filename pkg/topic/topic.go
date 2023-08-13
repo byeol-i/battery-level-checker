@@ -5,17 +5,17 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 
-type Admin struct {
+type TopicManager struct {
 	kafkaConf *sarama.Config
 	brokerList []string
 	numOfReplicationFactor int16
 	numOfPartitions int32
 }
 
-func NewAdmin() *Admin {
+func NewTopicManager() *TopicManager {
 	manager := config.GetInstance()
 
-	return &Admin{
+	return &TopicManager{
 		kafkaConf: manager.GetKafkaSarama(),
 		brokerList: manager.GetBrokerList(),
 		numOfReplicationFactor: manager.GetNumOfReplicationFactor(),
@@ -23,8 +23,8 @@ func NewAdmin() *Admin {
 	}
 }
 
-func (c *Admin) GetAdmin() (sarama.ClusterAdmin, error){
-	admin, err := sarama.NewClusterAdmin(c.brokerList, c.kafkaConf)
+func (t *TopicManager) GetAdmin() (sarama.ClusterAdmin, error){
+	admin, err := sarama.NewClusterAdmin(t.brokerList, t.kafkaConf)
 	if err != nil {
 		return nil, err
 	}
@@ -33,10 +33,10 @@ func (c *Admin) GetAdmin() (sarama.ClusterAdmin, error){
 	return admin, nil
 }
 
-func (c *Admin) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
+func (t *TopicManager) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	err := admin.CreateTopic(name, &sarama.TopicDetail{
-		NumPartitions: c.numOfPartitions,
-		ReplicationFactor: c.numOfReplicationFactor,
+		NumPartitions: t.numOfPartitions,
+		ReplicationFactor: t.numOfReplicationFactor,
 	}, false)
 	 
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *Admin) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
 	return nil
 }
 
-func (c *Admin) DeleteTopic(admin sarama.ClusterAdmin, name string) error {
+func (t *TopicManager) DeleteTopic(admin sarama.ClusterAdmin, name string) error {
 	err := admin.DeleteTopic(name)
 	if err != nil {
 		return err

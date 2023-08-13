@@ -10,19 +10,19 @@ import (
 
 type ConsumerSrv struct {
 	pb_svc_consumer.ConsumerServer
-	Admin *topic.Admin
+	TopicManager *topic.TopicManager
 }
 
 func NewConsumerServiceServer() *ConsumerSrv {
 	return &ConsumerSrv{
-		Admin : topic.NewAdmin(),
+		TopicManager : topic.NewTopicManager(),
 	}
 }
 
 // func CreateNewMsg
 
 func (s ConsumerSrv) CreateNewTopic(ctx context.Context, in *pb_svc_consumer.CreateNewTopicReq) (*pb_svc_consumer.CreateNewTopicRes, error) {
-	admin, err := s.Admin.GetAdmin()
+	admin, err := s.TopicManager.GetAdmin()
 	if err != nil {
 		return &pb_svc_consumer.CreateNewTopicRes{
 			Result: &common.ReturnMsg{
@@ -31,7 +31,7 @@ func (s ConsumerSrv) CreateNewTopic(ctx context.Context, in *pb_svc_consumer.Cre
 		}, err 
 	}
 
-	err = s.Admin.CreateTopic(admin, in.Topic)
+	err = s.TopicManager.CreateTopic(admin, in.Topic)
 	if err != nil {
 		return &pb_svc_consumer.CreateNewTopicRes{
 			Result: &common.ReturnMsg{

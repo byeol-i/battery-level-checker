@@ -11,7 +11,7 @@ services:
             - 80:80
         environment:
             - TZ=Asia/Seoul
-        command: "/opt/bin/app/main"
+        command: "/opt/bin/app/main -usingAuth=false"
     consumer:
         build:
             context: .
@@ -20,16 +20,17 @@ services:
             - kafka-network
         environment:
             - TZ=Asia/Seoul
-        command: "/opt/bin/app/main"
-    auth:
-        build:
-            context: .
-            dockerfile: cmd/auth/Dockerfile
-        networks:
-            - kafka-network
-        environment:
-            - TZ=Asia/Seoul
-        command: "/opt/bin/app/main"
+        command: "/opt/bin/app/main -brokerList=kafka-1:9094 -numOfReplicationFactor=1 -numOfPartitions=1"
+    # auth:
+    #     build:
+    #         context: .
+    #         dockerfile: cmd/auth/Dockerfile
+    #     hostname: battery_auth
+    #     networks:
+    #         - kafka-network
+    #     environment:
+    #         - TZ=Asia/Seoul
+    #     command: "/opt/bin/app/main"
     cache:
         build:
             context: .

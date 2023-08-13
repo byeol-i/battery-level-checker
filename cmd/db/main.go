@@ -12,6 +12,7 @@ import (
 	pb_svc_db "github.com/byeol-i/battery-level-checker/pb/svc/db"
 	"go.uber.org/zap"
 
+	"github.com/byeol-i/battery-level-checker/pkg/config"
 	"github.com/byeol-i/battery-level-checker/pkg/db"
 	server "github.com/byeol-i/battery-level-checker/pkg/svc/db"
 
@@ -21,7 +22,6 @@ import (
 )
 
 var (
-	grpcAddr = flag.String("addr", "0.0.0.0:50012", "grpc address")
 	usingTls = flag.Bool("tls", false, "using http2")
 	test = flag.Bool("dbsvc-test", false, "testing")
 )
@@ -36,6 +36,9 @@ func main() {
 
 func realMain() error {
 	flag.Parse()
+
+
+	manager := config.GetInstance()
 
 	// get env from docker, not a config pkg
 	primaryDBAddr := os.Getenv("DB_PRIMARY_ADDR")
@@ -99,7 +102,7 @@ func realMain() error {
 		return err
 	}
 
-	gRPCL, err := net.Listen("tcp", *grpcAddr)
+	gRPCL, err := net.Listen("tcp", manager.GetDBAddr())
 	if err != nil {
 		return err
 	}
@@ -114,7 +117,7 @@ func realMain() error {
 	wg, _ := errgroup.WithContext(context.Background())
 
 	wg.Go(func() error {
-		logger.Info("Starting grpc server..." + *grpcAddr)
+		logger.Info("Starting grpc server..." + manager.GetDBAddr())
 		err := grpcServer.Serve(gRPCL)
 		if err != nil {
 			log.Fatalf("failed to serve: %v", err)

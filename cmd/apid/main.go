@@ -89,10 +89,11 @@ func realMain() error {
 		rtr.Use(authCtrl.VerifyToken)
 	} else {
 		logger.Info("Didn't using auth server")
+		rtr.Use(authCtrl.MockToken)
 	}
 
 	rtr.AddRule("Battery", "GET", `/battery/history/([a-fA-F0-9-]+)$`, batteryCtrl.GetHistoryAllBattery)
-	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetUsersAllBattery)
+	rtr.AddRule("Battery", "GET", `/battery$`, batteryCtrl.GetUsersCachedBattery)
 	rtr.AddRule("Battery", "GET", `/battery/([a-fA-F0-9-]+)$`, batteryCtrl.GetBattery)
 	rtr.AddRule("Battery", "PUT", `/battery/([a-fA-F0-9-]+)$`, batteryCtrl.UpdateBattery)
 	
@@ -121,6 +122,9 @@ func realMain() error {
 			ln, err = tls.Listen("tcp", apidAddr, &tls.Config{
 				Certificates: []tls.Certificate{cert},
 			})
+			if err != nil {
+				return err
+			}
 		} else {
 			ln, err = net.Listen("tcp", apidAddr)
 		}

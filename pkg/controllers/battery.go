@@ -29,7 +29,7 @@ func NewBatteryController(basePattern string, dbClientAddr, cacheSvcAddr string,
 	}
 }
 
-// GetUsersAllBattery godoc
+// GetUsersCachedBattery godoc
 // @Summary Get User's all Battery Level
 // @Description Get device's battery
 // @Tags Battery
@@ -39,17 +39,18 @@ func NewBatteryController(basePattern string, dbClientAddr, cacheSvcAddr string,
 // @Failure 400 {object} models.JSONfailResult{}
 // @Success 200 {object} models.JSONsuccessResult{data=[]device.DeviceImpl{Id,BatteryLevel}}
 // @Router /battery/ [get]
-func (hdl *BatteryController) GetUsersAllBattery(resp http.ResponseWriter, req *http.Request) {
+func (hdl *BatteryController) GetUsersCachedBattery(resp http.ResponseWriter, req *http.Request) {
 	uid := req.Header.Get("Uid")
 
-	res, err := hdl.dbClient.CallGetUsersAllBattery(uid)
+	res, err := hdl.cacheClient.CallGetCurrentMsg(uid)
+	
+	// res, err := hdl.dbClient.CallGetUsersAllBattery(uid)
 	if err != nil {
 		logger.Error("dbClient's error", zap.Error(err))
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
-	// consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "GetUsersAllBattery", res)
 }
 
@@ -74,24 +75,23 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
         return
     }
 	
-	// uid := req.Header.Get("Uid")
+	uid := req.Header.Get("Uid")
 
-	// res, err := hdl.dbClient.CallGetBattery(matches[1], uid)
-	// if err != nil  {
-	// 	logger.Error("dbClient's error", zap.Error(err))
-	// 	respondError(resp, http.StatusInternalServerError, "Internal server error")
-	// 	return
-	// }
+	res, err := hdl.dbClient.CallGetBattery(matches[1], uid)
+	if err != nil  {
+		logger.Error("dbClient's error", zap.Error(err))
+		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		return
+	}
 
 	// err := consumer.ConsumeLatestMessage("battery_device__"+uid+"_"+matches[1])
 	// if err != nil {
 	// 	logger.Error("Can't consume msg", zap.Error(err))
 	// }
 
-	// consumer.GetTopics()
 	// respondJSON(resp, http.StatusOK, "GetBattery", res)
 
-	respondJSON(resp, http.StatusOK, "GetBattery", nil)
+	respondJSON(resp, http.StatusOK, "GetBattery", res)
 }
 
 
@@ -124,7 +124,6 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 		return
 	}
 
-	// consumer.GetTopics()
 	respondJSON(resp, http.StatusOK, "GetHistoryAllBattery", res)
 }
 

@@ -20,14 +20,14 @@ type DBSrv struct {
 	pb_svc_db.DBServer
 	primaryDB db.Database
 	slaveDB db.Database
-	Admin *topic.Admin
+	TopicManager *topic.TopicManager
 }
 
 func NewDBServiceServer(primaryDB *db.Database, slaveDB *db.Database) *DBSrv {
 	return &DBSrv{
 		primaryDB: *primaryDB,
 		slaveDB: *slaveDB,
-		Admin: topic.NewAdmin(),
+		TopicManager: topic.NewTopicManager(),
 	}
 }
 
@@ -48,7 +48,7 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	admin, err := s.Admin.GetAdmin()
+	admin, err := s.TopicManager.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.AddNewUserRes{
@@ -58,7 +58,7 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	err = s.Admin.CreateTopic(admin, "battery_user__" + in.User.UserCredential.Uid)
+	err = s.TopicManager.CreateTopic(admin, "battery_user__" + in.User.UserCredential.Uid)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddNewUserRes{
@@ -95,7 +95,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	admin, err := s.Admin.GetAdmin()
+	admin, err := s.TopicManager.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -105,7 +105,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	err = s.Admin.CreateTopic(admin, "battery_device__" + in.Uid + "__" + deviceId)
+	err = s.TopicManager.CreateTopic(admin, "battery_device__" + in.Uid + "__" + deviceId)
 	if err != nil {
 		logger.Error("Can't create topic for device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -131,7 +131,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 		}, err
 	}
 
-	admin, err := s.Admin.GetAdmin()
+	admin, err := s.TopicManager.GetAdmin()
 	if err != nil {
 		logger.Error("Can't get kafka admin", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{
@@ -141,7 +141,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 		}, err
 	}
 
-	err = s.Admin.DeleteTopic(admin, in.Uid.Uid + "__" + in.DeviceId.Id)
+	err = s.TopicManager.DeleteTopic(admin, in.Uid.Uid + "__" + in.DeviceId.Id)
 	if err != nil {
 		logger.Error("Can't delete topic", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{
@@ -183,31 +183,26 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 }
 
 func (s DBSrv) GetBattery(ctx context.Context, in *pb_svc_db.GetBatteryReq) (*pb_svc_db.GetBatteryRes, error) {
-	// raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
-	// if err != nil {
-	// 	return &pb_svc_db.GetBatteryRes{
-	// 		Result: &common.ReturnMsg{
-	// 			Error: err.Error(),
-	// 		},
-	// 	}, err
-	// }
+	raw, err := s.slaveDB.GetBattery(in.DeviceId.Id, in.Uid.Uid)
+	if err != nil {
+		return &pb_svc_db.GetBatteryRes{
+			Result: &common.ReturnMsg{
+				Error: err.Error(),
+			},
+		}, err
+	}
 	
-	// pbUnit := &pb_unit_device.BatteryLevel{
-	// 	Time: timestamppb.New(*raw.Time),
-	// 	BatteryLevel: int64(raw.BatteryLevel),
-	// 	BatteryStatus: raw.BatteryStatus,
-	// }
-
-	// err := consumer.ConsumeLatestMessage(in.Uid.Uid+"_"+in.DeviceId.Id)
-	// if err != nil {
-	// 	logger.Error("Can't consume msg", zap.Error(err))
-	// }
+	pbUnit := &pb_unit_device.BatteryLevel{
+		Time: timestamppb.New(raw.Time.Time),
+		BatteryLevel: int64(raw.BatteryLevel),
+		BatteryStatus: raw.BatteryStatus,
+	}
 	
 	return &pb_svc_db.GetBatteryRes{
-		// Result: &common.ReturnMsg{
-		// 	Result: pbUnit.String(),
-		// },
-		// BatteryLevel: pbUnit,
+		Result: &common.ReturnMsg{
+			Result: pbUnit.String(),
+		},
+		BatteryLevel: pbUnit,
 	}, nil
 }
 

@@ -39,7 +39,7 @@ func (h *MessageHandler) Cleanup(sarama.ConsumerGroupSession) error {
 func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {	
 	topic := claim.Topic()
 
-	userId, deviceId, err := extractUUIDs(topic)
+	userId, deviceId, err := ExtractUUIDs(topic)
 	if err != nil {
 		logger.Error("Can't extract uuid", zap.Error(err))
 	}
@@ -66,7 +66,7 @@ func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 	return nil
 }
 
-func extractUUIDs(input string) (uuid1, uuid2 string, err error) {
+func ExtractUUIDs(input string) (uuid1, uuid2 string, err error) {
 	re := regexp.MustCompile(`__([^_]+)`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	if len(matches) <  2 {

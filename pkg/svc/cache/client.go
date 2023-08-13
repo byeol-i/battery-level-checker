@@ -48,13 +48,13 @@ func (c *CacheSvcClient) CallWriteMsg(userId, deviceId string, value []byte) err
 }
 
 
-func (c *CacheSvcClient) CallGetCurrentMsg(userId string) (error) {
+func (c *CacheSvcClient) CallGetCurrentMsg(userId string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), contextTime)
 	defer cancel()
 
 	conn, err := grpc.DialContext(ctx, c.addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
@@ -64,11 +64,12 @@ func (c *CacheSvcClient) CallGetCurrentMsg(userId string) (error) {
 		UserId: userId,
 	}
 	
-	_, err = client.GetCurrentMsg(ctx, in)
+	res, err := client.GetCurrentMsg(ctx, in)
 	if err != nil {
 		logger.Error("Can't call grpc call", zap.Error(err))
-		return err
+		return nil, err
 	}
 
-	return nil
+
+	return res.Result, nil
 }

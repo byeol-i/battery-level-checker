@@ -9,6 +9,7 @@ var (
 	dbSvcAddr = flag.String("dbSvcAddr", "battery_db:50012", "db svc grpc addr")
 	cacheSvcAddr = flag.String("cacheSvcAddr", "battery_cache:50015", "cache svc grpc addr")
 
+	// authSvcAddr = flag.String("authSvcAddr", "battery_auth:50010", "auth grpc addr")
 	usingTls = flag.Bool("grpc.tls", false, "using http2")
 )
 
@@ -18,6 +19,7 @@ type GrpcConfigImpl interface {
 	GetCacheSvcAddr() (string)
 	GetDBAddr() (string)
 	GetDBSvcAddr() (string)
+	// GetAuthSvcAddr() (string)
 	GetUsingTls() (bool)
 }
 type GrpcConfig struct {
@@ -39,6 +41,10 @@ func (c GrpcConfig) GetDBAddr() (string) {
 func (c GrpcConfig) GetAuthAddr() (string) {
 	return *authAddr
 }
+
+// func (c GrpcConfig) GetAuthSvcAddr() (string) {
+// 	return *authSvcAddr
+// }
 
 func (c GrpcConfig) GetCacheAddr() (string) {
 	return *cacheAddr
