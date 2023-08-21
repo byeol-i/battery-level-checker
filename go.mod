@@ -7,7 +7,7 @@ require (
 	github.com/Shopify/sarama v1.38.1
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/lib/pq v1.10.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
