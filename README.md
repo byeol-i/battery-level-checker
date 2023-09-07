@@ -10,7 +10,8 @@ WIP
 
 That System is constructed in several kafka brokers and middleware which use HTTP transport
 
-<img width="330" alt="image" src="https://user-images.githubusercontent.com/35767154/185879467-d1d8eb77-135a-46c5-a467-b3544597dabb.png">
+<img width="663" alt="image" src="https://github.com/byeol-i/battery-level-checker/assets/35767154/ec27ca4e-f7d7-4c40-a1ba-0a8a17528137">
+
 
 # Simple scenario
 
