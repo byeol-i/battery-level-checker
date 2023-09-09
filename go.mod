@@ -12,7 +12,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/swaggo/echo-swagger v1.4.0
-	github.com/swaggo/swag v1.16.1
+	github.com/swaggo/swag v1.16.2
 	go.uber.org/zap v1.25.0
 	golang.org/x/sync v0.3.0
 	google.golang.org/api v0.139.0
