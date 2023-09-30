@@ -1,8 +1,7 @@
 package consumer
 
 import (
-	"fmt"
-	"regexp"
+	"strings"
 
 	"github.com/Shopify/sarama"
 	"github.com/byeol-i/battery-level-checker/pkg/device"
@@ -67,14 +66,39 @@ func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 }
 
 func ExtractUUIDs(input string) (uuid1, uuid2 string, err error) {
-	re := regexp.MustCompile(`_([^_]+)`)
-	matches := re.FindAllStringSubmatch(input, -1)
-	if len(matches) <  2 {
-		return "", "", fmt.Errorf("invalid input format")
+	// posix로 만든 regex... golang에서는 Perl로 작성하여야 한다
+	// re := regexp.MustCompile(`(?![device]|[battery])[^_]+`)
+	// matches := re.FindAllStringSubmatch(input, -1)
+	// if len(matches) <  2 {
+	// 	return "", "", fmt.Errorf("invalid input format")
+	// }
+
+	// uuid1 = matches[0][1]
+	// uuid2 = matches[1][1]
+
+	parts := strings.Split(input, "_")
+
+	result := []string{}
+	
+	for _, part := range parts {
+		if part == "device" {
+			continue
+		}
+
+		if part == "battery" {
+			continue
+		}
+
+		if part == "" {
+			continue
+		}
+		
+		result = append(result, part)
 	}
 
-	uuid1 = matches[0][1]
-	uuid2 = matches[1][1]
+	if (len(result) != 2) {
+		logger.Error("Can't parse UUID", zap.Strings("parts", parts))
+	}
 	
-	return uuid1, uuid2, nil
+	return result[0], result[1], nil
 }

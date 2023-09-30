@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLevel, error) {
@@ -107,7 +109,7 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 
 func (db *Database) UpdateBattery(deviceId string, uid string, batteryLevel *device.BatteryLevel) error {
 	const q = `
-	INSERT INTO "BatteryLevel"("device_id", "uid", "time", "battery_level", "battery_status")
+	INSERT INTO "BatteryLevel" ("device_id", "uid", "time", "battery_level", "battery_status")
 	VALUES ($1, $2, $3, $4, $5)
 	`
 
@@ -118,6 +120,7 @@ func (db *Database) UpdateBattery(deviceId string, uid string, batteryLevel *dev
 
 	_, err = db.Conn.Exec(q, deviceId, uid, batteryLevel.Time.Time, batteryLevel.BatteryLevel, batteryLevel.BatteryStatus)
 	if err != nil {
+		logger.Error("Can't update battery", zap.Any("batteryLevel", batteryLevel), zap.String("uid", uid), zap.String("DeviceId", deviceId))
 		return ErrorHandlingMsg(err)
 	}
 

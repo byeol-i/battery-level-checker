@@ -30,7 +30,6 @@ func (t *TopicManager) GetAdmin() (sarama.ClusterAdmin, error){
 	if err != nil {
 		return nil, err
 	}
-	// defer admin.Close()
 
 	return admin, nil
 }

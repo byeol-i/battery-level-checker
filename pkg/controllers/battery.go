@@ -180,31 +180,6 @@ func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.
 		respondError(resp, http.StatusInternalServerError, "Internal server error")
 		return
 	}
-	// t, err := time.Parse("2006-01-02 15:04:05", req.PostFormValue("Time"))
-	// if err != nil {
-	// 	respondError(resp, 405, "time error")
-	// }
-
-	// bt, err := strconv.Atoi(req.PostFormValue("BatteryLevel"))
-	// if err != nil {
-	// 	respondError(resp, 405, "can't convert batteryLevel")
-	// }
-
-	// validDevice := device.DeviceImpl{
-	// 	Name : req.PostFormValue("Name"),
-	// 	Time : &t,
-	// 	BatteryLevel: bt,
-	// 	BatteryStatus: req.PostFormValue("BatteryStatus"),
-	// }
-
-	// v := validator.New()
-
-	// err = v.Struct(validDevice)
-	// if err != nil {
-	// 	respondError(resp, 405, "not valid form")
-	// }
-
-	// producer.Write() 
 
 	respondJSON(resp, 200, "UpdateBattery", "")
 }

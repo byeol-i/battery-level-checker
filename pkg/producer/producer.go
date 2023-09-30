@@ -46,6 +46,8 @@ func WriteBatteryTime(batteryLevel *device.BatteryLevel, deviceId string, uid st
 		Value: sarama.StringEncoder(marshaledData),
 	}
 
+	logger.Info("Producer MSG", zap.Any("Topic","battery_device_" + uid + "_" + deviceId))
+
 	_, _, err = producer.SendMessage(msg)
 	if err != nil {
 		log.Panic(err)
