@@ -11,7 +11,7 @@ import (
 	"github.com/byeol-i/battery-level-checker/pkg/config"
 )
 var (
-	patterns = []string{"^battery_device__(.*?)__(.*)", "^battery_user__(.*?)__(.*)"}
+	patterns = []string{"^battery_device_(.*?)_(.*)", "^battery_user_(.*?)_(.*)"}
 )
 
 type topicManager struct {

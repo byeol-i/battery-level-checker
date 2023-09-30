@@ -11,6 +11,8 @@ services:
             - TZ=Asia/Seoul
         command: "/opt/bin/app/main -numOfPartitions=2 -numOfReplicationFactor=2"
         deploy:
+            mode: replicated
+            replicas: 3
             update_config:
                 parallelism: 2
                 order: start-first
@@ -44,6 +46,8 @@ services:
             - SWARM="true"
             - TZ=Asia/Seoul
         deploy:
+            mode: replicated
+            replicas: 3
             update_config:
                 parallelism: 2
                 order: start-first
@@ -85,6 +89,8 @@ services:
             - TZ=Asia/Seoul
         command: "/opt/bin/app/main"
         deploy:
+            mode: replicated
+            replicas: 3
             update_config:
                 parallelism: 2
                 order: start-first

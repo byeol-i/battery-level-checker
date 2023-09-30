@@ -94,7 +94,7 @@ func realMain() error {
 					logger.Error("Can't get admin", zap.Error(err))
 				}
 				log.Printf("delete %s", deviceId)
-				err = TopicManager.DeleteTopic(admin, "battery_device__"+userId+"__"+deviceId)
+				err = TopicManager.DeleteTopic(admin, "battery_device_"+userId+"_"+deviceId)
 				if err != nil {
 					logger.Error("Can't delete topic", zap.Error(err))
 				}

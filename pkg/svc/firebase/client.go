@@ -12,15 +12,14 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const contextTime = time.Second * 5
+const contextTime = time.Second * 10
 
 var (
 	addr = flag.String("auth addr", "battery_auth:50010", "auth grpc addr")
 )
 
 func CallVerifyToken(token string) (string, error) {
-	// logger.Info("make grpc call at auth server", zap.String("token", token))
-	dialTimeout := 3 * time.Second
+	dialTimeout := 10 * time.Second
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(dialTimeout))
 	if err != nil {
 		return "", err

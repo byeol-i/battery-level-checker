@@ -67,7 +67,7 @@ func (h *MessageHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 }
 
 func ExtractUUIDs(input string) (uuid1, uuid2 string, err error) {
-	re := regexp.MustCompile(`__([^_]+)`)
+	re := regexp.MustCompile(`_([^_]+)`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	if len(matches) <  2 {
 		return "", "", fmt.Errorf("invalid input format")

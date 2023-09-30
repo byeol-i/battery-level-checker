@@ -48,25 +48,25 @@ func (s DBSrv) AddNewUser(ctx context.Context, in *pb_svc_db.AddNewUserReq) (*pb
 		}, err
 	}
 
-	admin, err := s.TopicManager.GetAdmin()
-	if err != nil {
-		logger.Error("Can't get kafka admin", zap.Error(err))
-		return &pb_svc_db.AddNewUserRes{
-			Result: &common.ReturnMsg{
-				Error: err.Error(),
-			},
-		}, err
-	}
+	// admin, err := s.TopicManager.GetAdmin()
+	// if err != nil {
+	// 	logger.Error("Can't get kafka admin", zap.Error(err))
+	// 	return &pb_svc_db.AddNewUserRes{
+	// 		Result: &common.ReturnMsg{
+	// 			Error: err.Error(),
+	// 		},
+	// 	}, err
+	// }
 
-	err = s.TopicManager.CreateTopic(admin, "battery_user__" + in.User.UserCredential.Uid)
-	if err != nil {
-		logger.Error("Can't create topic for device", zap.Error(err))
-		return &pb_svc_db.AddNewUserRes{
-			Result: &common.ReturnMsg{
-				Error: err.Error(),
-			},
-		}, err
-	}
+	// err = s.TopicManager.CreateTopic(admin, "battery_user_" + in.User.UserCredential.Uid)
+	// if err != nil {
+	// 	logger.Error("Can't create topic for device", zap.Error(err))
+	// 	return &pb_svc_db.AddNewUserRes{
+	// 		Result: &common.ReturnMsg{
+	// 			Error: err.Error(),
+	// 		},
+	// 	}, err
+	// }
 
 	return &pb_svc_db.AddNewUserRes{
 		Result: &common.ReturnMsg{
@@ -85,7 +85,7 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	deviceId, err := s.primaryDB.AddNewDevice(*newDevice.GetDeviceSpec(), in.Uid)
+	_, err = s.primaryDB.AddNewDevice(*newDevice.GetDeviceSpec(), in.Uid)
 	if err != nil {
 		logger.Error("Can't add new device", zap.Error(err))
 		return &pb_svc_db.AddDeviceRes{
@@ -95,25 +95,25 @@ func (s DBSrv) AddDevice(ctx context.Context, in *pb_svc_db.AddDeviceReq) (*pb_s
 		}, err
 	}
 
-	admin, err := s.TopicManager.GetAdmin()
-	if err != nil {
-		logger.Error("Can't get kafka admin", zap.Error(err))
-		return &pb_svc_db.AddDeviceRes{
-			Result: &common.ReturnMsg{
-				Error: err.Error(),
-			},
-		}, err
-	}
+	// admin, err := s.TopicManager.GetAdmin()
+	// if err != nil {
+	// 	logger.Error("Can't get kafka admin", zap.Error(err))
+	// 	return &pb_svc_db.AddDeviceRes{
+	// 		Result: &common.ReturnMsg{
+	// 			Error: err.Error(),
+	// 		},
+	// 	}, err
+	// }
 
-	err = s.TopicManager.CreateTopic(admin, "battery_device__" + in.Uid + "__" + deviceId)
-	if err != nil {
-		logger.Error("Can't create topic for device", zap.Error(err))
-		return &pb_svc_db.AddDeviceRes{
-			Result: &common.ReturnMsg{
-				Error: err.Error(),
-			},
-		}, err
-	}
+	// err = s.TopicManager.CreateTopic(admin, "battery_device_" + in.Uid + "_" + deviceId)
+	// if err != nil {
+	// 	logger.Error("Can't create topic for device", zap.Error(err))
+	// 	return &pb_svc_db.AddDeviceRes{
+	// 		Result: &common.ReturnMsg{
+	// 			Error: err.Error(),
+	// 		},
+	// 	}, err
+	// }
 
 	return &pb_svc_db.AddDeviceRes{}, nil
 }
@@ -141,7 +141,7 @@ func (s DBSrv) RemoveDevice(ctx context.Context, in *pb_svc_db.RemoveDeviceReq) 
 		}, err
 	}
 
-	err = s.TopicManager.DeleteTopic(admin, in.Uid.Uid + "__" + in.DeviceId.Id)
+	err = s.TopicManager.DeleteTopic(admin, in.Uid.Uid + "_" + in.DeviceId.Id)
 	if err != nil {
 		logger.Error("Can't delete topic", zap.Error(err))
 		return &pb_svc_db.RemoveDeviceRes{

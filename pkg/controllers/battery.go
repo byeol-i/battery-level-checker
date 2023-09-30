@@ -84,7 +84,7 @@ func (hdl *BatteryController) GetBattery(resp http.ResponseWriter, req *http.Req
 		return
 	}
 
-	// err := consumer.ConsumeLatestMessage("battery_device__"+uid+"_"+matches[1])
+	// err := consumer.ConsumeLatestMessage("battery_device_"+uid+"_"+matches[1])
 	// if err != nil {
 	// 	logger.Error("Can't consume msg", zap.Error(err))
 	// }
@@ -115,8 +115,6 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
     }
 
 	uid := req.Header.Get("Uid")
-	logger.Info("GetHistoryAllBattery", zap.String("uid", uid), zap.String("device", matches[1]))
-	
 	res, err := hdl.dbClient.CallGetAllBattery(matches[1], uid)
 	if err != nil {
 		logger.Error("dbClient's error", zap.Error(err))
