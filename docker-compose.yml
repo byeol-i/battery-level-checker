@@ -61,7 +61,7 @@ services:
             - DB_PASSWORD=HelloWorld
             - DB_NAME=battery
             - TZ=Asia/Seoul
-        command: "/opt/bin/app/main"
+        command: "/opt/bin/app/main -brokerList=kafka-1:9094 -numOfReplicationFactor=1 -numOfPartitions=1"
 
 networks:
     kafka-network:

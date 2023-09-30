@@ -3,25 +3,32 @@ package db
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/byeol-i/battery-level-checker/pkg/device"
-	"github.com/byeol-i/battery-level-checker/pkg/logger"
 )
 
 func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLevel, error) {
 	const q = `
-	SELECT * FROM "BatteryLevel"
+	SELECT "time", "battery_level", "battery_status" FROM "BatteryLevel"
 	WHERE "device_id" = $1 AND
 	"uid" = $2	
 	ORDER BY time DESC
 	LIMIT 1;
 	`
+
+	var timeStamp string
+
 	batteryLevel := &device.BatteryLevel{}
-	err := db.Conn.QueryRow(q, deviceId, uid).Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
+	err := db.Conn.QueryRow(q, deviceId, uid).Scan(&timeStamp, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
 	if err != nil {
-		
 		return nil, ErrorHandlingMsg(err)
 	}
+
+	batteryLevel.Time.Time, err = time.Parse("2006-01-02T15:04:05Z", timeStamp)
+    if err != nil {
+        return nil, ErrorHandlingMsg(err)
+    }
 
 	return batteryLevel, nil
 }
@@ -29,7 +36,7 @@ func (db *Database) GetBattery(deviceId string, uid string) (*device.BatteryLeve
 func (db *Database) GetUsersAllBatteryLevels(uid string) ([]*device.BatteryLevel, error) {
 	var batteryLevels []*device.BatteryLevel
 	q := `
-	SELECT * FROM "BatteryLevel"
+	SELECT "time", "battery_level", "battery_status" FROM "BatteryLevel"
 	WHERE "uid" = $1`
 
 	rows, err := db.Conn.Query(q, uid)
@@ -41,11 +48,16 @@ func (db *Database) GetUsersAllBatteryLevels(uid string) ([]*device.BatteryLevel
 
 	for rows.Next() {
 		batteryLevel := &device.BatteryLevel{}
-		err := rows.Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
+		var timeStamp string
+		err := rows.Scan(&timeStamp, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
 		if err != nil {
 			log.Printf("failed to scan row: %v", err)
 			continue
 		}
+		batteryLevel.Time.Time, err = time.Parse("2006-01-02T15:04:05Z", timeStamp)
+    	if err != nil {
+        	return nil, ErrorHandlingMsg(err)
+    	}
 		batteryLevels = append(batteryLevels, batteryLevel)
 	}
 
@@ -60,7 +72,7 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 	var batteryLevels []*device.BatteryLevel
 
 	q := `
-	SELECT * FROM "BatteryLevel"
+	SELECT "time", "battery_level", "battery_status" FROM "BatteryLevel"
 	WHERE "device_id" = $1 AND
 	"uid" = $2`
 
@@ -73,11 +85,16 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 
 	for rows.Next() {
 		batteryLevel := &device.BatteryLevel{}
-		err := rows.Scan(&batteryLevel.Time, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
+		var timeStamp string
+		err := rows.Scan(&timeStamp, &batteryLevel.BatteryLevel, &batteryLevel.BatteryStatus)
 		if err != nil {
 			log.Printf("failed to scan row: %v", err)
 			continue
 		}
+		batteryLevel.Time.Time, err = time.Parse("2006-01-02T15:04:05Z", timeStamp)
+    	if err != nil {
+        	return nil, ErrorHandlingMsg(err)
+    	}
 		batteryLevels = append(batteryLevels, batteryLevel)
 	}
 
@@ -89,7 +106,6 @@ func (db *Database) GetAllBatteryLevels(deviceId string, uid string) ([]*device.
 }
 
 func (db *Database) UpdateBattery(deviceId string, uid string, batteryLevel *device.BatteryLevel) error {
-	logger.Info("UpdateBattery!")
 	const q = `
 	INSERT INTO "BatteryLevel"("device_id", "uid", "time", "battery_level", "battery_status")
 	VALUES ($1, $2, $3, $4, $5)

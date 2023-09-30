@@ -14,7 +14,7 @@ import (
 )
 
 type Device struct {
-	DeviceInterface
+	DeviceInterface `json:"-"`
 	DeviceImpl
 }
 
@@ -34,15 +34,15 @@ type DeviceInterface interface {
 }
 
 type DeviceImpl struct {
-	Id string `validate:"required" json:"id" example:"f8aa8e64-eefa-423d-be40-a761231db093"`
-	BatteryLevel BatteryLevel
+	Id string `validate:"required" json:"DeviceID" example:"f8aa8e64-eefa-423d-be40-a761231db093"`
+	BatteryLevel BatteryLevel `json:"-"`
 	Spec DeviceSpec
 }
 
 type BatteryLevel struct {	
-	Time BatteryTime `validate:"required" json:"time" example:"2006-01-02 15:04:05"`
-	BatteryLevel  int        `validate:"required" json:"batteryLevel" example:"50"`
-	BatteryStatus string     `validate:"required" json:"batteryStatus" example:"charging"`
+	Time BatteryTime `validate:"required" json:"Time" example:"2006-01-02 15:04:05"`
+	BatteryLevel  int        `validate:"required" json:"BatteryLevel" example:"50"`
+	BatteryStatus string     `validate:"required" json:"BatteryStatus" example:"charging"`
 }
 
 type BatteryTime struct {
@@ -50,15 +50,15 @@ type BatteryTime struct {
 }
  
 type DeviceSpec struct {
-	Name       string `validate:"required" json:"name" example:"iphone 99xs"`
-	Type       string `validate:"required" json:"type" example:"phone"`
+	Name       string `validate:"required" json:"Name" example:"iphone 99xs"`
+	Type       string `validate:"required" json:"Type" example:"phone"`
 	OS         string `validate:"required" json:"OS" example:"IOS"`
 	OSversion  string `validate:"required" json:"OSversion" example:"99.192"`
-	AppVersion string `validate:"required" json:"appVersion" example:"0.0.1"`
+	AppVersion string `validate:"required" json:"AppVersion" example:"0.0.1"`
 }
 
 type Id struct {
-	DeviceID   string `validate:"required" json:"deviceID" example:"f782fd74-d264-4901-8df5-c905f9df08db"`
+	DeviceID   string `validate:"required" json:"DeviceID" example:"f782fd74-d264-4901-8df5-c905f9df08db"`
 }
 
 func NewDevice() *Device {

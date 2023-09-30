@@ -137,15 +137,8 @@ func (hdl *FirebaseApp) CreateCustomToken(ctx context.Context, uid string) (stri
 		logger.Error("error getting Auth client", zap.Error(err))
 		return "", err
 	}
-
-	// testing
-	// claims := map[string]interface{}{
-    //     "exp": 10^9,
-	// }
-
 	token, err := client.CustomToken(ctx, uid)
-	// token, err := client.CustomTokenWithClaims(context.Background(), uid, claims)
-	
+
 	if err != nil {
 		logger.Error("Can't create custom token!", zap.Error(err))
 		return "", err

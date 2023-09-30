@@ -162,22 +162,20 @@ func (s DBSrv) GetDevices(ctx context.Context, in *pb_svc_db.GetDevicesReq) (*pb
 			},
 		}, err
 	}
-	logger.Info("Get devices raws", zap.Any("raws ", raws))
 	
 	var devices []*pb_unit_device.Device
 	for _, v := range raws {
 		device := &pb_unit_device.Device{
 			Spec: v.GetProtoDeviceSpec(),
+			Id: &pb_unit_device.ID{
+				Id: v.GetDeviceId(),
+			},
 		}
 
 		devices = append(devices, device)
 	}
-	logger.Info("Get devices", zap.Any("devices", devices))
 
 	return &pb_svc_db.GetDevicesRes{
-		// Result: &common.ReturnMsg{
-		// 	Result: "done",
-		// },
 		Devices: devices,
 	}, nil
 }

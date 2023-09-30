@@ -12,12 +12,12 @@ COPY go.sum .
 
 RUN mkdir -p /opt/bin/app/
 
+RUN go mod tidy \
+    && go get -u -d -v ./...
+
 # COPY vendor/ /go/src/
 
 COPY . .
-
-RUN go mod tidy \
-    && go get -u -d -v ./...
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o /opt/bin/app/main cmd/db/main.go \    
   && upx --lzma /opt/bin/app/main

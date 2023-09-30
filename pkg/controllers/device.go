@@ -67,7 +67,11 @@ func (hdl *DeviceControllers) AddNewDevice(resp http.ResponseWriter, req *http.R
 	err = hdl.dbSvc.CallAddNewDevice(newDevice, strings.Replace(uid, "\"", "", -1))
 	if err != nil {
 		logger.Error("dbSvc's error", zap.Error(err))
-		respondError(resp, http.StatusInternalServerError, "Internal server error")
+		if strings.Contains(err.Error(), "device already exists") {
+			respondError(resp, 409, "device already exists")
+		} else {
+			respondError(resp, http.StatusInternalServerError, "Internal server error")
+		}
 		return
 	}
 

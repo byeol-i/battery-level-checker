@@ -8,6 +8,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 )
+
 type BatteryLevelWrapper struct {
 	device.Id
 	device.BatteryLevel

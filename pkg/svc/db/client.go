@@ -181,7 +181,7 @@ func (c *DBSvcClient) CallGetAllDevices(uid string) ([]*device.Device, error) {
 		if err != nil {
 			logger.Error("Can't make pb to device struct", zap.Error(err))
 		}
-
+		
 		allDevices = append(allDevices, newDevice)
 	}
 

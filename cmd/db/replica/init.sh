@@ -1,12 +1,13 @@
 #!/bin/sh
 
 # TODO: Lame attempt to make this idempotent
+echo "Running init!"
 
 if [ ! -f ${PGDATA}/recovery.conf ]; then
   gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
   sleep 1
   rm -rf ${PGDATA}/*
-
+  echo "ls -al {PGDATA}"
   PGPASSWORD="password" pg_basebackup -h pgmaster -p 5432 -D ${PGDATA} -U replicator -X stream -v
 
   # TODO: Do this with ALTER SYSTEM

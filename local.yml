@@ -10,7 +10,7 @@ services:
             - "2181:2181"
         environment:
             ZOOKEEPER_SERVER_ID: 1
-            ZOOKEEPER_SERVERS: 0.0.0.0:2888:3888;zoo2:2888:3888;zoo3:2888:3888
+            ZOOKEEPER_SERVERS: 0.0.0.0:2888:3888;
             # ZOOKEEPER_CLIENT_PORT: 22181
     kafka-1:
         image: wurstmeister/kafka
@@ -45,7 +45,9 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
     pgmaster:
-        image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
+        image: db-primary
+        # image: ghcr.io/byeol-i/battery-level-checker--postgresql-primary:latest
+        command: ["postgres"]
         hostname: pgmaster
         networks:
             - kafka-network
@@ -65,14 +67,14 @@ services:
         ports:
             - "8432:5432"
         volumes:
-            # must be empty, when deleting postgres file in container shell, permission should be stuck...
             - /tmp/battery/data:/var/lib/postgresql/data:z
         environment:
             POSTGRES_DB: battery
             POSTGRES_USER: table_admin
             POSTGRES_PASSWORD: HelloWorld
             POSTGRES_INITDB_ARGS: --encoding=UTF-8
-            PGDATA: /var/lib/postgresql/data
+            # PGDATA: /var/lib/postgresql/data
+            TZ: Asia/Seoul
 
 networks:
     kafka-network:

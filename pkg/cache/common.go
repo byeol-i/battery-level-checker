@@ -3,6 +3,7 @@ package cache
 import (
 	"github.com/patrickmn/go-cache"
 )
+
 type CacheManager struct {
 	deviceCache *cache.Cache
 	userCache *cache.Cache

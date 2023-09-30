@@ -3,6 +3,8 @@ package topic
 import (
 	"github.com/Shopify/sarama"
 	"github.com/byeol-i/battery-level-checker/pkg/config"
+	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"go.uber.org/zap"
 )
 
 type TopicManager struct {
@@ -34,6 +36,7 @@ func (t *TopicManager) GetAdmin() (sarama.ClusterAdmin, error){
 }
 
 func (t *TopicManager) CreateTopic(admin sarama.ClusterAdmin, name string) (error) {
+	logger.Info("t.numOfReplicationFactor", zap.Any("t.numOfReplicationFactor", t.numOfReplicationFactor))
 	err := admin.CreateTopic(name, &sarama.TopicDetail{
 		NumPartitions: t.numOfPartitions,
 		ReplicationFactor: t.numOfReplicationFactor,

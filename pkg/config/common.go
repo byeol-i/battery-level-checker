@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/byeol-i/battery-level-checker/pkg/logger"
+	"go.uber.org/zap"
 )
 
 var lock = &sync.Mutex{}
@@ -27,6 +28,10 @@ func GetInstance() *configManager {
 		if configManagerInstance == nil {
 			logger.Info("Creating configManager instance")
 			flag.Parse()
+			logger.Info("Config -brokerList", zap.Any("brokerList", brokerList))
+			logger.Info("Config -numOfReplicationFactor", zap.Any("numOfReplicationFactor", numOfReplicationFactor))
+			logger.Info("Config -numOfPartitions", zap.Any("numOfPartitions", numOfReplicationFactor))
+	
 
 			configManagerInstance = &configManager{}
 		} 

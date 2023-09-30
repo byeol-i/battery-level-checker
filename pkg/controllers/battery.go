@@ -137,7 +137,7 @@ func (hdl *BatteryController) GetHistoryAllBattery(resp http.ResponseWriter, req
 // @Param Authorization header string true "With the bearer started"
 // @Success 200 {object} models.JSONsuccessResult{}
 // @Failure 400 {object} models.JSONfailResult{}
-// @Router /battery/{deviceID} [put]
+// @Router /battery/{deviceID} [post]
 func (hdl *BatteryController) UpdateBattery(resp http.ResponseWriter, req *http.Request) {
 	pattern := regexp.MustCompile(hdl.basePattern + `/battery/([a-zA-Z0-9-]+)`)
 	
