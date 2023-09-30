@@ -13,7 +13,7 @@ services:
             - kafka-network
         environment:
             ZOOKEEPER_SERVER_ID: 1
-            ZOOKEEPER_SERVERS: 0.0.0.0:2888:3888;zoo2:2888:3888
+            ZOOKEEPER_SERVERS: 0.0.0.0:2888:3888;zoo2:2888:3888;zoo3:2888:3888
             # ZOOKEEPER_CLIENT_PORT: 22181
             TZ: Asia/Seoul
         deploy:
@@ -32,31 +32,31 @@ services:
             - kafka-network
         environment:
             ZOOKEEPER_SERVER_ID: 2
-            ZOOKEEPER_SERVERS: zoo1:2888:3888;0.0.0.0:2888:3888
+            ZOOKEEPER_SERVERS: zoo1:2888:3888;0.0.0.0:2888:3888;zoo3:2888:3888
             # ZOOKEEPER_CLIENT_PORT: 22182
             TZ: Asia/Seoul
         deploy:
             placement:
                 constraints:
                     - node.labels.kafka == 2
-    # zoo3:
-    #     image: zookeeper
-    #     ports:
-    #         - target: 2181
-    #           published: 2183
-    #           protocol: tcp
-    #           mode: ingress
-    #     hostname: zoo3
-    #     networks:
-    #         - kafka-network
-    #     environment:
-    #         ZOOKEEPER_SERVER_ID: 3
-    #         ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;0.0.0.0:2888:3888
-    #         # ZOOKEEPER_CLIENT_PORT: 22182
-    #     deploy:
-    #         placement:
-    #             constraints:
-    #                 - node.labels.kafka == 3
+    zoo3:
+        image: zookeeper
+        ports:
+            - target: 2181
+              published: 2183
+              protocol: tcp
+              mode: ingress
+        hostname: zoo3
+        networks:
+            - kafka-network
+        environment:
+            ZOOKEEPER_SERVER_ID: 3
+            ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;0.0.0.0:2888:3888
+            # ZOOKEEPER_CLIENT_PORT: 22182
+        deploy:
+            placement:
+                constraints:
+                    - node.labels.kafka == 3
 
 networks:
     kafka-network:
