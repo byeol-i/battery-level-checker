@@ -5,8 +5,13 @@ if ! command -v docker &> /dev/null; then
   exit 1
 fi
 
-if [ -z "$(docker info | grep Swarm)" ]; then
-  echo "Not a Swarm..."
+swarm_info=$(docker info --format '{{.Swarm.LocalNodeState}}')
+
+if [ "$swarm_info" == "active" ]; then
+  # pass
+  echo ""
+else
+  echo "Please check is it swarm"
   exit 1
 fi
 
@@ -23,6 +28,8 @@ if [ "$num_nodes" -lt "$required_nodes" ]; then
   exit 1
 fi
 
+
+exit1
 cd ..
 
 NETWORK_NAME="kafka-network"
