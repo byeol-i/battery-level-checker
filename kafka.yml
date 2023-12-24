@@ -36,6 +36,8 @@ services:
               published: 9094
               protocol: tcp
               mode: host
+        labels:
+            - "traefik.enable=false"
         deploy:
             mode: replicated
             replicas: 1
@@ -79,6 +81,8 @@ services:
               published: 9094
               protocol: tcp
               mode: host
+        labels:
+            - "traefik.enable=false"
         deploy:
             mode: replicated
             replicas: 1
